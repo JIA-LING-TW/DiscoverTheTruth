@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>您的網站名稱</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap">
+</head>
+
+<body>
+
+    <!-- 頂部導覽欄 -->
+    <header class="header">
+        <div class="container">
+            <!-- 左側部分：網站標誌和導航按鈕 -->
+            <div class="nav-left">
+                <h1 class="logo">網站標誌</h1>
+                <nav>
+                    <ul class="nav-links">
+                        <li class="top"><a href="#home">首頁</a></li>
+                        <li class="top">
+                            <a href="#features">服務內容</a>
+                            <ul class="sub-menu">
+                                <li class="sub"><a href="#feature1">各公司ESG資料</a></li>
+                                <li class="sub"><a href="#feature2">ESG報告真實性驗證</a></li>
+                                <li class="sub"><a href="#feature3">ESG基金風險管理</a></li>
+                            </ul>
+                        </li>
+                        <li class="top">
+                            <a href="#skillｓ">技術實現</a>
+                            <ul class="sub-menu">
+                                <li class="sub"><a href="#skill1">圖片</a></li>
+                                <li class="sub"><a href="#skill2">報告書</a></li>
+                            </ul>
+                        </li>
+                        <li class="top"><a href="#about">關於我們</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <!-- 右側部分：登入按鈕 -->
+            <a href="#login" class="login-button">登入</a>
+        </div>
+    </header>
+
+    <!-- 底部 -->
+    <!-- <footer class="footer">
+        <div class="container">
+            <p>© 2024 您的公司名稱. 保留所有權利。</p>
+        </div>
+    </footer> -->
+
+    <script>
+        // 選取所有的 <a> 項目
+        const navLinks = document.querySelectorAll('.nav-links li a');
+
+        // 為每個 <a> 添加點擊事件處理程式
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                // 移除所有項目的 "active" 類
+                navLinks.forEach(el => el.classList.remove('active'));
+                // 為當前點擊的項目添加 "active" 類
+                link.classList.add('active');
+            });
+        });
+
+        // 服務內容（子選單）
+        const featuresLink = document.querySelector('.nav-links li a[href="#features"]');
+        const subMenu = featuresLink.nextElementSibling;
+
+        // 點擊服務內容切換顯示子選單
+        featuresLink.addEventListener('click', (e) => {
+            e.preventDefault(); // 防止頁面跳轉
+            subMenu.classList.toggle('show'); // 切換顯示或隱藏
+        });
+
+        // 點擊頁面其他地方時，隱藏子選單
+        document.addEventListener('click', (e) => {
+            if (!featuresLink.contains(e.target) && !subMenu.contains(e.target)) {
+                subMenu.classList.remove('show'); // 隱藏子選單
+            }
+        });
+
+        // 技術實現（子選單）
+        const skillｓLink = document.querySelector('.nav-links li a[href="#skillｓ"]');
+        const subMenu1 = skillｓLink.nextElementSibling;  // 取得對應的子選單 (ul)
+
+        // 點擊服務內容切換顯示子選單
+        skillｓLink.addEventListener('click', (e) => {
+            e.preventDefault(); // 防止頁面跳轉
+            subMenu1.classList.toggle('show'); // 切換顯示或隱藏
+        });
+
+        // 點擊頁面其他地方時，隱藏子選單
+        document.addEventListener('click', (e) => {
+            if (!skillｓLink.contains(e.target) && !subMenu1.contains(e.target)) {
+                subMenu1.classList.remove('show'); // 隱藏子選單
+            }
+        });
+    </script>
+
+
+
+
+
+</body>
+
+</html>
