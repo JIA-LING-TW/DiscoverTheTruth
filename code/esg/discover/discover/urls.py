@@ -8,8 +8,10 @@
 
 from django.urls import path
 import myapp.views as views
+from django.contrib import admin
 
 urlpatterns = [
+    path("admin/", admin.site.urls),
     path('', views.index, name='index'),  # 首頁
     path('about/', views.about, name='about'),  # 關於
     path('chart/', views.chart, name='chart'),  # 圖表頁
