@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A Django Website">
+        <meta name="keywords" content="Django, Website">
+        <title>Django 111</title>
+        <link rel="stylesheet" href="forget.css">
+        <link rel="stylesheet" href="login.css">
+        <link rel="stylesheet" href="register.css">
+    </head>
+    <body>
+        <header>
+            <div class="logo-container">
+                <img src="{% static "LOGO.png" %}" alt="碳索偵相 LOGO">
+                <span>碳索偵相</span>
+            </div>
+            <nav>
+                <a href="index.html">首頁</a>
+                <div class="dropdown">
+                    <a href="#">服務內容</a>
+                    <div class="dropdown-content">
+                        <a href="ESGEachCompany.html">各公司ESG資料</a>
+                        <a href="ESGReal.html">ESG報告真實性驗證</a>
+                        <a href="ESGRisk.html">ESG基金風險管理</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#">技術實現</a>
+                    <div class="dropdown-content">
+                        <a href="chart.html">圖表數據</a>
+                        <a href="report.html">報告書</a>
+                    </div>
+                </div>
+                <a href="about.html">關於</a>
+                <a href="content.html">聯絡</a>
+            </nav>
+            <div class="login-buttons" href="login.html">
+                <button>登入</button>
+            </div>
+        </header>
+        {% block body %}
+            <p>Body block start</p>
+            <p>Body block end</p>
+        {% endblock body %}
+    </body>
+</html>
