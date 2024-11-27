@@ -1,7 +1,8 @@
 from django.shortcuts import render
-
-# Create your views here.
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login as auth_login
+from django.contrib import messages
+from django.http import HttpResponse
 
 
 def index(request):
@@ -33,7 +34,20 @@ def forget(request):
 
 
 def login(request):
-    return render(request, 'login.html')
+    if request.method == "POST":
+        # 從表單獲取輸入
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        # 驗證使用者帳密
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            auth_login(request, user)
+            return redirect('index')  # 登入成功，導向首頁或其他頁面
+        else:
+            messages.error(request, "電子信箱或密碼不正確，請重新輸入。")
+
+    return render(request, 'login.html', {'message': messages.get_messages(request)})
 
 
 def register(request):
