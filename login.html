@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/login.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="images/logo.png" alt="碳索偵相 LOGO">
+            <span>碳索偵相</span>
+        </div>
+        <nav>
+            <a href="#">首頁</a>
+            <div class="dropdown">
+                <a href="#">服務內容</a>
+                <div class="dropdown-content">
+                    <a href="#">各公司ESG資料</a>
+                    <a href="#">ESG報告真實性驗證</a>
+                    <a href="#">ESG基金風險管理</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#">技術實現</a>
+                <div class="dropdown-content">
+                    <a href="#">圖表數據</a>
+                    <a href="#">報告書</a>
+                </div>
+            </div>
+            <a href="#">關於</a>
+            <a href="#">聯絡</a>
+        </nav>
+        <div class="login-buttons">
+            <button><a href="login.html" style="text-decoration: none;color: aliceblue;">登入</a></button>
+        </div>
+    </header>
+
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>登入頁面</title>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </head>
+
+    <body>
+        <div class="login-container">
+            <div class="login-box">
+                <h1 class="top_login">碳索偵相</h1>
+                <img src="/images/logo1.jpg" alt="Logo" class="logo">
+                <div class="error-message">{{ message }}</div>
+                <form method="post" action="{% url 'login' %}" id="loginForm">
+                    {% csrf_token %}
+                    <input type="email" name="email" placeholder="請輸入電子信箱" required>
+                    <div class="password-container">
+                        <input type="password" name="password" id="password" placeholder="請輸入密碼" required>
+                        <i class="fa-solid fa-eye" id="togglePassword"></i>
+                    </div>
+                    <div class="captcha-container">
+                        <input type="text" id="captchaInput" placeholder="請輸入驗證碼" required>
+                        <div id="captcha"></div>
+                        <a href="#" id="refreshCaptcha" title="重新產生驗證碼">
+                            <i class="fa-solid fa-rotate"></i>
+                        </a>
+                    </div>
+                    <button type="submit" class="btn-submit">登入</button>
+                </form>
+                <div class="links">
+                    <a href="register.html">還沒有帳號？註冊</a>
+                    <a href="forget.html">忘記密碼</a>
+                </div>
+            </div>
+        </div>
+
+        <script src="{% static 'js/script.js' %}"></script>
+    </body>
+
+    </html>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 密碼顯示切換
+            const togglePassword = document.getElementById("togglePassword");
+            const passwordField = document.getElementById("password");
+
+            togglePassword.addEventListener("click", function () {
+                if (passwordField.type === "password") {
+                    passwordField.type = "text";
+                    togglePassword.classList.replace("fa-eye", "fa-eye-slash");
+                } else {
+                    passwordField.type = "password";
+                    togglePassword.classList.replace("fa-eye-slash", "fa-eye");
+                }
+            });
+
+            // 驗證碼生成
+            function generateCaptcha() {
+                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                let captcha = "";
+                for (let i = 0; i < 6; i++) {
+                    captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                document.getElementById("captcha").innerText = captcha;
+            }
+
+            // 初始化驗證碼
+            generateCaptcha();
+
+            // 驗證碼刷新
+            const refreshCaptcha = document.getElementById("refreshCaptcha");
+            refreshCaptcha.addEventListener("click", function (e) {
+                e.preventDefault();
+                generateCaptcha();
+            });
+        });
+
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,168 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 10px 10px 10px;
+    /* 減少左邊的 padding */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    margin-left: -150px;
+    /* 負值讓 LOGO 靠左 */
+}
+
+nav {
+    margin-left: -100px;
+    /* 讓導航選單也靠左 */
+}
+
+
+.logo-container img {
+    height: 200px;
+    margin-right: 10px;
+}
+
+.logo-container span {
+    font-size: 40px;
+    font-weight: bold;
+    color: black;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    /* 將內容置中 */
+    align-items: center;
+    /* 垂直置中 */
+    gap: 40px;
+    /* 增加選項間距 */
+}
+
+nav a {
+    text-decoration: none;
+    color: black;
+    /* 讓文字更醒目 */
+    font-size: 20px;
+    /* 增加文字大小 */
+    font-weight: bold;
+    /* 保持粗體 */
+    transition: color 0.3s ease;
+    /* 增加平滑的文字顏色變化效果 */
+}
+
+nav a:hover {
+    color: #555;
+    /* 增加滑鼠懸停效果 */
+
+}
+
+nav a:hover {
+    color: black;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    padding: 10px 0;
+    z-index: 1;
+    min-width: 200px;
+}
+
+.dropdown-content a {
+    display: block;
+    padding: 8px 20px;
+    text-decoration: none;
+    color: gray;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.dropdown-content a:hover {
+    background-color: #f5f5f5;
+    color: black;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.login-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.login-buttons button {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.hero {
+    background: linear-gradient(to bottom right, #fde2eb, #5a8cbf);
+    /* 深化藍色 */
+    padding: 50px 20px;
+    text-align: center;
+    min-height: 100vh;
+}
+
+.hero h1 {
+    font-size: 48px;
+    color: #333;
+    margin: 10px 0;
+}
+
+.hero h2 {
+    font-size: 24px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.hero p {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.8;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+footer {
+    background-color: #f0f0f0;
+    padding: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+}
+
+.chat {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: black;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+}
