@@ -1,0 +1,848 @@
+{% load static %}
+{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>碳索偵相</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 10px 10px 10px; /* 減少左邊的 padding */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-left: -150px; /* 負值讓 LOGO 靠左 */
+        }
+
+        nav {
+            margin-left: -100px; /* 讓導航選單也靠左 */
+        }
+
+        
+        .logo-container img {
+            height: 200px;
+            margin-right: 10px;
+        }
+        .logo-container span {
+            font-size: 40px;
+            font-weight: bold;
+            color: black;
+        }
+        nav {
+            display: flex;
+            justify-content: center; /* 將內容置中 */
+            align-items: center; /* 垂直置中 */
+            gap: 40px; /* 增加選項間距 */
+        }
+
+        nav a {
+            text-decoration: none;
+            color: black; /* 讓文字更醒目 */
+            font-size: 20px; /* 增加文字大小 */
+            font-weight: bold; /* 保持粗體 */
+            transition: color 0.3s ease; /* 增加平滑的文字顏色變化效果 */
+        }
+
+        nav a:hover {
+            color: #555; /* 增加滑鼠懸停效果 */
+
+        }
+        nav a:hover {
+            color: black;
+        }
+        .dropdown {
+            position: relative;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 10px 0;
+            z-index: 1;
+            min-width: 200px;
+        }
+        .dropdown-content a {
+            display: block;
+            padding: 8px 20px;
+            text-decoration: none;
+            color: gray;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .dropdown-content a:hover {
+            background-color: #f5f5f5;
+            color: black;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .login-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .login-buttons button {
+            background-color: black;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .hero {
+            background: linear-gradient(to bottom right, #fde2eb, #5a8cbf); /* 深化藍色 */
+            padding: 50px 20px;
+            text-align: center;
+            min-height: 100vh;
+        }
+        .hero h1 {
+            font-size: 48px;
+            color: #333;
+            margin: 10px 0;
+        }
+        .hero h2 {
+            font-size: 24px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .hero p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        footer {
+            background-color: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        .chat {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: black;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+        
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="{% static "LOGO.png" %}" alt="碳索偵相 LOGO">
+            <span>碳索偵相</span>
+        </div>
+        <nav>
+            <a href="index.html">首頁</a>
+            <div class="dropdown">
+                <a href="#">服務內容</a>
+                <div class="dropdown-content">
+                    <a href="ESGEachCompany.html">各公司ESG資料</a>
+                    <a href="ESGReal.html">ESG報告真實性驗證</a>
+                    <a href="ESGRisk.html">ESG基金風險管理</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#">技術實現</a>
+                <div class="dropdown-content">
+                    <a href="chart.html">圖表數據</a>
+                    <a href="report.html">報告書</a>
+                </div>
+            </div>
+            <a href="about.html">關於</a>
+            <a href="content.html">聯絡</a>
+        </nav>
+        <div class="login-buttons" href="login.html">
+            <button>登入</button>
+        </div>
+    </header>
+    <section class="hero">
+        <h1>碳索偵相，打造誠信綠色市場</h1>
+        <h2>公司簡介</h2>
+        <p style="text-align: justify; font-size: 16px; color: #666; line-height: 1.8; max-width: 800px; margin: 0 auto;">
+            公司致力於應對全球對可持續發展需求的快速增長，專注於開發先進的ESG漂綠偵測系統。
+            隨著ESG投資的普及，一些企業為了吸引投資誇大或虛假宣傳其ESG成果，導致市場充滿不真實的報告和承諾，
+            增加了投資者和金融機構的風險。針對這一問題，我們的系統利用Hyperledger Fabric區塊鏈技術，
+            確保數據的不可篡改性，並結合AI模型，採用隨機森林和長短期記憶模型LSTM，深入分析企業的ESG行為真實性。
+            此外，系統網路架構SNA能評估企業在供應鏈中的關鍵關係和聲譽，提供全面的風險評估，
+            促進資金流向真實的可持續項目，助力全球綠色金融的健康發展。
+        </p>
+    <!-- 嵌入 YouTube 影片 -->
+    <div style="text-align: center; margin-top: 20px;">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/5MpGh4CGNH0" 
+            title="YouTube video player" frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen></iframe>
+    </div>
+    </div>
+    <!-- 插入圖片 -->
+    <div style="text-align: center; margin-top: 30px;">
+        <img src="{% static "A.png" %}"  style="max-width: 100%; height: auto;">
+    </div>
+
+    <div style="text-align: center; margin-top: 20px; padding: 20px;">
+        <p style="text-align: justify; font-size: 18px; line-height: 1.8; color: #333; max-width: 800px; margin: 0 auto;">
+            參考多項數據來源，對企業的聲譽及其在供應鏈中的關鍵角色進行精確評估，幫助投資者輕鬆辨別ESG數據中的潛在誇大或虛假宣傳，實現風險管理。我們的服務旨在促進資金流向真實的可持續項目，支持綠色金融市場的健康成長。
+        </p>
+        <button style="background-color: black; color: white; border: none; padding: 10px 20px; font-size: 18px; border-radius: 5px; cursor: pointer; margin-top: 20px;">
+            前往服務
+        </button>
+    
+        <!-- 技術介紹部分 -->
+        <div style="margin-top: 40px;"> <!-- 新增間距 -->
+            <h1 style="margin-bottom: 20px;">技術介紹</h1>
+            <p style="text-align: justify;font-size: 18px; color: #333; line-height: 1.8; max-width: 800px; margin: 0 auto;">
+                我們的技術結合區塊鏈的數據不可篡改性與 AI 模型的智能分析，深入評估企業 ESG 行為的真實性，
+                為使用者提供可靠的漂綠偵測和聲譽評估服務。
+            </p>
+            <div style="max-width: 800px; margin: 30px auto; text-align: left;"> <!-- 左對齊列表 -->
+                <ul style="list-style-type: none; padding: 0; font-size: 18px; line-height: 2; color: #333;">
+                    <li style="margin-left: 0; text-indent: -1.5em; padding-left: 1.5em;">• 結合區塊鏈和 AI 技術</li>
+                    <li style="margin-left: 0; text-indent: -1.5em; padding-left: 1.5em;">• 利用區塊鏈技術保障數據真實性</li>
+                    <li style="margin-left: 0; text-indent: -1.5em; padding-left: 1.5em;">• 建立風險預警系統</li>
+                    <li style="margin-left: 0; text-indent: -1.5em; padding-left: 1.5em;">• 網頁前端可查看風險報表、監控指標和異常預警</li>
+                </ul>
+            </div>
+        </div>
+    
+        <!-- 按鈕 -->
+        <div style="text-align: center; margin-top: 30px;">
+            <button style="background-color: black; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 5px; cursor: pointer;">
+                查看技術實現
+            </button>
+        </div>
+        </div>
+        <!-- 插入圖片 -->
+    <div style="text-align: center; margin-top: 30px;">
+        <img src="{% static "B.png" %}"  style="max-width: 80%; height: auto;">
+    </div>
+    
+    </section>
+
+    <div class="chat" style="z-index: 1000; position: fixed; bottom: 20px; right: 20px; background-color: black; color: white; padding: 10px 20px; border-radius: 50px; cursor: pointer;">
+        Let's Chat!
+    </div>
+    
+    <!DOCTYPE html>
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>風險等級</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #0056b3;
+            }
+    
+            .carousel {
+                max-width: 1200px;
+                margin: 50px auto;
+                position: relative;
+                background: linear-gradient(to bottom right, #f9fbfd, #5a8cbf); 
+                border-radius: 10px;
+                padding: 60px;
+            }
+    
+            .carousel-item {
+                display: none; /* 預設隱藏所有內容 */
+                align-items: center;
+                justify-content: space-between;
+                padding: 40px;
+                color: #fff;
+                box-sizing: border-box;
+            }
+    
+            .carousel-item.active {
+                display: flex; /* 只有當前選中的項目顯示 */
+            }
+    
+            .item-left {
+                text-align: center;
+                flex: 1;
+            }
+    
+            .item-left h2, .item-left h3 {
+                margin: 10px 0;
+            }
+    
+            .item-right {
+                flex: 1;
+                background-color: #fff;
+                color: #000;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            }
+    
+            .item-right h3 {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+    
+            .dots {
+                text-align: center;
+                margin-top: 20px;
+            }
+    
+            .dot {
+                cursor: pointer;
+                height: 12px;
+                width: 12px;
+                margin: 0 5px;
+                background-color: #bbb;
+                border-radius: 50%;
+                display: inline-block;
+                transition: background-color 0.3s;
+            }
+    
+            .dot.active {
+                background-color: #333;
+            }
+
+            .output-section {
+                background: linear-gradient(to bottom right, #f9dede, #d4c8e3); /* 使用與最上方一致的漸層 */
+                padding: 40px;
+                text-align: center;
+                margin-top: 20px; /* 與上方區塊間距 */
+            }
+
+            .output-section h2 {
+                font-size: 40px;
+                margin-bottom: 20px;
+                color: #000000; /* 文字稍微加深，對比更明顯 */
+            }
+            .output-section {
+                background: #ffffff; /* 設定白色背景 */
+                padding: 40px;
+                margin-top: 40px; /* 增加間距，避免與上方區塊重疊 */
+                display: flex;
+                flex-direction: column; /* 垂直排列元素 */
+                align-items: center; /* 水平置中 */
+                justify-content: center; /* 垂直置中 */
+                text-align: center; /* 文字置中 */
+            }
+
+            .content-container {
+                display: flex;
+                justify-content: space-between; /* 讓內容和圖片並排顯示 */
+                align-items: center; /* 垂直置中內容 */
+                gap: 20px;
+                width: 100%;
+                max-width: 1200px; /* 限制內容區域的最大寬度 */
+            }
+
+            .content-image {
+                flex: 1;
+                text-align: center; /* 圖片置中 */
+            }
+
+            .content-image img {
+                width: 100%;
+                height: auto;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .content-text {
+                flex: 2;
+                text-align: left;
+            }
+
+            .content-text h2 {
+                font-size: 28px;
+                margin-bottom: 20px;
+                color: #333;
+            }
+
+            .content-text p {
+                font-size: 16px;
+                line-height: 1.8;
+                color: #000;
+                margin-bottom: 20px;
+            }
+
+            .content-text button {
+                background-color: black;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                font-size: 16px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            .output-section {
+                background: #ffffff; 
+                padding: 40px;
+                margin-top: 0px; 
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .content-container {
+                display: flex;
+                justify-content: space-between; 
+                gap: 20px;
+                width: 100%;
+            }
+
+            .content-image {
+                flex: 1;
+                text-align: center;
+            }
+
+            .content-image img {
+                width: 100%;
+                height: auto;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .content-text {
+                flex: 2;
+                text-align: left;
+            }
+
+            .content-text h2 {
+                font-size: 28px;
+                margin-bottom: 20px;
+                color: #333;
+            }
+
+            .content-text p {
+                font-size: 16px;
+                line-height: 1.8;
+                color: #000;
+                margin-bottom: 20px;
+            }
+
+            .content-text button {
+                background-color: black;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                font-size: 16px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            .team-container {
+                background-color: #ffffff; /* 設定白色背景 */
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 30px;
+                padding: 40px 20px;
+                flex-wrap: wrap; /* 在螢幕較小時圖片換行 */
+            }
+            .team-member {
+                text-align: center;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                max-width: 300px;
+                width: 100%;
+            }
+            .team-member img {
+                width: 100%; /* 保持寬度為容器的寬度 */
+                max-height: 300px; /* 限制最大高度為350px */
+                object-fit: cover; /* 確保圖片按比例裁剪填充 */
+                border-radius: 8px;
+            }
+            .team-member h3 {
+                font-size: 20px; /* 字體大小 */
+                font-weight: bold; /* 字體加粗 */
+                color: #333; /* 字體顏色 */
+                border: 1px solid black; /* 黑框 */
+                padding: 5px; /* 框內間距 */
+                display: inline-block; /* 讓框隨字體大小縮放 */
+                margin-top: 15px;
+            }
+
+            /* 團隊介紹：描述文字樣式 */
+            .team-member p {
+                font-size: 18px; /* 字體加大 */
+                text-align: left; /* 靠左對齊 */
+                color: #000000; /* 字體顏色 */
+                margin: 10px 0; /* 間距 */
+                line-height: 1.8; /* 行距 */
+            }
+
+            .intro-button-container {
+                background-color: white; /* 確保背景為白色 */
+                padding: 20px; /* 增加內間距，避免元素重疊 */
+            }
+
+            .intro-button {
+                background-color: black; /* 按鈕背景色 */
+                color: white; /* 按鈕文字顏色 */
+                border: none; /* 無邊框 */
+                padding: 10px 20px; /* 內間距 */
+                border-radius: 5px; /* 圓角邊框 */
+                font-size: 16px; /* 字體大小 */
+                cursor: pointer; /* 滑鼠移上變為手型 */
+                transition: background-color 0.3s ease; /* 平滑過渡效果 */
+            }
+
+            .intro-button:hover {
+                background-color: #555; /* 滑鼠懸停變色 */
+                color: white; /* 保持文字顏色 */
+            }
+
+            .intro-button-container {
+                text-align: center; /* 按鈕置中 */
+                margin-top: 20px; /* 與上方團隊介紹保持適當距離 */
+            }
+
+            .intro-button {
+                background-color: black; /* 按鈕背景顏色 */
+                color: white; /* 按鈕文字顏色 */
+                border: none; /* 無邊框 */
+                padding: 10px 20px; /* 按鈕內邊距 */
+                font-size: 18px; /* 文字大小 */
+                border-radius: 5px; /* 圓角邊框 */
+                cursor: pointer; /* 鼠標樣式 */
+                transition: background-color 0.3s ease; /* 漸變效果 */
+            }
+
+            .intro-button:hover {
+                background-color: #555; /* 滑鼠懸停效果 */
+                color: white; /* 保持文字顏色 */
+            }
+
+            
+            .line-container {
+                display: flex;
+                align-items: center; /* 垂直置中 LOGO 和文字 */
+                gap: 20px; /* LOGO 和文字、選單的間距 */
+                margin-left: -40px; /* 左移 LOGO 和文字 */
+            }
+
+
+            .line-image {
+                margin-left: -20px; /* 單獨左移 LOGO 圖片 */
+                height: 60px;
+            }
+
+            .line-text {
+                margin-left: -20px; /* 單獨左移「碳索偵相」文字 */
+                font-size: 24px;
+                font-weight: bold;
+                color: black;
+            }
+
+
+        /* LOGO 圖片樣式 */
+        .line-image {
+            width: 300px; /* LOGO大小可調整 */
+            height: auto;
+            margin-left: 0; /* 確保完全貼左 */
+            border: none; /* 沒有邊框 */
+            outline: none; /* 移除可能的藍色框 */
+        }
+
+        /* 清除藍色背景的全局保險措施 */
+        body, .line-container, .line-image {
+            background-color: transparent; /* 確保背景無藍色 */
+        }
+
+        .bottom-section {
+            display: flex;
+            justify-content: space-between; /* 左右分布 */
+            align-items: flex-start; /* 垂直對齊 */
+            padding: 40px 60px 40px 20px; /* 左側內距縮小至 20px，讓內容左移 */
+            background: linear-gradient(to right, #ffffff, #e6f0fa);
+        }
+
+    .bottom-middle {
+        flex: 1;
+        text-align: center;
+    }
+
+    .bottom-middle ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .bottom-middle li {
+        margin: 10px 0;
+        font-size: 20px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .register-button {
+        display: inline-block;
+        margin-top: 20px;
+        background-color: black;
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 18px;
+        transition: background-color 0.3s ease;
+    }
+
+    .register-button:hover {
+        background-color: #555;
+    }
+
+    .bottom-right {
+    max-width: 600px; /* 限制段落寬度 */
+    font-size: 15px; /* 段落文字大小 */
+    color: #040000; /* 段落文字顏色 */
+    line-height: 1.8; /* 行距 */
+    margin-right: 140px; /* 向左移動段落 */
+}
+
+.contact-button {
+    display: inline-block; /* 確保按鈕寬度自適應 */
+    margin-top: 20px; /* 與段落保持距離 */
+    background-color: rgb(0, 0, 0); /* 按鈕背景色 */
+    color: white; /* 按鈕文字顏色 */
+    text-decoration: none; /* 移除下劃線 */
+    padding: 10px 15px; /* 縮小按鈕內間距，縮短按鈕寬度 */
+    border-radius: 5px; /* 按鈕圓角 */
+    font-size: 17px; /* 按鈕文字大小 */
+    width: fit-content; /* 讓按鈕寬度自適應內容 */
+    transition: background-color 0.3s ease; /* 滑鼠懸停過渡效果 */
+}
+
+.contact-button:hover {
+    background-color: #555; /* 滑鼠懸停背景顏色變灰 */
+}
+        </style>
+        
+    </head>
+    <body>
+        <div class="carousel">
+            <!-- 高風險 -->
+            <div class="carousel-item active" style="background-color: #0b4783;">
+                <div class="item-left">
+                    <h2>風險等級</h2>
+                    <h2>風險預警系統</h2>
+                </div>
+                <div class="item-right">
+                    <h3>高風險</h3>
+                    <p>被判定為高風險的企業，通常表現出與 ESG 資料異常或類似漂綠行為，可能存在數據誇大、虛假宣傳等不誠實行為。</p>
+                    <ul>
+                        <li>ESG 指標波動大，可能與產業基準有較大差異。</li>
+                        <li>環境、社會或治理數據的透明度較低或更新頻率不穩定。</li>
+                        <li>在供應鏈或合作夥伴網絡中存在與違規行為有關的記錄。</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 中風險 -->
+            <div class="carousel-item" style="background-color: #5a8cbf;">
+                <div class="item-left">
+                    <h2>風險等級</h2>
+                    <h2>風險預警系統</h2>
+                </div>
+                <div class="item-right">
+                    <h3>中風險</h3>
+                    <p>中風險的企業在 ESG 數據上可能存在部分不確定因素，例如數據缺失或報告不一致，但未完全達到高風險程度。</p>
+                    <ul>
+                        <li>在供應鏈或合作網絡中可能存在一兩次不合規行為的紀錄。</li>
+                        <li>數據變動範圍不算極端，但有潛在的不一致現象。</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 低風險 -->
+            <div class="carousel-item" style="background-color: #5392d0;">
+                <div class="item-left">
+                    <h2>風險等級</h2>
+                    <h2>風險預警系統</h2>
+                </div>
+                <div class="item-right">
+                    <h3>低風險</h3>
+                    <p>低風險企業在 ESG 方面表現穩定，數據透明且可信度高，符合行業內 ESG 標準。</p>
+                    <ul>
+                        <li>ESG 指標穩定且符合行業平均或以上，數據更新頻繁且透明。</li>
+                        <li>環境、社會、治理數據在歷史趨勢上表現良好，且無違規記錄。</li>
+                    </ul>
+                </div>
+            </div>
+    
+            <!-- 分頁點 -->
+            <div class="dots">
+                <span class="dot active" onclick="currentSlide(0)"></span>
+                <span class="dot" onclick="currentSlide(1)"></span>
+                <span class="dot" onclick="currentSlide(2)"></span>
+            </div>
+        </div>
+    
+        <script>
+            function currentSlide(index) {
+                const items = document.querySelectorAll('.carousel-item');
+                const dots = document.querySelectorAll('.dot');
+    
+                items.forEach((item, idx) => {
+                    item.classList.toggle('active', idx === index); // 只顯示當前選中的項目
+                });
+    
+                dots.forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === index); // 高亮當前的分頁點
+                });
+            }
+    
+            document.addEventListener('DOMContentLoaded', () => {
+                currentSlide(0); // 預設顯示第一頁
+            });
+        </script>
+    </body>
+    </html>
+    
+    <div class="output-section">
+        <h2>主要產出</h2>
+    </div>
+    
+
+    <div class="output-section">
+        <div class="content-container">
+            <div class="content-image">
+                <img src="{% static "C.png" %}" >
+            </div>
+            <div class="content-text">
+                <h2>報告書</h2>
+                <p>
+                    提供詳細且透明的ESG評估結果，涵蓋企業的環境、社會、治理行為真實性分析，並揭示潛在的漂綠風險。
+                    基於區塊鏈確保數據的不可篡改性，並結合AI模型的精密分析，從多個數據來源評估企業聲譽和在供應鏈中的影響力。
+                    透過清晰的指標和文字說明，報告協助使用者全面了解ESG風險，為可持續投資決策提供可靠依據。
+                </p>
+                <button>產生報告書</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="output-section">
+        <div class="content-container">
+            <div class="content-text">
+                <h2>圖表數據</h2>
+                <p>
+                    以簡潔明瞭的方式展示企業的ESG表現，透過清晰的數據視覺化揭露關鍵指標和趨勢。圖表包括環境影響、社會責任、治理結構等各方面的數據比較，並標示出潛在的漂綠風險和不一致的報告項目。我們的圖表結合了動態圖形和即時數據更新，方便使用者快速理解分析結果，並深入洞察企業在ESG領域的真實行為與市場聲譽。這些圖表為投資者提供可靠且一目了然的參考，助力可持續發展決策。
+                </p>
+                <button>產生圖表</button>
+            </div>
+            <div class="content-image">
+                <img src="{% static "D.png" %}" alt="Report Image">
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="output-section">
+        <div class="content-container">
+            <div class="content-image">
+                <img src="{% static "E.png" %}" >
+            </div>
+            <div class="content-text">
+                <h2>優勢</h2>
+                <p>
+                    系統結合區塊鏈的不可篡改性和AI分析，提供數據驗證和漂綠行為識別，透過系統網路架構（SNA），我們能進行更全面的風險管理，特別適合需要高準確性和數據真實性的ESG評估，滿足市場對誠信和透明度的需求。
+                    <li>區塊鏈多方數據</li><li>AI主動識別漂綠行為</li>
+                    <li>區塊鏈確保真實性</li><li>高誠信與透明的 ESG 評估</li>
+                </p>
+                <button>瞭解更多</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="output-section">
+        <h2>團隊介紹</h2>
+    </div>
+    <section>
+        <div class="team-container">
+            <!-- 李嘉玲 -->
+            <div class="team-member">
+                <div class="image-container">
+                    <img src="{% static "F.jpg" %}" alt="李嘉玲">
+                    <h3>李嘉玲</h3>
+                </div>
+                <p>2023年全國大專院校產學創新實作競賽 - 資訊與電子組佳作</p>
+            </div>
+    
+            <!-- 呂冠儀 -->
+            <div class="team-member">
+                <div class="image-container">
+                    <img src="{% static "G.jpg" %}" alt="呂冠儀">
+                    <h3>呂冠儀</h3>
+                </div>
+                <p>第28屆資訊服務應用創新競賽 - 資訊應用組佳作</p>
+            </div>
+    
+            <!-- 林紋萱 -->
+            <div class="team-member">
+                <div class="image-container">
+                    <img src="{% static "H.jpg" %}" alt="林紋萱">
+                    <h3>林紋萱</h3>
+                </div>
+                <p>
+                    第28屆資訊服務應用創新競賽 - AI應用組佳作<br>
+                    112年國科會大專生研究計劃
+                </p>
+            </div>
+        </div>
+    
+        <!-- 按鈕容器 -->
+        <div class="intro-button-container" style="margin-top: 0px; text-align: center;">
+            <button class="intro-button" style="background-color: black; color: white; border: none; padding: 10px 20px; font-size: 18px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease; outline: none;">前往介紹</button>
+            <!-- 橫線 -->
+            <hr style="border: 1px solid black; width: 90%; margin: 30px auto;">
+        </div>
+
+    <div class="bottom-section">
+        <div class="line-container">
+            <img src="{% static "LOGO.png" %}" class="line-image">
+            <span class="line-text">碳索偵相</span>
+            <ul class="bottom-menu">
+                <li>首頁</li>
+                <li>服務內容</li>
+                <li>技術實現</li>
+                <li>關於</li>
+                    <a href="#" class="register-button">立即註冊</a>
+            </ul>
+        </div>
+        <div class="bottom-right">
+            <p>若有任何問題想諮詢我們，歡迎聯絡以下 Email！</p>
+            <p>ExploreTheTruth@gmail.com</p>
+            <a href="#" class="contact-button">聯絡我們</a>
+        </div>
+    </div>
+
+
+
+
+    <footer style="background: linear-gradient(to right, #d7e3f4, #b0c9ea); padding: 20px; text-align: center;">
+        &copy; 2024 碳索偵相. All Rights Reserved.
+    </footer>
+</body>
+</html>
