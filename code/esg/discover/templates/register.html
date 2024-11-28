@@ -1,9 +1,14 @@
 {% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
+{% block subtitle %}
+    register
+{% endblock subtitle %}
+{% block selfcss %}
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
+{% endblock selfcss %}
+{% comment %} <!DOCTYPE html>
+<html lang="en"> {% endcomment %}
+{% comment %} <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,9 +19,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="/css/register.css">
     <title>忘記密碼</title>
-</head>
-
-<body>
+</head> {% endcomment %}
+{% block body %}
     <div class="register">
         <h1>快來一起打造誠信綠色市場！</h1>
         <div id="message" style="text-align: center; color: red;">{{ message }}</div>
@@ -64,7 +68,7 @@
         </div>
     </div>
 
-</body>
+
 <script>
     function password_validation() {
         const password = document.getElementById("passwordInput").value;
@@ -122,5 +126,6 @@
         }
     }
 </script>
+{% endblock body %}
 
 </html>
