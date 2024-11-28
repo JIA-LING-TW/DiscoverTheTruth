@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+{% block subtitle %}
+    forget
+{% endblock subtitle %}
+{% block selfcss %}
+<link rel="stylesheet" href="{% static 'css/forget.css' %}">
+{% endblock selfcss %}
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/forget.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/js/jquery-3.7.0.min.js"></script>
+    <title>忘記密碼</title>
+</head> {% endcomment %}
+
+{% block body %}
+    <div class="forget chineseFont">
+        <h1>碳索偵相</h1>
+        <div style="text-align:center; color:red" id="message">{{ message }}</div>
+        <form action="/send_reset_code/" method="post">
+            {% csrf_token %}
+            <input type="email" placeholder="輸入註冊時使用的 e-mail" required name="email" id="email">
+            <button class="btn btn-primary btn-block" type="submit">發送驗證碼</button>
+        </form>
+        <div class="message">
+            <a href="login.html">返回登入頁面</a>
+        </div>
+    </div>
+{% endblock body %}
+
+</html>

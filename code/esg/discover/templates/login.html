@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+{% block subtitle %}
+    login
+{% endblock subtitle %}
+{% block selfcss %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock selfcss %}
+{% block body %}
+        <div class="login-container">
+            <div class="login-box">
+                <h1 class="top_login">碳索偵相</h1>
+                <img src="{% static "logo1.jpg" %}" alt="Logo" class="logo">
+                <div class="error-message">{{ message }}</div>
+                <form method="post" action="{% url 'login' %}" id="loginForm">
+                    {% csrf_token %}
+                    <input type="text" name="username" placeholder="請輸入用戶名" required>
+                    <div class="password-container">
+                        <input type="password" name="password" id="password" placeholder="請輸入密碼" required>
+                        <i class="fa-solid fa-eye" id="togglePassword"></i>
+                    </div>
+                    <div class="captcha-container">
+                        <input type="text" id="captchaInput" placeholder="請輸入驗證碼" required>
+                        <div id="captcha"></div>
+                        <a href="#" id="refreshCaptcha" title="重新產生驗證碼">
+                            <i class="fa-solid fa-rotate"></i>
+                        </a>
+                    </div>
+                    <button type="submit" class="btn-submit">登入</button>
+                </form>
+                <div class="links">
+                    <a href="register.html">還沒有帳號？註冊</a>
+                    <a href="forget.html">忘記密碼</a>
+                </div>
+            </div>
+        </div>
+        <script src="{% static 'js/script.js' %}"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // 密碼顯示切換
+                const togglePassword = document.getElementById("togglePassword");
+                const passwordField = document.getElementById("password");
+    
+                togglePassword.addEventListener("click", function () {
+                    if (passwordField.type === "password") {
+                        passwordField.type = "text";
+                        togglePassword.classList.replace("fa-eye", "fa-eye-slash");
+                    } else {
+                        passwordField.type = "password";
+                        togglePassword.classList.replace("fa-eye-slash", "fa-eye");
+                    }
+                });
+    
+                // 驗證碼生成
+                function generateCaptcha() {
+                    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                    let captcha = "";
+                    for (let i = 0; i < 6; i++) {
+                        captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+                    document.getElementById("captcha").innerText = captcha;
+                }
+    
+                // 初始化驗證碼
+                generateCaptcha();
+    
+                // 驗證碼刷新
+                const refreshCaptcha = document.getElementById("refreshCaptcha");
+                refreshCaptcha.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    generateCaptcha();
+                });
+            });
+    
+        </script>
+{% endblock body %}
+
+
+
+</html>
