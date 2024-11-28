@@ -1,8 +1,9 @@
-from django.shortcuts import render
+import pandas as pd
+from .models import WaterResourceManagement  # 引入您的模型
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib import messages
-from django.http import HttpResponse
 
 
 def index(request):
@@ -56,3 +57,30 @@ def register(request):
 
 def report(request):
     return render(request, 'report.html')
+
+
+def import_water_resource_data(request):
+    # 指定要匯入的 Excel 檔案路徑（開發時可用靜態路徑，部署時建議用文件上傳）
+    file_path = '/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG/water_resource_management.xlsx'
+
+    try:
+        # 讀取 Excel 檔案
+        df = pd.read_excel(file_path)
+
+        # 遍歷每一列資料，並存入資料庫
+        for _, row in df.iterrows():
+            WaterResourceManagement.objects.create(
+                year=row['年份'],
+                company_code=row['公司代號'],
+                company_name=row['公司名稱'],
+                water_usage=row['用水量(公噸)'],
+                data_scope=row.get('資料範圍', None),
+                water_density=row.get('用水密集度(公噸/單位)', None),
+                density_unit=row.get('用水密集度-單位', None),
+                certification=row.get('取得驗證', None),
+            )
+
+        return JsonResponse({"status": "success", "message": "資料匯入成功！"})
+
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)})
