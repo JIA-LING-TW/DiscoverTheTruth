@@ -20,6 +20,7 @@ class WaterResourceManagement(models.Model):
     class Meta:
         verbose_name = "水資源管理"
         verbose_name_plural = "水資源管理"
+        unique_together = ('year', 'company_code')  # 確保 year 和 company_code 唯一
 
 
 class WasteManagement(models.Model):
