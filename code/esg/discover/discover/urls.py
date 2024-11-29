@@ -6,7 +6,7 @@
 #     path("index", index),
 # ]
 
-from myapp.views import import_water_resource_data
+from myapp.views import upload_xlsx_from_path, import_waste_management_data
 from django.urls import path
 import myapp.views as views
 from django.contrib import admin
@@ -24,6 +24,8 @@ urlpatterns = [
     path('login/', views.login, name='login'),  # 登入頁
     path('register/', views.register, name='register'),  # 註冊頁
     path('report/', views.report, name='report'),  # 報告頁
-    path('import-water-resource/', import_water_resource_data,
-         name='import_water_resource'),
+    path("upload-xlsx-path/", upload_xlsx_from_path,
+         name="upload_xlsx_from_path"),
+    path('import_waste_management_data/', import_waste_management_data,
+         name='import_waste_management_data'),
 ]
