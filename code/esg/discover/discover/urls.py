@@ -10,14 +10,15 @@ from myapp.views import upload_xlsx_from_path, upload_waste_management_data, upl
 from django.urls import path
 import myapp.views as views
 from django.contrib import admin
+from myapp.views import ESGEachCompany
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('', views.index, name='index'),  # 首頁
     path('about/', views.about, name='about'),  # 關於
     path('chart/', views.chart, name='chart'),  # 圖表頁
-    path('esg-each-company/', views.ESGEachCompany,
-         name='esg_each_company'),  # 每家公司 ESG 資訊
+    path("esg_each_company/", ESGEachCompany,
+         name="ESGEachCompany"),  # 每家公司 ESG 資訊
     path('esg-real/', views.ESGReal, name='esg_real'),  # 真實 ESG 資訊
     path('esg-risk/', views.ESGRisk, name='esg_risk'),  # ESG 風險
     path('forget/', views.forget, name='forget'),  # 忘記密碼

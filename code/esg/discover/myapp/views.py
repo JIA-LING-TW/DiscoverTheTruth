@@ -1,10 +1,12 @@
+from .models import WaterResourceManagement, EnergyManagement, GreenhouseGasEmission, WasteManagement
+from django.db.models import Q
+from django.shortcuts import render
+from django.forms.models import model_to_dict
 from myapp.models import GreenhouseGasEmission  # 替換為實際的 app 名稱
 from myapp.models import EnergyManagement  # 替換為實際的 app 名稱
 from myapp.models import WasteManagement
 from .models import WaterResourceManagement
-from django.http import JsonResponse
 from django.db import transaction
-from .models import WasteManagement, WaterResourceManagement
 import pandas as pd
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
@@ -25,7 +27,65 @@ def chart(request):
 
 
 def ESGEachCompany(request):
-    return render(request, 'ESGEachCompany')
+    # 獲取篩選參數
+    year = request.GET.get("year")
+    company_code = request.GET.get("company_code")
+    company_name = request.GET.get("company_name")
+    database = request.GET.get("database")  # 取得使用者選擇的資料庫
+
+    # 構建篩選條件
+    filters = Q()
+    if year:
+        filters &= Q(year=year)
+    if company_code:
+        filters &= Q(company_code__icontains=company_code)
+    if company_name:
+        filters &= Q(company_name__icontains=company_name)
+
+    # 根據選擇的資料庫查詢相應的資料
+    if database == 'water':
+        results = WaterResourceManagement.objects.filter(filters)
+        fields = [
+            'year', 'company_code', 'company_name', 'water_usage',
+            'data_scope', 'water_density', 'density_unit', 'certification'
+        ]
+    elif database == 'energy':
+        results = EnergyManagement.objects.filter(filters)
+        fields = [
+            'year', 'company_code', 'company_name', 'renewable_energy_usage_rate',
+            'data_scope', 'certification'
+        ]
+    elif database == 'greenhouse':
+        results = GreenhouseGasEmission.objects.filter(filters)
+        fields = [
+            'year', 'company_code', 'company_name', 'scope_1_emissions',
+            'scope_2_emissions', 'scope_3_emissions', 'intensity', 'intensity_unit'
+        ]
+    elif database == 'waste':
+        results = WasteManagement.objects.filter(filters)
+        fields = [
+            'year', 'company_code', 'company_name', 'hazardous_waste',
+            'non_hazardous_waste', 'total_weight', 'data_scope',
+            'waste_density', 'waste_density_unit', 'certification'
+        ]
+    else:
+        # 如果資料庫選擇無效，返回空結果或錯誤
+        results = []
+        fields = []
+
+    # 將查詢結果轉換成字典格式
+    results_dict = [model_to_dict(item) for item in results]
+
+    # 將篩選結果傳遞給模板
+    context = {
+        "results": results_dict,
+        "year": year,
+        "company_code": company_code,
+        "company_name": company_name,
+        "database": database,  # 讓模板知道使用的是哪個資料庫
+        "fields": fields,  # 顯示的欄位名稱
+    }
+    return render(request, 'ESGEachCompany.html', context)
 
 
 def ESGReal(request):
@@ -71,6 +131,10 @@ def upload_xlsx_from_path(request):
     try:
         # 讀取 XLSX 檔案
         df = pd.read_excel(file_path)
+
+        # 確保公司代號是字串格式，並去除小數點
+        df["公司代號"] = df["公司代號"].apply(lambda x: str(
+            int(x)) if pd.notna(x) else '')  # 去除小數點並轉為字串
 
         # 檢查必要欄位是否存在
         required_columns = ["年份", "公司代號", "公司名稱",
@@ -132,6 +196,10 @@ def upload_waste_management_data(request):
         # 讀取 XLSX 檔案
         df = pd.read_excel(file_path)
 
+        # 確保公司代號是字串格式，並去除小數點
+        df["公司代號"] = df["公司代號"].apply(lambda x: str(
+            int(x)) if pd.notna(x) else '')  # 去除小數點並轉為字串
+
         # 檢查必要欄位是否存在
         required_columns = [
             "年份", "公司代號", "公司名稱", "有害廢棄物量(公噸)", "非有害廢棄物量(公噸)",
@@ -165,7 +233,7 @@ def upload_waste_management_data(request):
 
         # 將資料寫入資料庫
         for _, row in df.iterrows():
-            # 檢查資料是否已存在
+            # 檢查資料是否已存在：根據 "年份" 和 "公司代號"
             if WasteManagement.objects.filter(year=row["年份"], company_code=row["公司代號"]).exists():
                 print(f"資料已存在：{row['年份']} - {row['公司代號']}")
                 continue  # 如果資料已存在，跳過此行
@@ -174,7 +242,7 @@ def upload_waste_management_data(request):
             WasteManagement.objects.create(
                 year=int(row["年份"]) if pd.notna(
                     row["年份"]) else None,  # 只在年份有效時才插入
-                company_code=row["公司代號"],
+                company_code=row["公司代號"],  # 確保是字串格式
                 company_name=row["公司名稱"],
                 hazardous_waste=row.get("有害廢棄物量(公噸)", None),
                 non_hazardous_waste=row.get("非有害廢棄物量(公噸)", None),
@@ -249,7 +317,7 @@ def upload_energy_management_data(request):
 
 
 def upload_greenhouse_gas_emission_data(request):
-    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG/greenhouse_gas_emissions.xlsx"  # 替換為實際檔案路徑
+    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG/greenhouse_gas_emissions.xlsx"
 
     try:
         # 讀取 Excel 檔案
@@ -268,21 +336,30 @@ def upload_greenhouse_gas_emission_data(request):
 
         # 清理數據函數
         def clean_value(value):
-            if pd.isna(value):  # 如果是 NaN，返回 None
+            if pd.isna(value):
                 return None
             if isinstance(value, str) and value.strip() in ["無", "NA", "無，NA", "無統計相關數據"]:
                 return None
             try:
-                return float(value)  # 嘗試轉為浮點數
+                return float(value)
             except (ValueError, TypeError):
                 return None
 
-        # 清理數據
-        df["年份"] = pd.to_numeric(df["年份"], errors="coerce")  # 將年份轉為數字，無效值為 NaN
-        df = df.dropna(subset=["年份"])  # 移除年份為 NaN 的行
-        df["年份"] = df["年份"].astype(int)  # 確保年份為整數
+        def clean_company_code(value):
+            if pd.isna(value):
+                return None
+            if isinstance(value, float):
+                return str(int(value))
+            return str(value).strip()
 
-        # 清理相關數據欄位
+        # 清理數據
+        df["年份"] = pd.to_numeric(df["年份"], errors="coerce")
+        df = df.dropna(subset=["年份"])
+        df["年份"] = df["年份"].astype(int)
+
+        df["公司代號"] = df["公司代號"].apply(clean_company_code)
+        df = df.dropna(subset=["公司代號"])  # 移除公司代號為空的行
+
         columns_to_clean = [
             "範疇一-排放量(噸CO2e)", "範疇二-排放量(噸CO2e)",
             "範疇三-排放量(噸CO2e)", "溫室氣體排放密集度-密集度(噸CO2e/單位)"
@@ -290,17 +367,12 @@ def upload_greenhouse_gas_emission_data(request):
         for col in columns_to_clean:
             df[col] = df[col].apply(clean_value)
 
-        # 去除重複資料
         df = df.drop_duplicates(subset=["年份", "公司代號"])
 
         # 將資料寫入資料庫
         for _, row in df.iterrows():
-            # 檢查資料是否已存在
             if GreenhouseGasEmission.objects.filter(year=row["年份"], company_code=row["公司代號"]).exists():
-                print(f"資料已存在：{row['年份']} - {row['公司代號']}")
-                continue  # 跳過重複資料
-
-            # 創建新記錄
+                continue
             GreenhouseGasEmission.objects.create(
                 year=row["年份"],
                 company_code=row["公司代號"],
