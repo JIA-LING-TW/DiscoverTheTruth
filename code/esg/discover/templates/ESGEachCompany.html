@@ -6,92 +6,162 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ESG 各公司查詢系統</title>
     <style>
+        /* 全局樣式 */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f7f6;
             color: #333;
+            display: flex;
+            height: 100vh;
         }
-        header {
-            background-color: #2d3e50;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            font-size: 1.5em;
-        }
-        form {
-            background-color: white;
+
+        /* 左側篩選條件樣式 */
+        .sidebar {
+            width: 25%;
+            background-color: #ffffff;
             padding: 20px;
-            margin: 20px auto;
-            width: 60%;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
         }
-        label {
-            font-size: 1.1em;
-            margin-bottom: 8px;
-            display: block;
-            color: #333;
-        }
-        select, input[type="text"], button {
-            padding: 8px;
+
+        .sidebar h2 {
+            color: #2d3e50;
+            font-size: 1.5em;
             margin-bottom: 20px;
-            width: 100%;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
             font-size: 1em;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            color: #555;
+        }
+
+        select, input[type="text"], button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
             box-sizing: border-box;
         }
+
         select, input[type="text"] {
             background-color: #f9f9f9;
         }
+
         button {
-            background-color: #2d3e50;
+            background-color: #ffa726;
             color: white;
+            font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.2s;
         }
+
         button:hover {
-            background-color: #1f2a36;
+            background-color: #fb8c00;
+            transform: translateY(-2px);
         }
+
+        /* 右側結果表格樣式 */
+        .content {
+            width: 75%;
+            padding: 20px;
+            overflow-y: auto; /* 垂直滾動 */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content h2 {
+            color: #ffa726;
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        /* 表格樣式 */
+        .table-container {
+            flex-grow: 1;
+            overflow: auto; /* 水平和垂直滾動 */
+            position: relative;
+        }
+
         table {
-            width: 80%;
-            margin: 20px auto;
+            width: 100%;
             border-collapse: collapse;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
         }
+
         th, td {
-            padding: 12px;
+            padding: 15px;
             text-align: left;
+            border: 1px solid #ddd;
+            white-space: nowrap; /* 保持單行 */
         }
+
         th {
-            background-color: #2d3e50;
+            background-color: #ffa726;
             color: white;
+            text-transform: uppercase;
+            position: sticky;
+            top: 0; /* 固定表頭 */
+            z-index: 2;
+            width:80px;
         }
+
+        td:first-child, th:first-child {
+            position: sticky;
+            left: 0;
+            background-color: #ffee58; /* 固定左欄背景色 */
+            z-index: 1;
+        }
+
+        /* 隱藏 ID 欄 */
+        th[data-field="id"], td[data-field="id"] {
+            display: none;
+        }
+
         tr:nth-child(even) {
-            background-color: #f7f7f7;
+            background-color: #f9f9f9;
         }
+
         tr:hover {
-            background-color: #f0f0f0;
+            background-color: #ffee58;
         }
+
+        /* 無查詢結果訊息 */
         .message {
             text-align: center;
             font-size: 1.2em;
+            color: #666;
             margin-top: 20px;
-            color: #555;
         }
+
+        table {
+            table-layout: fixed; /* 表格固定佈局 */
+            width: 100%; /* 表格總寬度 */
+        }
+        
+        th, td {
+            width:160px;
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+            word-wrap: break-word; /* 強制文字在必要時換行 */
+            word-break: break-word; /* 防止長字串溢出 */
+            white-space: normal; /* 允許換行 */
+        }
+        
+        
     </style>
 </head>
 <body>
 
-<header>
-    ESG 各公司查詢系統
-</header>
-
-<div class="container">
+<div class="sidebar">
+    <h2>查詢條件</h2>
     <form method="get" action="">
         <label for="market_type">市場別:</label>
         <select name="market_type" id="market_type">
@@ -125,27 +195,31 @@
 
         <button type="submit">查詢</button>
     </form>
+</div>
 
+<div class="content">
     {% if data %}
         <h2>查詢結果: {{ category|default:"未選擇" }}</h2>
-        <table>
-            <thead>
-                <tr>
-                    {% for field_name, verbose_name in fields %}
-                        <th>{{ verbose_name }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for record in data %}
+        <div class="table-container">
+            <table>
+                <thead>
                     <tr>
                         {% for field_name, verbose_name in fields %}
-                            <td>{{ record|getattr:field_name }}</td>
+                            <th data-field="{{ field_name }}">{{ verbose_name }}</th>
                         {% endfor %}
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for record in data %}
+                        <tr>
+                            {% for field_name, verbose_name in fields %}
+                                <td data-field="{{ field_name }}">{{ record|getattr:field_name }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
         <p class="message">尚無查詢結果。</p>
     {% endif %}
