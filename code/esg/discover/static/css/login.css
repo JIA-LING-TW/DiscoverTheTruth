@@ -172,6 +172,10 @@ input {
     margin-bottom: 10px;
 }
 
+.top {
+    font-size: 38px;
+}
+
 
 /* Submit Button */
 .btn-submit {
