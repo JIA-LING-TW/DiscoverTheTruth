@@ -17,6 +17,7 @@ urlpatterns = [
     path('', views.index, name='index'),  # 首頁
     path('about/', views.about, name='about'),  # 關於
     path('chart/', views.chart, name='chart'),  # 圖表頁
+    path('contact/', views.contact, name='contact'),  # 圖表頁
     path("esg_each_company/", ESGEachCompany,
          name="ESGEachCompany"),  # 每家公司 ESG 資訊
     path('esg-real/', views.ESGReal, name='esg_real'),  # 真實 ESG 資訊
