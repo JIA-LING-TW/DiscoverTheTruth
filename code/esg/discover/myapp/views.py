@@ -1,3 +1,5 @@
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
 from .models import GreenhouseGasEmission
 from .models import EnergyManagement
 from .models import WasteManagement
@@ -108,7 +110,35 @@ def login(request):
     return render(request, 'login.html', {'message': messages.get_messages(request)})
 
 
+@csrf_exempt  # 暫時禁用 CSRF 驗證，用於測試 AJAX，正式部署時應移除
 def register(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        username = request.POST.get('username')
+        password = request.POST.get('passwd')
+        confirm_password = request.POST.get('passwd1')
+
+        # 密碼不一致檢查
+        if password != confirm_password:
+            return JsonResponse({'message': '密碼不一致！'})
+
+        # 使用者名稱是否已存在
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({'message': '使用者名稱已存在！'})
+
+        # Email 是否已被使用
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({'message': 'Email 已被使用！'})
+
+        # 建立新使用者
+        User.objects.create(
+            username=username,
+            email=email,
+            password=make_password(password)  # 加密密碼
+        )
+
+        return JsonResponse({'message': '註冊成功！'})
+
     return render(request, 'register.html')
 
 
