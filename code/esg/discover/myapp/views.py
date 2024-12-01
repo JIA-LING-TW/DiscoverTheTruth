@@ -95,6 +95,10 @@ def forget(request):
     return render(request, 'forget.html')
 
 
+def contact(request):
+    return render(request, 'contact.html')
+
+
 # 生成隨機驗證碼
 
 def generate_captcha():

@@ -1,0 +1,154 @@
+/* 全局樣式 */
+.big {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7f6;
+    color: #333;
+    display: flex;
+    height: 100vh;
+}
+
+/* 左側篩選條件樣式 */
+.sidebar {
+    width: 25%;
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+}
+
+.sidebar-title {
+    color: #2d3e50;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1em;
+    color: #555;
+}
+
+.form-select,
+.form-input,
+.submit-btn {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.form-select,
+.form-input {
+    background-color: #f9f9f9;
+}
+
+.submit-btn {
+    background-color: #ffa726;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.submit-btn:hover {
+    background-color: #fb8c00;
+    transform: translateY(-2px);
+}
+
+/* 右側結果表格樣式 */
+.content {
+    width: 75%;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.results-title {
+    color: #ffa726;
+    text-align: center;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+/* 表格樣式 */
+.table-container {
+    flex-grow: 1;
+    overflow: auto;
+}
+
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+}
+
+th,
+td {
+    padding: 15px;
+    text-align: left;
+    border: 1px solid #ddd;
+    white-space: nowrap;
+}
+
+th {
+    background-color: #ffa726;
+    color: white;
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    width: 80px;
+}
+
+td:first-child,
+th:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #ffee58;
+    z-index: 1;
+}
+
+/* 隱藏 ID 欄 */
+th[data-field="id"],
+td[data-field="id"] {
+    display: none;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #ffee58;
+}
+
+/* 無查詢結果訊息 */
+.message {
+    text-align: center;
+    font-size: 1.2em;
+    color: #666;
+    margin-top: 20px;
+}
+
+.result-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+th,
+td {
+    width: 160px;
+    padding: 15px;
+    text-align: left;
+    border: 1px solid #ddd;
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+}
