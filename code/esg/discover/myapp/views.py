@@ -1,3 +1,5 @@
+import string
+import random
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from .models import GreenhouseGasEmission
@@ -93,21 +95,42 @@ def forget(request):
     return render(request, 'forget.html')
 
 
+# 生成隨機驗證碼
+
+def generate_captcha():
+    characters = string.ascii_uppercase + string.digits  # 可使用字母和數字
+    captcha = ''.join(random.choices(characters, k=6))  # 生成6位隨機字符
+    return captcha
+
+
 def login(request):
     if request.method == "POST":
-        # 從表單獲取輸入
+        # 獲取表單輸入
         username = request.POST.get('username')
         password = request.POST.get('password')
+        captcha_input = request.POST.get('captcha_input')  # 用戶輸入的驗證碼
 
-        # 驗證使用者帳密
+        # 獲取 session 中的正確驗證碼
+        captcha = request.session.get('captcha', '')
+
+        # 驗證用戶輸入的驗證碼
+        if captcha_input != captcha:
+            messages.error(request, "驗證碼錯誤，請重新輸入。")
+            return redirect('login')  # 驗證碼錯誤，重新載入頁面
+
+        # 驗證用戶名和密碼
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            return redirect('index')  # 登入成功，導向首頁或其他頁面
+            return redirect('index')  # 登入成功，跳轉到首頁或其他頁面
         else:
-            messages.error(request, "電子信箱或密碼不正確，請重新輸入。")
+            messages.error(request, "電子信箱或密碼錯誤，請重新輸入。")
 
-    return render(request, 'login.html', {'message': messages.get_messages(request)})
+    # 生成並儲存新的驗證碼到 session
+    captcha = generate_captcha()
+    request.session['captcha'] = captcha
+
+    return render(request, 'login.html', {'captcha': captcha, 'message': messages.get_messages(request)})
 
 
 @csrf_exempt  # 暫時禁用 CSRF 驗證，用於測試 AJAX，正式部署時應移除
