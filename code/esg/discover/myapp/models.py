@@ -115,3 +115,44 @@ class GreenhouseGasEmission(models.Model):
 
     def __str__(self):
         return f"{self.company_name} ({self.year})"
+
+
+class Report(models.Model):
+    market_type = models.CharField(max_length=255)  # 市場別
+    year = models.IntegerField()  # 年份
+    company_code = models.IntegerField()  # 公司代號
+    company_name = models.CharField(max_length=255)  # 公司名稱
+    english_abbreviation = models.CharField(max_length=255)  # 英文簡稱
+    declaration_reason = models.CharField(max_length=255)  # 申報原因
+    industry_category = models.CharField(max_length=255)  # 產業類別
+    report_period = models.CharField(max_length=255)  # 報告書內容涵蓋期間
+    preparation_guidelines = models.CharField(max_length=255)  # 編製依循準則
+    third_party_verification = models.CharField(
+        max_length=255, null=True, blank=True)  # 第三方驗證單位
+    upload_date = models.DateTimeField()  # 上傳日期
+    revised_report = models.DateTimeField(null=True, blank=True)  # 修正後報告書
+    revised_report_upload_date = models.DateTimeField(
+        null=True, blank=True)  # 修正後報告書上傳日期
+    english_report_url = models.CharField(
+        max_length=255, null=True, blank=True)  # 永續報告書英文版網址
+    english_report_file = models.DateTimeField(
+        null=True, blank=True)  # 永續報告書英文版檔案
+    english_report_upload_date = models.DateTimeField(
+        null=True, blank=True)  # 英文版上傳日期
+    revised_english_report = models.DateTimeField(
+        null=True, blank=True)  # 英文版修正後報告書
+    revised_english_report_upload_date = models.DateTimeField(
+        null=True, blank=True)  # 英文版修正後報告書上傳日期
+    report_contact_info = models.CharField(max_length=255)  # 報告書聯絡資訊
+    remarks = models.CharField(max_length=255, null=True, blank=True)  # 備註
+
+    created_at = models.DateTimeField(auto_now_add=True)  # 自動生成創建時間
+    updated_at = models.DateTimeField(auto_now=True)  # 自動生成更新時間
+
+    def __str__(self):
+        return self.company_name
+
+    class Meta:
+        verbose_name = "永續報告書"
+        verbose_name_plural = "永續報告書"
+        unique_together = ("market_type", "year", "company_code")
