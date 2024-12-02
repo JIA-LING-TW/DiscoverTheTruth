@@ -128,7 +128,7 @@ def login(request):
             auth_login(request, user)
             return redirect('index')  # 登入成功，跳轉到首頁或其他頁面
         else:
-            messages.error(request, "電子信箱或密碼錯誤，請重新輸入。")
+            messages.error(request, "使用者名稱或密碼錯誤，請重新輸入。")
 
     # 生成並儲存新的驗證碼到 session
     captcha = generate_captcha()
