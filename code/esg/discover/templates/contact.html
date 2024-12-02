@@ -7,5 +7,59 @@
 {% endblock selfcss %}
 {% block body %}
 {% comment %} body放這裡面喔喔喔喔！！ {% endcomment %}
+<body>
+
+
+    <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>聯絡我們</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div class="contact-card">
+            <div class="contact-info">
+                <h2>聯絡我們</h2>
+                <p>電子信箱：<a href="mailto:ExploreTheTruth@gmail.com">ExploreTheTruth@gmail.com</a></p>
+            </div>
+            <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3614.710607891911!2d121.53182407562738!3d25.043893237892686!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442a97d255598df%3A0x47ea748e8f3f53aa!2z5ZyL56uL6Ie65YyX56eR5oqA5aSn5a24!5e0!3m2!1szh-TW!2stw!4v1732871695633!5m2!1szh-TW!2stw" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+    </body>
+    </html>
+    
+ 
+
+
+
+    <div class="bottom-section">
+        <div class="line-container">
+            <img src="{% static "LOGO.png" %}" class="line-image">
+            <span class="line-text">碳索偵相</span>
+            <ul class="bottom-menu">
+                <li>首頁</li>
+                <li>服務內容</li>
+                <li>技術實現</li>
+                <li>關於</li>
+                    <a href="register.html" class="register-button">立即註冊</a>
+            </ul>
+        </div>
+        <div class="bottom-right">
+            <p>若有任何問題想諮詢我們，歡迎聯絡以下 Email！</p>
+            <p>ExploreTheTruth@gmail.com</p>
+            <a href="content.html" class="contact-button">聯絡我們</a>
+        </div>
+    </div>
+
+
+
+
+    <footer style="background: linear-gradient(to right, #d7e3f4, #b0c9ea); padding: 20px; text-align: center;">
+        &copy; 2024 碳索偵相. All Rights Reserved.
+    </footer>
+</body>
 
 {% endblock %}
