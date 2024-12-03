@@ -155,3 +155,87 @@ class SustainabilityReport(models.Model):
         verbose_name = "永續報告書"
         verbose_name_plural = "永續報告書"
         ordering = ['-year', 'company_name']
+
+
+class ClimateRiskAndOpportunity(models.Model):
+    market_type = models.CharField(max_length=10, verbose_name="市場別")
+    year = models.PositiveIntegerField(verbose_name="年份")
+    company_code = models.CharField(max_length=10, verbose_name="公司代號")
+    company_name = models.CharField(max_length=100, verbose_name="公司名稱")
+
+    # 5. 董事會與管理階層對於氣候相關風險與機會之監督及治理
+    board_and_management_supervision = models.TextField(
+        verbose_name="董事會與管理階層對於氣候相關風險與機會之監督及治理", blank=True, null=True)
+
+    # 6. 辨識之氣候風險與機會如何影響企業之業務、策略及財務 (短期、中期、長期)
+    impact_on_business_strategy_financials = models.TextField(
+        verbose_name="辨識之氣候風險與機會如何影響企業之業務、策略及財務 (短期、中期、長期)", blank=True, null=True)
+
+    # 7. 極端氣候事件及轉型行動對財務之影響
+    impact_of_extreme_weather_and_transformation_on_financials = models.TextField(
+        verbose_name="極端氣候事件及轉型行動對財務之影響", blank=True, null=True)
+
+    # 8. 氣候風險之辨識、評估及管理流程如何整合於整體風險管理制度
+    climate_risk_identification_and_management_process = models.TextField(
+        verbose_name="氣候風險之辨識、評估及管理流程如何整合於整體風險管理制度", blank=True, null=True)
+
+    # 9. 若使用情境分析評估面對氣候變遷風險之韌性，應說明所使用之情境、參數、假設、分析因子及主要財務影響
+    scenario_analysis_and_assumptions = models.TextField(
+        verbose_name="若使用情境分析評估面對氣候變遷風險之韌性，應說明所使用之情境、參數、假設、分析因子及主要財務影響", blank=True, null=True)
+
+    # 10. 若有因應管理氣候相關風險之轉型計畫，說明該計畫內容，及用於辨識及管理實體風險及轉型風險之指標與目標
+    transformation_plan_for_climate_risks = models.TextField(
+        verbose_name="若有因應管理氣候相關風險之轉型計畫，說明該計畫內容，及用於辨識及管理實體風險及轉型風險之指標與目標", blank=True, null=True)
+
+    # 11. 若使用內部碳定價作為規劃工具，應說明價格制定基礎
+    internal_carbon_pricing_basis = models.TextField(
+        verbose_name="若使用內部碳定價作為規劃工具，應說明價格制定基礎", blank=True, null=True)
+
+    # 12. 若有設定氣候相關目標，應說明所涵蓋之活動、溫室氣體排放範疇、規劃期程，每年達成進度等資訊；若使用碳抵換或再生能源憑證(RECs)以達成相關目標，應說明所抵換之減碳額度來源及數量或再生能源憑證(RECs)數量
+    climate_related_goals_and_progress = models.TextField(
+        verbose_name="若有設定氣候相關目標，應說明所涵蓋之活動、溫室氣體排放範疇、規劃期程，每年達成進度等資訊；若使用碳抵換或再生能源憑證(RECs)以達成相關目標，應說明所抵換之減碳額度來源及數量或再生能源憑證(RECs)數量", blank=True, null=True)
+
+    class Meta:
+        verbose_name = "氣候風險與機會"
+        verbose_name_plural = "氣候風險與機會"
+
+    def __str__(self):
+        return f"{self.company_name} ({self.year})"
+
+
+class CompanyBoard(models.Model):
+    market_type = models.CharField(max_length=10, verbose_name="市場別")
+    year = models.PositiveIntegerField(verbose_name="年份")
+    company_code = models.CharField(max_length=10, verbose_name="公司代號")
+    company_name = models.CharField(max_length=100, verbose_name="公司名稱")
+
+    # Board seats (including independent directors)
+    board_seats_total = models.PositiveIntegerField(
+        verbose_name="董事席次(含獨立董事)(席)", blank=True, null=True)
+
+    # Independent board seats
+    independent_board_seats = models.PositiveIntegerField(
+        verbose_name="獨立董事席次(席)", blank=True, null=True)
+
+    # Female board seats
+    female_director_seats = models.PositiveIntegerField(
+        verbose_name="女性董事席次及比率-席", blank=True, null=True)
+
+    # Female board ratio
+    female_director_ratio = models.FloatField(
+        verbose_name="女性董事席次及比率-比率", blank=True, null=True)
+
+    # Board attendance rate
+    board_attendance_rate = models.FloatField(
+        verbose_name="董事出席董事會出席率", blank=True, null=True)
+
+    # Training hours compliance rate
+    training_hours_compliance_rate = models.FloatField(
+        verbose_name="董事進修時數符合進修要點比率", blank=True, null=True)
+
+    class Meta:
+        verbose_name = "公司董事會"
+        verbose_name_plural = "公司董事會"
+
+    def __str__(self):
+        return f"{self.company_name} ({self.year})"
