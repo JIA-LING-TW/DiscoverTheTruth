@@ -72,13 +72,14 @@
                             <tr>
                                 {% for field, verbose_name in fields %}
                                     {% if field != "id" %}  <!-- 移除 ID 欄位 -->
-                                        <td>
-                                            {% if field == "shareholder" and item.shareholder_link %}
-                                                <a href="{{ item.shareholder_link }}" target="_blank">{{ item.shareholder }}</a>  <!-- 假設 shareholder 欄位有 link -->
-                                            {% else %}
-                                                {{ item|get_attr:field }}  <!-- 顯示其他欄位的值 -->
-                                            {% endif %}
-                                        </td>
+                                    <td>
+                                        {% if field == "top_10_shareholders" and item.top_10_shareholders %}
+                                            <a href="{{ item.top_10_shareholders }}" target="_blank">點擊查看</a>
+                                        {% else %}
+                                            {{ item|get_attr:field }}
+                                        {% endif %}
+                                    </td>
+                                    
                                     {% endif %}
                                 {% endfor %}
                             </tr>
