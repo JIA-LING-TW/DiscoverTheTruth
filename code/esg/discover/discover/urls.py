@@ -11,6 +11,7 @@ from django.urls import path
 import myapp.views as views
 from django.contrib import admin
 from myapp.views import ESGEachCompany
+from myapp.views import upload_excel
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -34,4 +35,5 @@ urlpatterns = [
          name="upload_energy_management_data"),
     path("upload-greenhouse-gas/", upload_greenhouse_gas_emission_data,
          name="upload_greenhouse_gas"),
+    path('upload_excel/', upload_excel, name='upload_excel'),
 ]
