@@ -109,9 +109,8 @@ th {
 
 td:first-child,
 th:first-child {
-    position: sticky;
+    /* position: sticky; */
     left: 0;
-    background-color: #ffee58;
     z-index: 1;
 }
 

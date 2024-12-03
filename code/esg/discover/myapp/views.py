@@ -1,3 +1,13 @@
+from .models import WaterResourceManagement, WasteManagement, EnergyManagement, GreenhouseGasEmission, ClimateRiskAndOpportunity, CompanyBoard, CorporateGovernance, EmployeeDevelop, CompanyGovernance, Shareholder
+from .models import (
+    WaterResourceManagement, WasteManagement, EnergyManagement, GreenhouseGasEmission,
+    ClimateRiskAndOpportunity, CompanyBoard, CorporateGovernance, EmployeeDevelop,
+    CompanyGovernance, Shareholder
+)
+from .models import Shareholder
+from .models import CompanyGovernance  # 根據你的模型名稱進行調整
+from .models import EmployeeDevelop
+from .models import CorporateGovernance
 from .models import CompanyBoard
 from .models import ClimateRiskAndOpportunity
 import time
@@ -54,12 +64,19 @@ def ESGEachCompany(request):
         'water': WaterResourceManagement,
         'waste': WasteManagement,
         'energy': EnergyManagement,
-        'emission': GreenhouseGasEmission
+        'emission': GreenhouseGasEmission,
+        'climate': ClimateRiskAndOpportunity,
+        'board': CompanyBoard,
+        'governance': CorporateGovernance,  # 公司治理
+        'investor_communication': CompanyGovernance,  # 投資人溝通
+        'employee': EmployeeDevelop,
+        'shareholder': Shareholder,
     }
-    selected_model = models.get(category, None)
 
+    selected_model = models.get(category, None)
     data = None
     fields = []
+
     if selected_model:
         # 篩選數據
         filters = {}
@@ -70,22 +87,44 @@ def ESGEachCompany(request):
         if company_name:
             filters['company_name__icontains'] = company_name
         if company_code:
-            filters['company_code'] = company_code
+            filters['company_code__icontains'] = company_code
 
         data = selected_model.objects.filter(**filters)
+
         # 提取字段名稱和顯示名稱
         fields = [(field.name, field.verbose_name)
                   for field in selected_model._meta.fields]
 
-    return render(request, 'ESGEachCompany.html', {
+    # 顯示的篩選條件
+    categories = [
+        ('water', '水資源管理'),
+        ('waste', '廢棄物管理'),
+        ('energy', '能源管理'),
+        ('emission', '溫室氣體排放'),
+        ('climate', '氣候相關議題'),
+        ('board', '董事會'),
+        ('governance', '公司治理'),
+        ('investor_communication', '投資人溝通'),  # 新增投資人溝通分類
+        ('employee', '人力資源發展'),
+        ('shareholder', '持股及控制力'),
+    ]
+    market_types = ['上市', '上櫃']
+    years = [2021, 2022, 2023]
+
+    context = {
         'data': data,
         'fields': fields,
         'category': category,
         'market_type': market_type,
         'year': year,
         'company_name': company_name,
-        'company_code': company_code
-    })
+        'company_code': company_code,
+        'categories': categories,
+        'market_types': market_types,
+        'years': years,
+    }
+
+    return render(request, 'ESGEachCompany.html', context)
 
 
 def ESGReal(request):
@@ -703,6 +742,323 @@ def upload_company_board_data(request):
                 female_director_ratio=row.get("女性董事席次及比率-比率", 0),
                 board_attendance_rate=row.get("董事出席董事會出席率", 0),
                 training_hours_compliance_rate=row.get("董事進修時數符合進修要點比率", 0),
+            )
+
+        return JsonResponse({"success": "資料成功導入！"})
+
+    except Exception as e:
+        return JsonResponse({"error": f"處理檔案時發生錯誤：{str(e)}"}, status=500)
+
+
+def upload_function_committee_data(request):
+    # 請替換為實際檔案路徑
+    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(G)/functional_committee.xlsx"
+
+    try:
+        # 讀取 Excel 檔案
+        df = pd.read_excel(file_path)
+
+        # 檢查必要欄位是否存在
+        required_columns = [
+            "市場別", "年份", "公司代號", "公司名稱",
+            "薪酬委員會席次(席)", "薪酬委員會獨立董事席次(席)", "薪酬委員會出席率",
+            "審計委員會席次(席)", "審計委員會出席率"
+        ]
+        if not all(column in df.columns for column in required_columns):
+            return JsonResponse({"error": "Excel 檔案格式錯誤，缺少必要欄位。"}, status=400)
+
+        # 清理數據：處理 NaN 和非數字值
+        def clean_value(value):
+            if pd.isna(value):  # 如果是 NaN，返回 None
+                return None
+            if isinstance(value, str) and value.strip() in ["無", "無統計相關數據", "無，無統計相關數據"]:
+                return None  # 對無效數據返回 None
+            try:
+                return float(value)  # 嘗試轉換為浮點數
+            except ValueError:
+                return None  # 如果無法轉換為數字，返回 None
+
+        # 清理年份欄位：將無效的年份轉為 None 並移除無效年份行
+        df["年份"] = pd.to_numeric(df["年份"], errors="coerce")
+        df = df.dropna(subset=["年份"])  # 移除年份為 NaN 的行
+        df["年份"] = df["年份"].astype(int)  # 確保年份是整數
+
+        # 清理公司代號：轉為字串並去掉小數點
+        df["公司代號"] = df["公司代號"].apply(
+            lambda x: str(int(x)) if pd.notna(x) else None)
+
+        # 清理其他數據欄位
+        for column in ["薪酬委員會席次(席)", "薪酬委員會獨立董事席次(席)", "薪酬委員會出席率",
+                       "審計委員會席次(席)", "審計委員會出席率"]:
+            if column in df.columns:
+                df[column] = df[column].apply(clean_value)
+
+        # 去除重複資料：依年份和公司代號去重
+        df = df.drop_duplicates(subset=["年份", "公司代號"])
+
+        # 插入資料到資料庫
+        for _, row in df.iterrows():
+            # 檢查資料是否已存在
+            if CorporateGovernance.objects.filter(year=row["年份"], company_code=row["公司代號"]).exists():
+                continue  # 如果資料已存在，跳過此行
+
+            # 創建新記錄
+            CorporateGovernance.objects.create(
+                market_type=row["市場別"],
+                year=row["年份"],
+                company_code=row["公司代號"],
+                company_name=row["公司名稱"],
+                compensation_committee_seats=row.get("薪酬委員會席次(席)", None),
+                independent_compensation_committee_seats=row.get(
+                    "薪酬委員會獨立董事席次(席)", None),
+                compensation_committee_attendance_rate=row.get(
+                    "薪酬委員會出席率", None),
+                audit_committee_seats=row.get("審計委員會席次(席)", None),
+                audit_committee_attendance_rate=row.get("審計委員會出席率", None),
+            )
+
+        return JsonResponse({"success": "資料成功導入！"})
+
+    except Exception as e:
+        return JsonResponse({"error": f"處理檔案時發生錯誤：{str(e)}"}, status=500)
+
+
+def upload_employee_develop_data(request):
+    # 替換為實際檔案路徑
+    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(S)/hr_develop.xlsx"
+
+    try:
+        # 讀取 Excel 檔案
+        df = pd.read_excel(file_path)
+
+        # 檢查必要欄位是否存在
+        required_columns = [
+            "市場別", "年份", "公司代號", "公司名稱",
+            "員工福利平均數(仟元/人)(每年6/2起公開)", "員工薪資平均數(仟元/人)(每年6/2起公開)",
+            "非擔任主管職務之全時員工薪資平均數(仟元/人)(每年7/1起公開)", "非擔任主管職務之全時員工薪資中位數(仟元/人)(每年7/1起公開)",
+            "管理職女性主管占比", "職業災害人數及比率-人數", "職業災害人數及比率-比率", "職業災害-類別",
+            "火災-件數", "火災-死傷人數", "火災-比率(死傷人數/員工總人數)"
+        ]
+        if not all(column in df.columns for column in required_columns):
+            return JsonResponse({"error": "Excel 檔案格式錯誤，缺少必要欄位。"}, status=400)
+
+        # 清理數據：處理 NaN 和非數字值
+        def clean_value(value):
+            if pd.isna(value):  # 如果是 NaN，返回 None
+                return None
+            if isinstance(value, str) and value.strip() in ["無", "無統計相關數據", "無，無統計相關數據"]:
+                return None  # 對無效數據返回 None
+            try:
+                return float(value)  # 嘗試轉換為浮點數
+            except ValueError:
+                return None  # 如果無法轉換為數字，返回 None
+
+        # 清理年份欄位：將無效的年份轉為 None 並移除無效年份行
+        df["年份"] = pd.to_numeric(df["年份"], errors="coerce")
+        df = df.dropna(subset=["年份"])  # 移除年份為 NaN 的行
+        df["年份"] = df["年份"].astype(int)  # 確保年份是整數
+
+        # 清理公司代號：轉為字串並去掉小數點
+        df["公司代號"] = df["公司代號"].apply(
+            lambda x: str(int(x)) if pd.notna(x) else None)
+
+        # 清理其他數據欄位
+        for column in [
+            "員工福利平均數(仟元/人)(每年6/2起公開)", "員工薪資平均數(仟元/人)(每年6/2起公開)",
+            "非擔任主管職務之全時員工薪資平均數(仟元/人)(每年7/1起公開)", "非擔任主管職務之全時員工薪資中位數(仟元/人)(每年7/1起公開)",
+            "管理職女性主管占比", "職業災害人數及比率-比率", "火災-比率(死傷人數/員工總人數)"
+        ]:
+            if column in df.columns:
+                df[column] = df[column].apply(clean_value)
+
+        # 針對其他需要處理的數字欄位，確保 NaN 轉為 None
+        for column in [
+            "職業災害人數及比率-人數", "火災-件數", "火災-死傷人數"
+        ]:
+            if column in df.columns:
+                df[column] = df[column].apply(lambda x: clean_value(x))
+
+        # 去除重複資料：依年份和公司代號去重
+        df = df.drop_duplicates(subset=["年份", "公司代號"])
+
+        # 插入資料到資料庫
+        for _, row in df.iterrows():
+            # 檢查資料是否已存在
+            if EmployeeDevelop.objects.filter(year=row["年份"], company_code=row["公司代號"]).exists():
+                continue  # 如果資料已存在，跳過此行
+
+            # 確保火災相關欄位處理為 None 或 0，避免插入 NaN
+            occupational_accident_count = row.get("職業災害人數及比率-人數", None)
+            fire_incidents_count = row.get("火災-件數", None)
+            fire_incidents_injury_count = row.get("火災-死傷人數", None)
+            fire_incidents_rate = row.get("火災-比率(死傷人數/員工總人數)", None)
+
+            # 若為 NaN 轉為 None
+            if pd.isna(occupational_accident_count):
+                occupational_accident_count = None
+            if pd.isna(fire_incidents_count):
+                fire_incidents_count = None
+            if pd.isna(fire_incidents_injury_count):
+                fire_incidents_injury_count = None
+            if pd.isna(fire_incidents_rate):
+                fire_incidents_rate = None
+
+            # 創建新記錄
+            EmployeeDevelop.objects.create(
+                market_type=row["市場別"],
+                year=row["年份"],
+                company_code=row["公司代號"],
+                company_name=row["公司名稱"],
+                employee_benefits_avg=row.get("員工福利平均數(仟元/人)(每年6/2起公開)", None),
+                employee_salary_avg=row.get("員工薪資平均數(仟元/人)(每年6/2起公開)", None),
+                non_supervisor_salary_avg=row.get(
+                    "非擔任主管職務之全時員工薪資平均數(仟元/人)(每年7/1起公開)", None),
+                non_supervisor_salary_median=row.get(
+                    "非擔任主管職務之全時員工薪資中位數(仟元/人)(每年7/1起公開)", None),
+                female_manager_ratio=row.get("管理職女性主管占比", None),
+                occupational_accident_count=occupational_accident_count,
+                occupational_accident_rate=row.get("職業災害人數及比率-比率", None),
+                occupational_accident_category=row.get("職業災害-類別", None),
+                fire_incidents_count=fire_incidents_count,
+                fire_incidents_injury_count=fire_incidents_injury_count,
+                fire_incidents_rate=fire_incidents_rate,
+            )
+
+        return JsonResponse({"success": "資料成功導入！"})
+
+    except Exception as e:
+        return JsonResponse({"error": f"處理檔案時發生錯誤：{str(e)}"}, status=500)
+
+
+def upload_investor_communication_data(request):
+    # 替換為實際檔案路徑
+    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(G)/investor_communication.xlsx"
+
+    try:
+        # 讀取 Excel 檔案
+        df = pd.read_excel(file_path)
+
+        # 檢查必要欄位是否存在
+        required_columns = [
+            "市場別", "年份", "公司代號", "公司名稱",
+            "公司年度召開法說會次數(次)",
+            "利害關係人或公司治理專區連結"
+        ]
+        if not all(column in df.columns for column in required_columns):
+            return JsonResponse({"error": "Excel 檔案格式錯誤，缺少必要欄位。"}, status=400)
+
+        # 清理數據：處理 NaN 和非數字值
+        def clean_value(value):
+            if pd.isna(value):  # 如果是 NaN，返回 None
+                return None
+            if isinstance(value, str) and value.strip() in ["無", "無統計相關數據", "無，無統計相關數據"]:
+                return None  # 對無效數據返回 None
+            try:
+                return float(value)  # 嘗試轉換為浮點數
+            except ValueError:
+                return None  # 如果無法轉換為數字，返回 None
+
+        # 清理年份欄位：將無效的年份轉為 None 並移除無效年份行
+        df["年份"] = pd.to_numeric(df["年份"], errors="coerce")
+        df = df.dropna(subset=["年份"])  # 移除年份為 NaN 的行
+        df["年份"] = df["年份"].astype(int)  # 確保年份是整數
+
+        # 清理公司代號：轉為字串並去掉小數點
+        df["公司代號"] = df["公司代號"].apply(
+            lambda x: str(int(x)) if pd.notna(x) else None)
+
+        # 清理數據欄位
+        for column in [
+            "公司年度召開法說會次數(次)"
+        ]:
+            if column in df.columns:
+                df[column] = df[column].apply(clean_value)
+
+        # 清理網址欄位
+        df["利害關係人或公司治理專區連結"] = df[
+            "利害關係人或公司治理專區連結"].apply(
+            lambda x: x.strip() if isinstance(x, str) else None
+        )
+
+        # 去除重複資料：依年份和公司代號去重
+        df = df.drop_duplicates(subset=["年份", "公司代號"])
+
+        # 插入資料到資料庫
+        for _, row in df.iterrows():
+            # 檢查資料是否已存在
+            if CompanyGovernance.objects.filter(year=row["年份"], company_code=row["公司代號"]).exists():
+                continue  # 如果資料已存在，跳過此行
+
+            # 確保 annual_conference_count 是有效數字或 None
+            annual_conference_count = row.get("公司年度召開法說會次數(次)", None)
+            if pd.isna(annual_conference_count):
+                annual_conference_count = None  # 將 NaN 轉為 None
+
+            # 創建新記錄
+            CompanyGovernance.objects.create(
+                market_type=row["市場別"],
+                year=row["年份"],
+                company_code=row["公司代號"],
+                company_name=row["公司名稱"],
+                annual_conference_count=annual_conference_count,
+                governance_link=row.get("利害關係人或公司治理專區連結", None),
+            )
+
+        return JsonResponse({"success": "資料成功導入！"})
+
+    except Exception as e:
+        return JsonResponse({"error": f"處理檔案時發生錯誤：{str(e)}"}, status=500)
+
+
+def upload_shareholder_data(request):
+    # 替換為實際檔案路徑
+    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(G)/shareholding_and_control.xlsx"
+
+    try:
+        # 讀取 Excel 檔案
+        df = pd.read_excel(file_path)
+
+        # 檢查必要欄位是否存在
+        required_columns = [
+            "市場別", "年份", "公司代號", "公司名稱", "前10大股東持股情況"
+        ]
+        if not all(column in df.columns for column in required_columns):
+            return JsonResponse({"error": "Excel 檔案格式錯誤，缺少必要欄位。"}, status=400)
+
+        # 清理數據：處理 NaN 和無效數據
+        def clean_value(value):
+            if pd.isna(value) or isinstance(value, str) and value.strip() in ["無", "無統計相關數據"]:
+                return None  # 將無效數據轉換為 None
+            return value
+
+        # 清理年份欄位：將無效的年份轉為 None 並移除無效年份行
+        df["年份"] = pd.to_numeric(df["年份"], errors="coerce")
+        df = df.dropna(subset=["年份"])  # 移除年份為 NaN 的行
+        df["年份"] = df["年份"].astype(int)  # 確保年份是整數
+
+        # 清理公司代號：轉為字串並去掉小數點
+        df["公司代號"] = df["公司代號"].apply(
+            lambda x: str(int(x)) if pd.notna(x) else None)
+
+        # 清理股東資料欄位
+        df["前10大股東持股情況"] = df["前10大股東持股情況"].apply(clean_value)
+
+        # 去除重複資料：依年份和公司代號去重
+        df = df.drop_duplicates(subset=["年份", "公司代號"])
+
+        # 插入資料到資料庫
+        for _, row in df.iterrows():
+            # 檢查資料是否已存在
+            if Shareholder.objects.filter(year=row["年份"], company_code=row["公司代號"]).exists():
+                continue  # 如果資料已存在，跳過此行
+
+            # 創建新記錄
+            Shareholder.objects.create(
+                market_type=row["市場別"],
+                year=row["年份"],
+                company_code=row["公司代號"],
+                company_name=row["公司名稱"],
+                top_10_shareholders=row.get("前10大股東持股情況", None),
             )
 
         return JsonResponse({"success": "資料成功導入！"})
