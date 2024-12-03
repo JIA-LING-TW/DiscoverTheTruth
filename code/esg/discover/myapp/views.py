@@ -1,3 +1,6 @@
+import time
+from .forms import ExcelUploadForm
+from .models import SustainabilityReport
 import string
 import random
 from django.contrib.auth.hashers import make_password
@@ -461,3 +464,69 @@ def upload_greenhouse_gas_emission_data(request):
 
     except Exception as e:
         return JsonResponse({"error": f"處理檔案時發生錯誤：{str(e)}"}, status=500)
+
+
+def upload_excel(request):
+    if request.method == "POST":
+        form = ExcelUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            # 獲取上傳的 Excel 檔案
+            excel_file = request.FILES['file']
+
+            try:
+                # 使用 pandas 讀取 Excel 檔案
+                df = pd.read_excel(excel_file, engine='openpyxl')
+
+                # 處理布林欄位，將空值或 NaT 轉為 False
+                df['修正後報告書'] = df['修正後報告書'].fillna(False).astype(bool)
+                df['英文版修正後報告書'] = df['英文版修正後報告書'].fillna(False).astype(bool)
+
+                # 處理日期欄位，將 NaT 轉為 None
+                date_columns = [
+                    '上傳日期',
+                    '修正後報告書上傳日期',
+                    '英文版上傳日期',
+                    '英文版修正後報告書上傳日期'
+                ]
+                for col in date_columns:
+                    if col in df.columns:
+                        df[col] = pd.to_datetime(
+                            df[col], errors='coerce').dt.date
+
+                # 迭代 DataFrame，將資料存入資料庫
+                for _, row in df.iterrows():
+                    SustainabilityReport.objects.create(
+                        market_type=row.get('市場別'),
+                        year=row.get('年份'),
+                        company_code=row.get('公司代號'),
+                        company_name=row.get('公司名稱'),
+                        company_abbreviation=row.get('英文簡稱'),
+                        declaration_reason=row.get('申報原因'),
+                        industry_category=row.get('產業類別'),
+                        report_period=row.get('報告書內容涵蓋期間'),
+                        guidelines=row.get('編製依循準則'),
+                        third_party_verifier=row.get('第三方驗證單位'),
+                        upload_date=row.get('上傳日期') or None,
+                        revised_report=row.get('修正後報告書', False),
+                        revised_report_upload_date=row.get(
+                            '修正後報告書上傳日期') or None,
+                        english_report_url=row.get('永續報告書英文版網址'),
+                        english_report_upload_date=row.get('英文版上傳日期') or None,
+                        english_revised_report=row.get('英文版修正後報告書', False),
+                        english_revised_report_upload_date=row.get(
+                            '英文版修正後報告書上傳日期') or None,
+                        contact_info=row.get('報告書聯絡資訊'),
+                        remarks=row.get('備註'),
+                    )
+
+                # 導向成功頁面或顯示成功訊息
+                return redirect('success_page')
+
+            except Exception as e:
+                # 若發生錯誤，顯示錯誤訊息
+                return render(request, 'upload.html', {'form': form, 'error': str(e)})
+
+    else:
+        form = ExcelUploadForm()
+
+    return render(request, 'upload.html', {'form': form})
