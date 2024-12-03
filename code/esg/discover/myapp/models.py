@@ -196,8 +196,8 @@ class ClimateRiskAndOpportunity(models.Model):
         verbose_name="若有設定氣候相關目標，應說明所涵蓋之活動、溫室氣體排放範疇、規劃期程，每年達成進度等資訊；若使用碳抵換或再生能源憑證(RECs)以達成相關目標，應說明所抵換之減碳額度來源及數量或再生能源憑證(RECs)數量", blank=True, null=True)
 
     class Meta:
-        verbose_name = "氣候風險與機會"
-        verbose_name_plural = "氣候風險與機會"
+        verbose_name = "氣候相關議題"
+        verbose_name_plural = "氣候相關議題"
 
     def __str__(self):
         return f"{self.company_name} ({self.year})"
@@ -234,8 +234,113 @@ class CompanyBoard(models.Model):
         verbose_name="董事進修時數符合進修要點比率", blank=True, null=True)
 
     class Meta:
-        verbose_name = "公司董事會"
-        verbose_name_plural = "公司董事會"
+        verbose_name = "董事會"
+        verbose_name_plural = "董事會"
 
     def __str__(self):
         return f"{self.company_name} ({self.year})"
+
+# 功能性委員會
+
+
+class CorporateGovernance(models.Model):
+    market_type = models.CharField(max_length=50, verbose_name="市場別")
+    year = models.PositiveIntegerField(verbose_name="年份")
+    company_code = models.CharField(
+        max_length=20, verbose_name="公司代號", blank=True, null=True)
+    company_name = models.CharField(max_length=100, verbose_name="公司名稱")
+    compensation_committee_seats = models.IntegerField(
+        verbose_name="薪酬委員會席次", blank=True, null=True)
+    independent_compensation_committee_seats = models.IntegerField(
+        verbose_name="薪酬委員會獨立董事席次", blank=True, null=True)
+    compensation_committee_attendance_rate = models.FloatField(
+        verbose_name="薪酬委員會出席率", blank=True, null=True)
+    audit_committee_seats = models.IntegerField(
+        verbose_name="審計委員會席次", blank=True, null=True)
+    audit_committee_attendance_rate = models.FloatField(
+        verbose_name="審計委員會出席率", blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.company_name} ({self.year})"
+
+    class Meta:
+        verbose_name = "功能性委員會"
+        verbose_name_plural = "功能性委員會"
+
+
+class EmployeeDevelop(models.Model):
+    market_type = models.CharField(max_length=50, verbose_name="市場別")
+    year = models.PositiveIntegerField(verbose_name="年份")
+    company_code = models.CharField(
+        max_length=20, verbose_name="公司代號", blank=True, null=True)
+    company_name = models.CharField(max_length=100, verbose_name="公司名稱")
+    employee_benefits_avg = models.FloatField(
+        verbose_name="員工福利平均數(仟元/人)(每年6/2起公開)", blank=True, null=True)
+    employee_salary_avg = models.FloatField(
+        verbose_name="員工薪資平均數(仟元/人)(每年6/2起公開)", blank=True, null=True)
+    non_supervisor_salary_avg = models.FloatField(
+        verbose_name="非擔任主管職務之全時員工薪資平均數(仟元/人)(每年7/1起公開)", blank=True, null=True)
+    non_supervisor_salary_median = models.FloatField(
+        verbose_name="非擔任主管職務之全時員工薪資中位數(仟元/人)(每年7/1起公開)", blank=True, null=True)
+    female_manager_ratio = models.FloatField(
+        verbose_name="管理職女性主管占比", blank=True, null=True)
+    occupational_accident_count = models.IntegerField(
+        verbose_name="職業災害人數及比率-人數", blank=True, null=True)
+    occupational_accident_rate = models.FloatField(
+        verbose_name="職業災害人數及比率-比率", blank=True, null=True)
+    occupational_accident_category = models.CharField(
+        max_length=255, verbose_name="職業災害-類別", blank=True, null=True)
+    fire_incidents_count = models.IntegerField(
+        verbose_name="火災-件數", blank=True, null=True)
+    fire_incidents_injury_count = models.IntegerField(
+        verbose_name="火災-死傷人數", blank=True, null=True)
+    fire_incidents_rate = models.FloatField(
+        verbose_name="火災-比率(死傷人數/員工總人數)", blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.company_name} ({self.year})"
+
+    class Meta:
+        verbose_name = "人力資源發展"
+        verbose_name_plural = "人力資源發展"
+
+
+# 投資人溝通
+class CompanyGovernance(models.Model):
+    market_type = models.CharField(max_length=50, verbose_name="市場別")
+    year = models.PositiveIntegerField(verbose_name="年份")
+    company_code = models.CharField(
+        max_length=20, verbose_name="公司代號", blank=True, null=True)
+    company_name = models.CharField(max_length=100, verbose_name="公司名稱")
+    annual_conference_count = models.PositiveIntegerField(
+        verbose_name="公司年度召開法說會次數(次)", blank=True, null=True
+    )
+    governance_link = models.URLField(
+        verbose_name="利害關係人或公司治理專區連結", blank=True, null=True
+    )
+
+    def __str__(self):
+        return f"{self.company_name} ({self.year})"
+
+    class Meta:
+        verbose_name = "投資人溝通"
+        verbose_name_plural = "投資人溝通"
+
+
+class Shareholder(models.Model):
+    market_type = models.CharField(max_length=50, verbose_name="市場別")  # 市場別
+    year = models.PositiveIntegerField(verbose_name="年份")  # 年份
+    company_code = models.CharField(
+        max_length=20, verbose_name="公司代號", blank=True, null=True
+    )  # 公司代號
+    company_name = models.CharField(
+        max_length=100, verbose_name="公司名稱")  # 公司名稱
+    top_10_shareholders = models.TextField(
+        verbose_name="前10大股東持股情況", blank=True, null=True)  # 前10大股東持股情況
+
+    def __str__(self):
+        return f"{self.company_name} ({self.year})"  # 顯示公司名稱和年份
+
+    class Meta:
+        verbose_name = "持股及控制力"  # 顯示在管理介面中的名稱
+        verbose_name_plural = "持股及控制力"  # 顯示在管理介面中的複數名稱
