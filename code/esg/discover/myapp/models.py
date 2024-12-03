@@ -117,46 +117,6 @@ class GreenhouseGasEmission(models.Model):
         return f"{self.company_name} ({self.year})"
 
 
-class SustainabilityReport(models.Model):
-    market_type = models.CharField(max_length=50, verbose_name="市場別")
-    year = models.PositiveIntegerField(verbose_name="年份")
-    company_code = models.CharField(max_length=20, verbose_name="公司代號")
-    company_name = models.CharField(max_length=100, verbose_name="公司名稱")
-    company_abbreviation = models.CharField(
-        max_length=100, verbose_name="英文簡稱", blank=True, null=True)
-    declaration_reason = models.TextField(
-        verbose_name="申報原因", blank=True, null=True)
-    industry_category = models.CharField(max_length=100, verbose_name="產業類別")
-    report_period = models.CharField(
-        max_length=50, verbose_name="報告書內容涵蓋期間", blank=True, null=True)
-    guidelines = models.TextField(verbose_name="編製依循準則", blank=True, null=True)
-    third_party_verifier = models.CharField(
-        max_length=100, verbose_name="第三方驗證單位", blank=True, null=True)
-    upload_date = models.DateField(verbose_name="上傳日期", blank=True, null=True)
-    revised_report = models.BooleanField(verbose_name="修正後報告書", default=False)
-    revised_report_upload_date = models.DateField(
-        verbose_name="修正後報告書上傳日期", blank=True, null=True)
-    english_report_url = models.URLField(
-        verbose_name="永續報告書英文版網址", blank=True, null=True)
-    english_report_upload_date = models.DateField(
-        verbose_name="英文版上傳日期", blank=True, null=True)
-    english_revised_report = models.BooleanField(
-        verbose_name="英文版修正後報告書", default=False)
-    english_revised_report_upload_date = models.DateField(
-        verbose_name="英文版修正後報告書上傳日期", blank=True, null=True)
-    contact_info = models.TextField(
-        verbose_name="報告書聯絡資訊", blank=True, null=True)
-    remarks = models.TextField(verbose_name="備註", blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.company_name} ({self.year})"
-
-    class Meta:
-        verbose_name = "永續報告書"
-        verbose_name_plural = "永續報告書"
-        ordering = ['-year', 'company_name']
-
-
 class ClimateRiskAndOpportunity(models.Model):
     market_type = models.CharField(max_length=10, verbose_name="市場別")
     year = models.PositiveIntegerField(verbose_name="年份")
@@ -344,3 +304,54 @@ class Shareholder(models.Model):
     class Meta:
         verbose_name = "持股及控制力"  # 顯示在管理介面中的名稱
         verbose_name_plural = "持股及控制力"  # 顯示在管理介面中的複數名稱
+
+
+class SustainabilityReport(models.Model):
+    market_type = models.CharField(max_length=50, verbose_name="市場別")  # 市場別
+    year = models.PositiveIntegerField(verbose_name="年份")  # 年份
+    company_code = models.CharField(
+        max_length=20, verbose_name="公司代號", blank=True, null=True)  # 公司代號
+    company_name = models.CharField(
+        max_length=100, verbose_name="公司名稱")  # 公司名稱
+    english_abbreviation = models.CharField(
+        max_length=100, verbose_name="英文簡稱", blank=True, null=True)  # 英文簡稱
+    report_reason = models.TextField(
+        verbose_name="申報原因", blank=True, null=True)  # 申報原因
+    industry_type = models.CharField(
+        max_length=100, verbose_name="產業類別", blank=True, null=True)  # 產業類別
+    report_period = models.CharField(
+        max_length=100, verbose_name="報告書內容涵蓋期間", blank=True, null=True)  # 報告期間
+    compliance_guideline = models.TextField(
+        verbose_name="編製依循準則", blank=True, null=True)  # 編製準則
+    verification_unit = models.CharField(
+        max_length=100, verbose_name="第三方驗證單位", blank=True, null=True)  # 驗證單位
+    verification_standard = models.CharField(
+        max_length=200, verbose_name="第三方採用標準", blank=True, null=True)  # 第三方採用標準
+    cpa_assurance_unit = models.CharField(
+        max_length=100, verbose_name="會計師確信驗證單位", blank=True, null=True)  # 確信驗證單位
+    cpa_assurance_standard = models.CharField(
+        max_length=200, verbose_name="會計師確信採用標準", blank=True, null=True)  # 確信採用標準
+    cpa_assurance_opinion = models.CharField(
+        max_length=100, verbose_name="會計師確信意見類型", blank=True, null=True)  # 確信意見類型
+    report_url = models.URLField(
+        verbose_name="永續報告書網址", blank=True, null=True)  # 報告書網址
+    upload_date = models.CharField(
+        max_length=20, verbose_name="上傳日期", blank=True, null=True)  # 上傳日期
+    revised_upload_date = models.CharField(
+        max_length=20, verbose_name="修正後報告書上傳日期", blank=True, null=True)  # 修正後上傳日期
+    english_report_url = models.URLField(
+        verbose_name="永續報告書英文版網址", blank=True, null=True)  # 英文版網址
+    english_upload_date = models.CharField(
+        max_length=20, verbose_name="英文版上傳日期", blank=True, null=True)  # 英文版上傳日期
+    english_revised_upload_date = models.CharField(
+        max_length=20, verbose_name="英文版修正後報告書上傳日期", blank=True, null=True)  # 英文版修正後上傳日期
+    contact_info = models.TextField(
+        verbose_name="報告書聯絡資訊", blank=True, null=True)  # 聯絡資訊
+    remarks = models.TextField(verbose_name="備註", blank=True, null=True)  # 備註
+
+    def __str__(self):
+        return f"{self.company_name} ({self.year})"  # 顯示公司名稱和年份
+
+    class Meta:
+        verbose_name = "永續報告書"  # 管理介面中的名稱
+        verbose_name_plural = "永續報告書"  # 管理介面中的複數名稱

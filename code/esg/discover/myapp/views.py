@@ -1,3 +1,5 @@
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 from .models import WaterResourceManagement, WasteManagement, EnergyManagement, GreenhouseGasEmission, ClimateRiskAndOpportunity, CompanyBoard, CorporateGovernance, EmployeeDevelop, CompanyGovernance, Shareholder
 from .models import (
     WaterResourceManagement, WasteManagement, EnergyManagement, GreenhouseGasEmission,
@@ -1059,6 +1061,95 @@ def upload_shareholder_data(request):
                 company_code=row["公司代號"],
                 company_name=row["公司名稱"],
                 top_10_shareholders=row.get("前10大股東持股情況", None),
+            )
+
+        return JsonResponse({"success": "資料成功導入！"})
+
+    except Exception as e:
+        return JsonResponse({"error": f"處理檔案時發生錯誤：{str(e)}"}, status=500)
+
+
+def upload_sustainability_report_data(request):
+    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_report/report.xlsx"  # 替換為實際的檔案路徑
+
+    try:
+        # 讀取 Excel 檔案
+        df = pd.read_excel(file_path, engine='openpyxl')
+
+        # 檢查必要欄位是否存在
+        required_columns = [
+            "市場別", "年份", "公司代號", "公司名稱", "英文簡稱", "申報原因",
+            "產業類別", "報告書內容涵蓋期間", "編製依循準則", "第三方驗證單位",
+            "第三方採用標準", "會計師確信驗證單位", "會計師確信採用標準",
+            "會計師確信意見類型", "永續報告書網址", "上傳日期", "修正後報告書上傳日期",
+            "永續報告書英文版網址", "英文版上傳日期", "英文版修正後報告書上傳日期",
+            "報告書聯絡資訊", "備註"
+        ]
+
+        if not all(column in df.columns for column in required_columns):
+            return JsonResponse({"error": "Excel 檔案格式錯誤，缺少必要欄位。"}, status=400)
+
+        # 清理數據：處理 NaN 和非數字值
+        def clean_value(value):
+            if pd.isna(value):
+                return None
+            if isinstance(value, str) and value.strip() in ["無", "無統計相關數據", "無，無統計相關數據"]:
+                return None
+            return value.strip() if isinstance(value, str) else value
+
+        # 清理年份欄位，將無效的年份轉為 None 並移除無效年份行
+        df["年份"] = pd.to_numeric(df["年份"], errors="coerce")
+        df = df.dropna(subset=["年份"])
+        df["年份"] = df["年份"].astype(int)
+
+        # 清理公司代號，轉為字串並去掉小數點
+        df["公司代號"] = df["公司代號"].apply(
+            lambda x: str(int(x)) if pd.notna(x) else None)
+
+        # 清理其他數據欄位
+        for column in [
+            "上傳日期", "修正後報告書上傳日期", "英文版上傳日期", "英文版修正後報告書上傳日期"
+        ]:
+            if column in df.columns:
+                df[column] = pd.to_datetime(df[column], errors='coerce')
+
+        # 去除重複項
+        df = df.drop_duplicates(subset=["市場別", "年份", "公司代號", "公司名稱"])
+
+        # 將資料寫入資料庫
+        for _, row in df.iterrows():
+            if SustainabilityReport.objects.filter(
+                market_type=row["市場別"],
+                year=row["年份"],
+                company_code=row["公司代號"],
+                company_name=row["公司名稱"]
+            ).exists():
+                print(f"重複資料跳過：{row['年份']} - {row['公司代號']} - {row['公司名稱']}")
+                continue
+
+            SustainabilityReport.objects.create(
+                market_type=row["市場別"],
+                year=row["年份"],
+                company_code=row["公司代號"],
+                company_name=row["公司名稱"],
+                english_abbreviation=row.get("英文簡稱", None),
+                report_reason=row.get("申報原因", None),
+                industry_type=row.get("產業類別", None),
+                report_period=row.get("報告書內容涵蓋期間", None),
+                compliance_guideline=row.get("編製依循準則", None),
+                verification_unit=row.get("第三方驗證單位", None),
+                verification_standard=row.get("第三方採用標準", None),
+                cpa_assurance_unit=row.get("會計師確信驗證單位", None),
+                cpa_assurance_standard=row.get("會計師確信採用標準", None),
+                cpa_assurance_opinion=row.get("會計師確信意見類型", None),
+                report_url=row.get("永續報告書網址", None),
+                upload_date=row.get("上傳日期", None),
+                revised_upload_date=row.get("修正後報告書上傳日期", None),
+                english_report_url=row.get("永續報告書英文版網址", None),
+                english_upload_date=row.get("英文版上傳日期", None),
+                english_revised_upload_date=row.get("英文版修正後報告書上傳日期", None),
+                contact_info=row.get("報告書聯絡資訊", None),
+                remarks=row.get("備註", None)
             )
 
         return JsonResponse({"success": "資料成功導入！"})

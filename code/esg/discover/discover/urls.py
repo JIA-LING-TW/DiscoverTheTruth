@@ -11,7 +11,7 @@ from django.urls import path
 import myapp.views as views
 from django.contrib import admin
 from myapp.views import ESGEachCompany
-from myapp.views import upload_excel, upload_weather_management_data, upload_company_board_data, upload_function_committee_data, upload_employee_develop_data, upload_investor_communication_data, upload_shareholder_data
+from myapp.views import upload_excel, upload_weather_management_data, upload_company_board_data, upload_function_committee_data, upload_employee_develop_data, upload_investor_communication_data, upload_shareholder_data, upload_sustainability_report_data
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -48,4 +48,6 @@ urlpatterns = [
          name='upload_investor_communication_data'),
     path('upload_shareholder_data/', upload_shareholder_data,
          name='upload_shareholder_data'),
+    path('upload_sustainability_report_data/', upload_sustainability_report_data,
+         name='upload_sustainability_report_data'),
 ]
