@@ -335,7 +335,7 @@ class Shareholder(models.Model):
     )  # 公司代號
     company_name = models.CharField(
         max_length=100, verbose_name="公司名稱")  # 公司名稱
-    top_10_shareholders = models.TextField(
+    top_10_shareholders = models.URLField(
         verbose_name="前10大股東持股情況", blank=True, null=True)  # 前10大股東持股情況
 
     def __str__(self):
