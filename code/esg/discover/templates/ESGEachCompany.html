@@ -62,7 +62,7 @@
                         <tr>
                             {% for field, verbose_name in fields %}
                                 {% if field != "id" %}  <!-- 移除 ID 欄位 -->
-                                    <th>{{ verbose_name }}</th>
+                                    <th class="one" style="background-color: #ffa726;">{{ verbose_name }}</th>
                                 {% endif %}
                             {% endfor %}
                         </tr>

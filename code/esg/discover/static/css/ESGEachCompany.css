@@ -97,7 +97,7 @@ td {
     white-space: nowrap;
 }
 
-th {
+.one {
     background-color: #ffa726;
     color: white;
     text-transform: uppercase;

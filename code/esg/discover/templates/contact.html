@@ -30,11 +30,6 @@
                 <h3>地址</h3>
                 <p>國立台北科技大學 宏裕科技大樓實驗室635</p>
             </div>
-            <div class="contact-item">
-                <i class="fas fa-phone icon"></i>
-                <h3>電話</h3>
-                <p>+886 2 1234 5678</p>
-            </div>
         </div>
     </div>
 </section>
@@ -51,21 +46,47 @@
         <h2 class="section-title">留下您的訊息</h2>
         <form action="#" method="POST" class="contact-form">
             <div class="form-group">
-                <label for="name">姓名</label>
-                <input type="text" id="name" name="name" placeholder="請輸入您的姓名" required>
+                <label for="name" class="form-label">姓名</label>
+                <input type="text" id="name" name="name" class="form-input" placeholder="請輸入您的姓名" required>
             </div>
             <div class="form-group">
-                <label for="email">電子郵件</label>
-                <input type="email" id="email" name="email" placeholder="請輸入您的電子郵件" required>
+                <label for="email" class="form-label">電子郵件</label>
+                <input type="email" id="email" name="email" class="form-input" placeholder="請輸入您的電子郵件" required>
             </div>
             <div class="form-group">
-                <label for="message">訊息</label>
-                <textarea id="message" name="message" rows="5" placeholder="請輸入您的訊息" required></textarea>
+                <label for="message" class="form-label">訊息</label>
+                <textarea id="message" name="message" class="form-input" rows="5" placeholder="請輸入您的訊息" required></textarea>
             </div>
             <button type="submit" class="submit-button">提交</button>
         </form>
     </div>
 </section>
+
+<div class="bottom-section">
+    <div class="line-container">
+        <img src="{% static "LOGO.png" %}" class="line-image">
+        <span class="line-text">碳索偵相</span>
+        <ul class="bottom-menu">
+            <li>首頁</li>
+            <li>服務內容</li>
+            <li>技術實現</li>
+            <li>關於</li>
+                <a href="#" class="register-button">立即註冊</a>
+        </ul>
+    </div>
+    <div class="bottom-right">
+        <p>若有任何問題想諮詢我們，歡迎聯絡以下 Email！</p>
+        <p>ExploreTheTruth@gmail.com</p>
+        <a href="#" class="contact-button">聯絡我們</a>
+    </div>
+</div>
+
+
+
+
+<footer style="background: linear-gradient(to right, #d7e3f4, #b0c9ea); padding: 20px; text-align: center;">
+    &copy; 2024 碳索偵相. All Rights Reserved.
+</footer>
 {% endblock body %}
 
 
