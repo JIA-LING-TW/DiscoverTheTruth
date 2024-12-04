@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 from .models import WaterResourceManagement, WasteManagement, EnergyManagement, GreenhouseGasEmission, ClimateRiskAndOpportunity, CompanyBoard, CorporateGovernance, EmployeeDevelop, CompanyGovernance, Shareholder
@@ -13,7 +14,6 @@ from .models import CorporateGovernance
 from .models import CompanyBoard
 from .models import ClimateRiskAndOpportunity
 import time
-from .forms import ExcelUploadForm
 from .models import SustainabilityReport
 import string
 import random
@@ -215,8 +215,67 @@ def register(request):
     return render(request, 'register.html')
 
 
+# def report(request):
+
+#     market_type = request.GET.get('market_type')
+#     year = request.GET.get('year')
+#     company_code = request.GET.get('company_code')
+
+
+#     reports = SustainabilityReport.objects.all()
+#     if market_type:
+#         reports = reports.filter(market_type=market_type)
+#     if year:
+#         reports = reports.filter(year=year)
+#     if company_code:
+#         reports = reports.filter(company_code__icontains=company_code)
+
+
+#     available_years = ['2021', '2022', '2023']
+
+
+#     context = {
+#         'reports': reports,
+#         'market_type': market_type,
+#         'year': year,
+#         'company_code': company_code,
+#         'available_years': available_years,
+#     }
+#     return render(request, 'report.html', context)
+
+
 def report(request):
-    return render(request, 'report.html')
+    # 取得篩選參數
+    market_type = request.GET.get('market_type')
+    year = request.GET.get('year')
+    company_code = request.GET.get('company_code')
+
+    # 依據篩選條件過濾報告書
+    reports = SustainabilityReport.objects.all()
+    if market_type:
+        reports = reports.filter(market_type=market_type)
+    if year:
+        reports = reports.filter(year=year)
+    if company_code:
+        reports = reports.filter(company_code__icontains=company_code)
+
+    # 分頁設定：每頁顯示 20 筆資料
+    paginator = Paginator(reports, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # 傳遞年度選項
+    years = [2021, 2022, 2023]
+
+    # 渲染模板並傳遞分頁後的報告書資料
+    context = {
+        'page_obj': page_obj,
+        'market_type': market_type,
+        'year': year,
+        'company_code': company_code,
+        'years': years,  # 傳遞年度選項
+    }
+    return render(request, 'report.html', context)
 
 
 def upload_water_resource_management_data(request):
