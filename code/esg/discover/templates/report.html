@@ -8,7 +8,7 @@
 
 {% block body %}
 <div class="container">
-    <h1>永續報告書篩選</h1>
+    <h1>永續報告書</h1>
 
     <!-- 篩選表單 -->
     <form method="GET" action="" class="filter-form">
@@ -20,7 +20,7 @@
                 <option value="上櫃" {% if market_type == "上櫃" %}selected{% endif %}>上櫃</option>
             </select>
         </div>
-
+    
         <div>
             <label for="year">報告年度：</label>
             <select name="year" id="year">
@@ -30,14 +30,18 @@
                 {% endfor %}
             </select>
         </div>
-
+    
         <div>
             <label for="company_code">公司代號：</label>
             <input type="text" name="company_code" id="company_code" value="{{ company_code }}">
         </div>
-
-        <button type="submit">篩選</button>
+    
+        <!-- 篩選按鈕 -->
+        <div>
+            <button type="submit">篩選</button>
+        </div>
     </form>
+    
 
     <!-- 資料表格 -->
     <table>
