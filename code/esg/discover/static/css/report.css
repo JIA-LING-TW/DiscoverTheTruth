@@ -7,9 +7,9 @@ body {
 }
 
 /* 容器樣式 */
-.container {
+.container23 {
     width: 80%;
-    margin: 50px auto;
+    margin: 30px auto;
     padding: 20px;
     background-color: white;
     border-radius: 10px;
@@ -135,7 +135,7 @@ table td a:hover {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-    .container {
+    .container23 {
         width: 95%;
         padding: 15px;
     }
