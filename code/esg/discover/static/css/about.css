@@ -1,168 +1,178 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.hero-section {
+    background: linear-gradient(to right, #4CAF50, #2F8F40);
+    color: white;
+    padding: 100px 0;
+}
+
+.hero-section h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+}
+
+.hero-section p {
+    font-size: 1.2em;
+    line-height: 1.8;
+}
+
+.core-values,
+.team,
+.contact-info {
+    background-color: white;
+    padding: 50px 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+
+}
+
+h2 {
+    font-size: 2.5em;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.values-grid,
+.team-grid {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.value {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 30%;
+    text-align: center;
+}
+
+.value i {
+    font-size: 50px;
+    color: #4CAF50;
+    margin-bottom: 10px;
+}
+
+.team {
+    background: linear-gradient(to right, #4CAF50, #2F8F40);
+}
+
+.team-container {
+    background: linear-gradient(to right, #4CAF50, #2F8F40);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;
+    padding: 40px 20px;
+    flex-wrap: wrap;
+    /* 在螢幕較小時圖片換行 */
+}
+
+.team-member {
+    text-align: center;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 300px;
+    width: 100%;
+    height: 550px;
+}
+
+.team-member img {
+    width: 100%;
+    /* 保持寬度為容器的寬度 */
+    max-height: 300px;
+    /* 限制最大高度為350px */
+    object-fit: cover;
+    /* 確保圖片按比例裁剪填充 */
+    border-radius: 8px;
+}
+
+.team-member h3 {
+    font-size: 20px;
+    /* 字體大小 */
+    font-weight: bold;
+    /* 字體加粗 */
+    color: #333;
+    /* 字體顏色 */
+    border: 1px solid black;
+    /* 黑框 */
+    padding: 5px;
+    /* 框內間距 */
+    display: inline-block;
+    /* 讓框隨字體大小縮放 */
+    margin-top: 15px;
+}
+
+/* 團隊介紹：描述文字樣式 */
+.team-member p {
+    font-size: 18px;
+    /* 字體加大 */
+    text-align: left;
+    /* 靠左對齊 */
+    color: #000000;
+    /* 字體顏色 */
+    margin: 10px 0;
+    /* 間距 */
+    line-height: 1.8;
+    /* 行距 */
+
+}
+
+ul {
+    list-style: none;
     padding: 0;
 }
 
-header {
-    background-color: #fff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 10px 10px 10px;
-    /* 減少左邊的 padding */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: relative;
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    margin-left: -150px;
-    /* 負值讓 LOGO 靠左 */
-}
-
-nav {
-    margin-left: -100px;
-    /* 讓導航選單也靠左 */
-}
-
-
-.logo-container img {
-    height: 200px;
-    margin-right: 10px;
-}
-
-.logo-container span {
-    font-size: 40px;
-    font-weight: bold;
-    color: black;
-}
-
-nav {
-    display: flex;
-    justify-content: center;
-    /* 將內容置中 */
-    align-items: center;
-    /* 垂直置中 */
-    gap: 40px;
-    /* 增加選項間距 */
-}
-
-nav a {
-    text-decoration: none;
-    color: black;
-    /* 讓文字更醒目 */
-    font-size: 20px;
-    /* 增加文字大小 */
-    font-weight: bold;
-    /* 保持粗體 */
-    transition: color 0.3s ease;
-    /* 增加平滑的文字顏色變化效果 */
-}
-
-nav a:hover {
-    color: #555;
-    /* 增加滑鼠懸停效果 */
-
-}
-
-nav a:hover {
-    color: black;
-}
-
-.dropdown {
-    position: relative;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #fff;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    padding: 10px 0;
-    z-index: 1;
-    min-width: 200px;
-}
-
-.dropdown-content a {
-    display: block;
-    padding: 8px 20px;
-    text-decoration: none;
-    color: gray;
-    font-size: 14px;
-    white-space: nowrap;
-}
-
-.dropdown-content a:hover {
-    background-color: #f5f5f5;
-    color: black;
-}
-
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-.login-buttons {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-}
-
-.login-buttons button {
-    background-color: black;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 20px;
-    cursor: pointer;
-}
-
-.hero {
-    background: linear-gradient(to bottom right, #fde2eb, #5a8cbf);
-    /* 深化藍色 */
-    padding: 50px 20px;
-    text-align: center;
-    min-height: 100vh;
-}
-
-.hero h1 {
-    font-size: 48px;
-    color: #333;
+ul li {
+    font-size: 1.2em;
     margin: 10px 0;
+    color: #555;
 }
 
-.hero h2 {
-    font-size: 24px;
-    color: #666;
-    margin-bottom: 30px;
+ul li i {
+    margin-right: 10px;
+    color: #4CAF50;
 }
 
-.hero p {
-    font-size: 16px;
-    color: #666;
-    line-height: 1.8;
-    max-width: 800px;
-    margin: 0 auto;
+/* 響應式設計 */
+@media (max-width: 768px) {
+
+    .values-grid,
+    .team-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .value,
+    .team-member {
+        width: 80%;
+    }
 }
 
-footer {
-    background-color: #f0f0f0;
-    padding: 20px;
+.team_topic {
     text-align: center;
-    font-size: 14px;
-    color: #666;
 }
 
-.chat {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: black;
+.team_p {
+    font-size: 20px;
     color: white;
-    padding: 10px 20px;
-    border-radius: 50px;
-    cursor: pointer;
+}
+
+.section-title1 {
+    color: white;
 }
