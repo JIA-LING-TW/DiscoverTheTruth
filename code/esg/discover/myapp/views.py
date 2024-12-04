@@ -1,44 +1,30 @@
-from django.core.paginator import Paginator
-from django.db import IntegrityError
-from django.core.exceptions import ValidationError
-from .models import WaterResourceManagement, WasteManagement, EnergyManagement, GreenhouseGasEmission, ClimateRiskAndOpportunity, CompanyBoard, CorporateGovernance, EmployeeDevelop, CompanyGovernance, Shareholder
-from .models import (
-    WaterResourceManagement, WasteManagement, EnergyManagement, GreenhouseGasEmission,
-    ClimateRiskAndOpportunity, CompanyBoard, CorporateGovernance, EmployeeDevelop,
-    CompanyGovernance, Shareholder
-)
-from .models import Shareholder
-from .models import CompanyGovernance  # 根據你的模型名稱進行調整
-from .models import EmployeeDevelop
-from .models import CorporateGovernance
-from .models import CompanyBoard
-from .models import ClimateRiskAndOpportunity
-import time
-from .models import SustainabilityReport
+import os
+# import time
 import string
 import random
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import User
-from .models import GreenhouseGasEmission
-from .models import EnergyManagement
-from .models import WasteManagement
-import os
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from .models import WaterResourceManagement, EnergyManagement, GreenhouseGasEmission, WasteManagement
-from django.db.models import Q
-from django.shortcuts import render
-from django.forms.models import model_to_dict
-from myapp.models import GreenhouseGasEmission  # 替換為實際的 app 名稱
-from myapp.models import EnergyManagement  # 替換為實際的 app 名稱
-from myapp.models import WasteManagement
-from .models import WaterResourceManagement
-from django.db import transaction
 import pandas as pd
+
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
+from django.forms.models import model_to_dict
+from django.db import transaction, IntegrityError
+from django.db.models import Q
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
 from django.contrib import messages
+
+# 專案中的模型匯入
+from .models import (
+    GreenRisk, WaterResourceRisk, EnergyResourceRisk, WasteManagementRisk,
+    WaterResourceManagement, EnergyManagement, GreenhouseGasEmission, WasteManagement,
+    ClimateRiskAndOpportunity, CompanyBoard, CorporateGovernance, EmployeeDevelop,
+    CompanyGovernance, Shareholder, SustainabilityReport
+)
 
 
 def index(request):
@@ -134,7 +120,42 @@ def ESGReal(request):
 
 
 def ESGRisk(request):
-    return render(request, 'ESGRisk.html')
+    results = []
+    report_year = request.POST.get('report_year')
+    risk_type = request.POST.get('risk_type')
+    company_id = request.POST.get('company_id')
+
+    # 根據篩選條件查詢相應的資料
+    if risk_type == 'WaterResourceRisk':
+        results = WaterResourceRisk.objects.all()
+    elif risk_type == 'EnergyResourceRisk':
+        results = EnergyResourceRisk.objects.all()
+    elif risk_type == 'WasteManagementRisk':
+        results = WasteManagementRisk.objects.all()
+    elif risk_type == 'GreenRisk':
+        results = GreenRisk.objects.all()
+
+    if report_year:
+        results = results.filter(report_year=report_year)
+
+    if company_id:
+        results = results.filter(company_id__icontains=company_id)
+
+    # Convert company_id to integer (if it is a float) before sending to the template
+    for result in results:
+        if isinstance(result.company_id, float):
+            # This will remove the decimal part
+            result.company_id = int(result.company_id)
+
+    # Pass the selected values to the template to retain the form state
+    context = {
+        'results': results,
+        'report_year': report_year,
+        'risk_type': risk_type,
+        'company_id': company_id
+    }
+
+    return render(request, 'ESGRisk.html', context)
 
 
 def forget(request):
@@ -279,7 +300,9 @@ def report(request):
 
 
 def upload_water_resource_management_data(request):
-    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG/water_resource_management.xlsx"  # 請替換為實際檔案路徑
+    # file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG/water_resource_management.xlsx"  # 請替換為實際檔案路徑
+    file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "2021-2023_ESG(E)", "water_resource_management.xlsx"))
 
     try:
         # 讀取 Excel 檔案
@@ -348,7 +371,9 @@ def upload_water_resource_management_data(request):
 
 
 def upload_waste_management_data(request):
-    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG/waste_management.xlsx"  # 替換為實際檔案路徑
+    # file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG/waste_management.xlsx"  # 替換為實際檔案路徑
+    file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "2021-2023_ESG(E)", "waste_management.xlsx"))
 
     try:
         # 讀取 Excel 檔案
@@ -419,7 +444,9 @@ def upload_waste_management_data(request):
 
 
 def upload_energy_management_data(request):
-    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG/energy_management.xlsx"  # 替換為實際的檔案路徑
+    # file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG/energy_management.xlsx"  # 替換為實際的檔案路徑
+    file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "2021-2023_ESG(E)", "energy_management.xlsx"))
 
     try:
         # 讀取 Excel 檔案
@@ -488,7 +515,9 @@ def upload_energy_management_data(request):
 
 
 def upload_greenhouse_gas_emission_data(request):
-    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG/greenhouse_gas_emissions.xlsx"  # 替換為實際的檔案路徑
+    # file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG/greenhouse_gas_emissions.xlsx"  # 替換為實際的檔案路徑
+    file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "2021-2023_ESG(E)", "greenhouse_gas_emissions.xlsx"))
 
     try:
         # 讀取 Excel 檔案
@@ -568,75 +597,77 @@ def upload_greenhouse_gas_emission_data(request):
         return JsonResponse({"error": f"處理檔案時發生錯誤：{str(e)}"}, status=500)
 
 
-def upload_excel(request):
-    if request.method == "POST":
-        form = ExcelUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            # 獲取上傳的 Excel 檔案
-            excel_file = request.FILES['file']
+# def upload_excel(request):
+#     if request.method == "POST":
+#         form = ExcelUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             # 獲取上傳的 Excel 檔案
+#             excel_file = request.FILES['file']
 
-            try:
-                # 使用 pandas 讀取 Excel 檔案
-                df = pd.read_excel(excel_file, engine='openpyxl')
+#             try:
+#                 # 使用 pandas 讀取 Excel 檔案
+#                 df = pd.read_excel(excel_file, engine='openpyxl')
 
-                # 處理布林欄位，將空值或 NaT 轉為 False
-                df['修正後報告書'] = df['修正後報告書'].fillna(False).astype(bool)
-                df['英文版修正後報告書'] = df['英文版修正後報告書'].fillna(False).astype(bool)
+#                 # 處理布林欄位，將空值或 NaT 轉為 False
+#                 df['修正後報告書'] = df['修正後報告書'].fillna(False).astype(bool)
+#                 df['英文版修正後報告書'] = df['英文版修正後報告書'].fillna(False).astype(bool)
 
-                # 處理日期欄位，將 NaT 轉為 None
-                date_columns = [
-                    '上傳日期',
-                    '修正後報告書上傳日期',
-                    '英文版上傳日期',
-                    '英文版修正後報告書上傳日期'
-                ]
-                for col in date_columns:
-                    if col in df.columns:
-                        df[col] = pd.to_datetime(
-                            df[col], errors='coerce').dt.date
+#                 # 處理日期欄位，將 NaT 轉為 None
+#                 date_columns = [
+#                     '上傳日期',
+#                     '修正後報告書上傳日期',
+#                     '英文版上傳日期',
+#                     '英文版修正後報告書上傳日期'
+#                 ]
+#                 for col in date_columns:
+#                     if col in df.columns:
+#                         df[col] = pd.to_datetime(
+#                             df[col], errors='coerce').dt.date
 
-                # 迭代 DataFrame，將資料存入資料庫
-                for _, row in df.iterrows():
-                    SustainabilityReport.objects.create(
-                        market_type=row.get('市場別'),
-                        year=row.get('年份'),
-                        company_code=row.get('公司代號'),
-                        company_name=row.get('公司名稱'),
-                        company_abbreviation=row.get('英文簡稱'),
-                        declaration_reason=row.get('申報原因'),
-                        industry_category=row.get('產業類別'),
-                        report_period=row.get('報告書內容涵蓋期間'),
-                        guidelines=row.get('編製依循準則'),
-                        third_party_verifier=row.get('第三方驗證單位'),
-                        upload_date=row.get('上傳日期') or None,
-                        revised_report=row.get('修正後報告書', False),
-                        revised_report_upload_date=row.get(
-                            '修正後報告書上傳日期') or None,
-                        english_report_url=row.get('永續報告書英文版網址'),
-                        english_report_upload_date=row.get('英文版上傳日期') or None,
-                        english_revised_report=row.get('英文版修正後報告書', False),
-                        english_revised_report_upload_date=row.get(
-                            '英文版修正後報告書上傳日期') or None,
-                        contact_info=row.get('報告書聯絡資訊'),
-                        remarks=row.get('備註'),
-                    )
+#                 # 迭代 DataFrame，將資料存入資料庫
+#                 for _, row in df.iterrows():
+#                     SustainabilityReport.objects.create(
+#                         market_type=row.get('市場別'),
+#                         year=row.get('年份'),
+#                         company_code=row.get('公司代號'),
+#                         company_name=row.get('公司名稱'),
+#                         company_abbreviation=row.get('英文簡稱'),
+#                         declaration_reason=row.get('申報原因'),
+#                         industry_category=row.get('產業類別'),
+#                         report_period=row.get('報告書內容涵蓋期間'),
+#                         guidelines=row.get('編製依循準則'),
+#                         third_party_verifier=row.get('第三方驗證單位'),
+#                         upload_date=row.get('上傳日期') or None,
+#                         revised_report=row.get('修正後報告書', False),
+#                         revised_report_upload_date=row.get(
+#                             '修正後報告書上傳日期') or None,
+#                         english_report_url=row.get('永續報告書英文版網址'),
+#                         english_report_upload_date=row.get('英文版上傳日期') or None,
+#                         english_revised_report=row.get('英文版修正後報告書', False),
+#                         english_revised_report_upload_date=row.get(
+#                             '英文版修正後報告書上傳日期') or None,
+#                         contact_info=row.get('報告書聯絡資訊'),
+#                         remarks=row.get('備註'),
+#                     )
 
-                # 導向成功頁面或顯示成功訊息
-                return redirect('success_page')
+#                 # 導向成功頁面或顯示成功訊息
+#                 return redirect('success_page')
 
-            except Exception as e:
-                # 若發生錯誤，顯示錯誤訊息
-                return render(request, 'upload.html', {'form': form, 'error': str(e)})
+#             except Exception as e:
+#                 # 若發生錯誤，顯示錯誤訊息
+#                 return render(request, 'upload.html', {'form': form, 'error': str(e)})
 
-    else:
-        form = ExcelUploadForm()
+#     else:
+#         form = ExcelUploadForm()
 
-    return render(request, 'upload.html', {'form': form})
+#     return render(request, 'upload.html', {'form': form})
 
 
 def upload_weather_management_data(request):
     # 替換為實際的檔案路徑
-    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(E)/weather_management.xlsx"
+    # file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(E)/weather_management.xlsx"
+    file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "2021-2023_ESG(E)", "weather_management.xlsx"))
 
     try:
         # 讀取 Excel 檔案
@@ -732,7 +763,9 @@ def upload_weather_management_data(request):
 
 
 def upload_company_board_data(request):
-    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(G)/board_of_directors.xlsx"
+    # file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(G)/board_of_directors.xlsx"
+    file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "2021-2023_ESG(G)", "board_of_directors.xlsx"))
     try:
         # Read the Excel file
         df = pd.read_excel(file_path)
@@ -813,7 +846,9 @@ def upload_company_board_data(request):
 
 def upload_function_committee_data(request):
     # 請替換為實際檔案路徑
-    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(G)/functional_committee.xlsx"
+    # file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(G)/functional_committee.xlsx"
+    file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "2021-2023_ESG(G)", "functional_committee.xlsx"))
 
     try:
         # 讀取 Excel 檔案
@@ -886,7 +921,9 @@ def upload_function_committee_data(request):
 
 def upload_employee_develop_data(request):
     # 替換為實際檔案路徑
-    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(S)/hr_develop.xlsx"
+    # file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(S)/hr_develop.xlsx"
+    file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "2021-2023_ESG(S)", "hr_develop.xlsx"))
 
     try:
         # 讀取 Excel 檔案
@@ -993,7 +1030,9 @@ def upload_employee_develop_data(request):
 
 def upload_investor_communication_data(request):
     # 替換為實際檔案路徑
-    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(G)/investor_communication.xlsx"
+    # file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(G)/investor_communication.xlsx"
+    file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "2021-2023_ESG(G)", "investor_communication.xlsx"))
 
     try:
         # 讀取 Excel 檔案
@@ -1073,7 +1112,9 @@ def upload_investor_communication_data(request):
 
 def upload_shareholder_data(request):
     # 替換為實際檔案路徑
-    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(G)/shareholding_and_control.xlsx"
+    # file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG(G)/shareholding_and_control.xlsx"
+    file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "2021-2023_ESG(G)", "shareholding_and_control.xlsx"))
 
     try:
         # 讀取 Excel 檔案
@@ -1129,7 +1170,9 @@ def upload_shareholder_data(request):
 
 
 def upload_sustainability_report_data(request):
-    file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_report/report.xlsx"  # 替換為實際的檔案路徑
+    # file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_report/report.xlsx"  # 替換為實際的檔案路徑
+    file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "2021-2023_report", "report.xlsx"))
 
     try:
         # 讀取 Excel 檔案
@@ -1215,3 +1258,172 @@ def upload_sustainability_report_data(request):
 
     except Exception as e:
         return JsonResponse({"error": f"處理檔案時發生錯誤：{str(e)}"}, status=500)
+
+
+def load_csv_to_database(request):
+    # 絕對路徑：請替換成您的 CSV 文件的實際路徑
+    # csv_file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/result/Water_risk.csv"
+    csv_file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "result", "Water_risk.csv"))
+
+    # 讀取 CSV 檔案
+    try:
+        data = pd.read_csv(csv_file_path)
+    except Exception as e:
+        return JsonResponse({"error": f"讀取 CSV 文件失敗: {e}"})
+
+    # 將資料插入資料庫
+    records_created = 0
+    for _, row in data.iterrows():
+        # 使用 get_or_create 來避免重複插入資料
+        obj, created = WaterResourceRisk.objects.get_or_create(
+            market_category=row["市場別"],
+            report_year=row["報告年度"],
+            company_id=row.get("公司代號", None),
+            company_name=row.get("公司名稱", None),
+            water_usage=row["用水量"],
+            data_scope=row.get("資料範圍", None),
+            water_intensity=row["用水密集度"],
+            water_intensity_unit=row.get("用水密集度-單位", None),
+            verification_status=row["驗證狀態"],
+            network_centrality=row["網絡中心性"],
+            greenwashing_label=row["漂綠標籤"],
+            risk_level=row["風險等級"],
+            anomaly_label=row["異常標籤"],
+        )
+        if created:
+            records_created += 1
+
+    return JsonResponse({"message": f"成功載入 {records_created} 筆資料到資料庫中！"})
+
+
+def load_csv_to_database_energy(request):
+    # 絕對路徑：請替換成您的 CSV 文件的實際路徑
+    # csv_file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/result/energy_risk.csv"
+    # 使用 os.path.abspath 將檔案路徑轉為絕對路徑
+    csv_file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "result", "energy_risk.csv"))
+
+    # 讀取 CSV 檔案
+    try:
+        data = pd.read_csv(csv_file_path)
+    except Exception as e:
+        return JsonResponse({"error": f"讀取 CSV 文件失敗: {e}"})
+
+    # 將資料插入資料庫
+    records_created = 0
+    for _, row in data.iterrows():
+        # 使用 get_or_create 來避免重複插入資料
+        obj, created = EnergyResourceRisk.objects.get_or_create(
+            market_category=row["市場別"],
+            report_year=row["報告年度"],
+            company_id=row.get("公司代號", None),
+            company_name=row.get("公司名稱", None),
+            renewable_energy_rate=row.get("再生能源使用率", None),
+            data_scope=row.get("資料範圍", None),
+            verification_status=row["驗證狀態"],
+            network_centrality=row["網絡中心性"],
+            greenwashing_label=row["漂綠標籤"],
+            risk_level=row["風險等級"],
+            anomaly_label=row["異常標籤"],
+        )
+        if created:
+            records_created += 1
+
+    return JsonResponse({"message": f"成功載入 {records_created} 筆資料到資料庫中！"})
+
+    from django.shortcuts import render
+
+
+def load_csv_to_database_waste(request):
+    # 絕對路徑：請替換成您的 CSV 文件的實際路徑
+    # csv_file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/result/waste_risk.csv"
+    # 使用 os.path.abspath 將檔案路徑轉為絕對路徑
+    csv_file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "result", "waste_risk.csv"))
+
+    # 檢查 CSV 檔案是否存在
+    if not os.path.exists(csv_file_path):
+        return JsonResponse({"error": f"檔案不存在: {csv_file_path}"})
+
+    # 讀取 CSV 檔案
+    try:
+        data = pd.read_csv(csv_file_path)
+    except Exception as e:
+        return JsonResponse({"error": f"讀取 CSV 文件失敗: {e}"})
+
+    # 將資料插入資料庫
+    records_created = 0
+    for _, row in data.iterrows():
+        # 使用 get_or_create 來避免重複插入資料
+        obj, created = WasteManagementRisk.objects.get_or_create(
+            market_category=row["市場別"],
+            report_year=row["報告年度"],
+            company_id=row.get("公司代號", None),
+            company_name=row.get("公司名稱", None),
+            hazardous_waste_amount=row.get("有害廢棄物量", None),
+            non_hazardous_waste_amount=row.get("非有害廢棄物量", None),
+            total_waste_amount=row.get("廢棄物總量", None),
+            data_scope=row.get("資料範圍", None),
+            waste_intensity=row.get("廢棄物密集度", None),
+            waste_intensity_unit=row.get("廢棄物密集度-單位", None),
+            verification_status=row["驗證狀態"],
+            network_centrality=row["網絡中心性"],
+            greenwashing_label=row["漂綠標籤"],
+            risk_level=row["風險等級"],
+            anomaly_label=row["異常標籤"],
+        )
+        if created:
+            records_created += 1
+
+    return JsonResponse({"message": f"成功載入 {records_created} 筆資料到資料庫中！"})
+
+
+def load_csv_to_database_green(request):
+    # 使用 os.path.abspath 將檔案路徑轉為絕對路徑
+    csv_file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "result", "green_risk.csv"))
+
+    # 檢查 CSV 檔案是否存在
+    if not os.path.exists(csv_file_path):
+        return JsonResponse({"error": f"檔案不存在: {csv_file_path}"})
+
+    # 讀取 CSV 檔案
+    try:
+        data = pd.read_csv(csv_file_path)
+    except Exception as e:
+        return JsonResponse({"error": f"讀取 CSV 文件失敗: {e}"})
+
+    # 將資料插入資料庫
+    records_created = 0
+    for _, row in data.iterrows():
+        try:
+            # 使用 get_or_create 來避免重複插入資料
+            obj, created = GreenRisk.objects.get_or_create(
+                market_category=row["市場別"],
+                report_year=row["年份"],
+                company_id=row.get("公司代號", None),
+                company_name=row.get("公司名稱", None),
+                scope_1_emission=row.get("範疇一排放量", None),
+                scope_1_data_boundary=row.get("範疇一-資料邊界", None),
+                scope_1_verification=row.get("範疇一-取得驗證", None),
+                scope_2_emission=row.get("範疇二排放量", None),
+                scope_2_data_boundary=row.get("範疇二-資料邊界", None),
+                scope_2_verification=row.get("範疇二-取得驗證", None),
+                scope_3_emission=row.get("範疇三排放量", None),
+                scope_3_data_boundary=row.get("範疇三-資料邊界", None),
+                scope_3_verification=row.get("範疇三-取得驗證", None),
+                emission_intensity=row.get("排放密集度", None),
+                emission_intensity_unit=row.get("溫室氣體排放密集度-單位", None),
+                network_centrality=row["網絡中心性"],
+                greenwashing_label=row["漂綠標籤"],
+                risk_level=row["風險等級"],
+                anomaly_label=row["異常標籤"],
+            )
+            if created:
+                records_created += 1
+        except Exception as e:
+            # 若某一行資料插入失敗，記錄下錯誤但不終止整個流程
+            return JsonResponse({"error": f"資料插入失敗，錯誤訊息: {e}"})
+
+    return JsonResponse({"message": f"成功載入 {records_created} 筆資料到資料庫中！"})

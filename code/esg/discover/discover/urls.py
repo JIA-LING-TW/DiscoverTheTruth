@@ -59,4 +59,8 @@ urlpatterns = [
          name="upload_shareholder_data"),
     path("upload_sustainability_report_data/", upload_sustainability_report_data,
          name="upload_sustainability_report_data"),
+    path('load-data/', views.load_csv_to_database, name='load_data'),
+    path('load-data_a/', views.load_csv_to_database_energy, name='load_data'),
+    path('load-data_b/', views.load_csv_to_database_waste, name='load_data'),
+    path('load-data_c/', views.load_csv_to_database_green, name='load_data'),
 ]
