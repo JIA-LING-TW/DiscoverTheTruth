@@ -28,10 +28,15 @@ h1 {
 .filter-form {
     margin-bottom: 30px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     flex-wrap: wrap;
-    /* 當寬度不足時，表單項目將會換行 */
+    /* 當螢幕過小時可以換行 */
+}
+
+.filter-form div {
+    margin-right: 15px;
+    /* 每個項目之間有空隙 */
 }
 
 .filter-form label {
@@ -43,7 +48,6 @@ h1 {
 .filter-form select,
 .filter-form input {
     padding: 8px;
-    margin-right: 20px;
     width: 160px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -51,7 +55,9 @@ h1 {
 }
 
 .filter-form button {
+    width: 130px;
     padding: 10px 20px;
+    margin-top: 22px;
     background-color: #28a745;
     color: white;
     border: none;
@@ -64,6 +70,7 @@ h1 {
 .filter-form button:hover {
     background-color: #218838;
 }
+
 
 /* 資料表格樣式 */
 table {
@@ -81,9 +88,9 @@ table td {
 }
 
 table th {
-    background-color: #f1f1f1;
+    background-color: #1aab5e;
     font-weight: bold;
-    color: #555;
+    color: rgb(0, 0, 0);
 }
 
 table td a {
