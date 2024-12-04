@@ -7,53 +7,56 @@
         <meta name="description" content="A Django Website">
         <meta name="keywords" content="Django, Website">
         <title>
-            {% block subtitle %}
-                web
-            {% endblock subtitle %}
+            {% block subtitle %}web{% endblock subtitle %}
         </title>
-        <link rel="stylesheet" href="forget.css">
-        <link rel="stylesheet" href="login.css">
-        <link rel="stylesheet" href="register.css">
-        <link rel="stylesheet" href="ESGEachCompany.css">
-        <link rel="stylesheet" href="contact.css">
-        <link rel="stylesheet" href="report.css">
-        <link rel="stylesheet" href="about.css">
+        <!-- CSS 檔案 -->
+        <link rel="stylesheet" href="{% static 'css/forget.css' %}">
+        <link rel="stylesheet" href="{% static 'css/login.css' %}">
+        <link rel="stylesheet" href="{% static 'css/register.css' %}">
+        <link rel="stylesheet" href="{% static 'css/ESGEachCompany.css' %}">
+        <link rel="stylesheet" href="{% static 'css/contact.css' %}">
+        <link rel="stylesheet" href="{% static 'css/report.css' %}">
+        <link rel="stylesheet" href="{% static 'css/about.css' %}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
         <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        
+        <!-- JS 檔案 -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="/static/js/jquery-3.7.0.min.js"></script>
-        <script src="/static/js/bootstrap.js"></script>
-        {% block selfcss %}
-        {% endblock selfcss %}
+        <script src="{% static 'js/jquery-3.7.0.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap.js' %}"></script>
+        
+        {% block selfcss %}{% endblock selfcss %}
     </head>
     <body>
         <header>
             <div class="logo-container">
-                <img src="{% static "LOGO.png" %}" alt="碳索偵相 LOGO">
+                <img src="{% static 'LOGO.png' %}" alt="碳索偵相 LOGO">
                 <span>碳索偵相</span>
             </div>
             <nav>
-                <a href="/index">首頁</a>
+                <a href="{% url 'index' %}">首頁</a>
                 <div class="dropdown">
                     <a href="#">服務內容</a>
                     <div class="dropdown-content">
-                        <a href="esg_each_company/">各公司ESG資料</a>
-                        <a href="esg-real/">ESG報告真實性驗證</a>
-                        <a href="esg-risk/">ESG基金風險管理</a>
+                        <a href="{% url 'ESGEachCompany' %}">各公司ESG資料</a>
+                        <a href="{% url 'esg_real' %}">ESG報告真實性驗證</a>
+                        <a href="{% url 'esg_risk' %}">ESG基金風險管理</a>
                     </div>
                 </div>
                 <div class="dropdown">
                     <a href="#">技術實現</a>
                     <div class="dropdown-content">
-                        <a href="/chart/">圖表數據</a>
-                        <a href="report/">報告書</a>
+                        <a href="{% url 'chart' %}">圖表數據</a>
+                        <a href="{% url 'report' %}">報告書</a>
                     </div>
                 </div>
-                <a href="about/">關於我們</a>
-                <a href="contact/">聯絡我們</a>
+                <a href="{% url 'about' %}">關於我們</a>
+                <a href="{% url 'contact' %}">聯絡我們</a>
             </nav>
-            <div class="login-buttons" href="login/">
-                <button>登入</button>
+            <div class="login-buttons">
+                <a href="{% url 'login' %}">
+                    <button>登入</button>
+                </a>
             </div>
         </header>
         {% block body %}
