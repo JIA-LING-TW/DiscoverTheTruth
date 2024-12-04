@@ -5,7 +5,89 @@
 {% block selfcss %}
 <link rel="stylesheet" href="{% static 'css/about.css' %}">
 {% endblock selfcss %}
-{% block body %}
-{% comment %} body放這裡面喔喔喔喔！！ {% endcomment %}
 
-{% endblock %}
+{% block body %}
+<section class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">關於我們</h1>
+        <p class="hero-description">
+            我們是一個充滿熱情與創新精神的團隊，來自台北科技大學資訊與財金管理系研究所，<br>
+            目前皆為碩士一年級的學生。我們秉持著學以致用的理念，<br>
+            致力於將資訊科技與財金知識結合，為各類挑戰開創嶄新的解決方案。
+        </p>
+    </div>
+</section>
+
+<section class="core-values">
+    <div class="container">
+        <h2 class="section-title">我們的核心價值</h2>
+        <div class="values-grid">
+            <div class="value">
+                <i class="fas fa-leaf"></i>
+                <h3 class="value-title">環境永續</h3>
+                <p class="value-description">致力於降低碳排放，推動永續發展。</p>
+            </div>
+            <div class="value">
+                <i class="fas fa-users"></i>
+                <h3 class="value-title">社會責任</h3>
+                <p class="value-description">注重社會影響，履行企業社會責任。</p>
+            </div>
+            <div class="value">
+                <i class="fas fa-balance-scale"></i>
+                <h3 class="value-title">治理透明</h3>
+                <p class="value-description">強調良好的企業治理與透明度。</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="team">
+    <div class="team_topic">
+        <h2 class="section-title1">我們的團隊</h2>
+        <p class="team_p">
+            我們將持續以積極的態度迎接各種挑戰，運用多元的專業知識，<br>創造出具有社會影響力的作品，為未來帶來更多可能性。
+        </p>
+    </div>
+    <div class="team-container">
+        <!-- 李嘉玲 -->
+        <div class="team-member">
+            <div class="image-container">
+                <img src="{% static "F.jpg" %}" alt="李嘉玲">
+                <h3>李嘉玲</h3>
+            </div>
+            <p>在2023年全國大專院校產學創新實作競賽中，於資訊與電子組榮獲佳作。她擅長網頁開發與資料庫設計，能夠將理論知識轉化為實際成果，展現出卓越的實作能力。</p>
+        </div>
+
+        <!-- 呂冠儀 -->
+        <div class="team-member">
+            <div class="image-container">
+                <img src="{% static "G.jpg" %}" alt="呂冠儀">
+                <h3>呂冠儀</h3>
+            </div>
+            <p>在第28屆資訊服務應用創新競賽的資訊應用組中獲得佳作。專注於人工智慧的應用與整合，擅長將技術融入日常生活需求，打造出實用性強的創新解決方案。</p>
+        </div>
+
+        <!-- 林紋萱 -->
+        <div class="team-member">
+            <div class="image-container">
+                <img src="{% static "H.jpg" %}" alt="林紋萱">
+                <h3>林紋萱</h3>
+            </div>
+            <p>
+                在第28屆資訊服務應用創新競賽的AI應用組榮獲佳作，並成功執行112年國科會大專生研究計劃。在人工智慧與研究設計方面表現出色，具備敏銳的洞察力與紮實的專業背景。
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="contact-info">
+    <div class="container">
+        <h2 class="section-title">聯繫我們</h2>
+        <p class="contact-description">若您有任何疑問或需要更多資訊，請聯繫我們：</p>
+        <ul class="contact-list">
+            <li><i class="fas fa-envelope"></i> Email: ExploreTheTruth@gmail.com</li>
+            <li><i class="fas fa-map-marker-alt"></i> 地址: 國立台北科技大學 宏裕科技大樓實驗室635</li>
+        </ul>
+    </div>
+</section>
+{% endblock body %}

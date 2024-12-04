@@ -415,6 +415,7 @@ body {
     object-fit: cover;
     /* 確保圖片按比例裁剪填充 */
     border-radius: 8px;
+    height: 500px;
 }
 
 .team-member h3 {
