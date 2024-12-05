@@ -17,3 +17,225 @@
     margin: 0;
     font-size: 1em;
 }
+
+.container44 {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.content44 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.block44 {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    flex: 1 1 calc(50% - 20px);
+    /* 每個區塊佔 50% 寬度，並保持間距 */
+    box-sizing: border-box;
+}
+
+.block44 h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.block44 p {
+    font-size: 18px;
+    color: #555;
+}
+
+.f33 .row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 15px;
+    /* 控制項目間的距離 */
+    align-items: center;
+    /* 改為垂直居中對齊 */
+}
+
+
+/* 整體容器的間距與佈局 */
+.f33 {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 10px 15px;
+    background-color: #f9f9f9;
+    /* 背景色 */
+    border: 1px solid #ddd;
+    /* 邊框 */
+    border-radius: 8px;
+    /* 圓角 */
+    margin-bottom: 20px;
+}
+
+/* 每個欄位容器的樣式 */
+.col-auto_risk {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    /* 減少垂直間距 */
+}
+
+
+/* 標籤樣式 */
+.form-label1_risk,
+.company_code_risk {
+    font-size: 16px;
+    font-weight: bold;
+    /* 加粗字體 */
+    margin-right: 5px;
+    /* 標籤與輸入框間距 */
+    color: #333;
+    /* 深灰色文字 */
+}
+
+/* 下拉選單樣式 */
+.form-select_risk {
+    width: 150px;
+    /* 最小寬度 */
+    padding: 5px 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #555;
+}
+
+
+.form-control_risk {
+    width: 150px;
+    /* 設置固定寬度 */
+    padding: 5px 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #555;
+}
+
+/* 按鈕樣式 */
+.btn-success_risk {
+    padding: 6px 12px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-success_risk:hover {
+    background-color: #218838;
+    /* 深綠色，滑過效果 */
+}
+
+/* 媒體響應設計（針對窄螢幕） */
+@media (max-width: 768px) {
+    .f33 {
+        flex-direction: column;
+        /* 垂直排列 */
+        padding: 15px;
+    }
+
+    .col-auto_risk {
+        flex-direction: column;
+        /* 單列排列 */
+        align-items: flex-start;
+    }
+
+    .form-label1_risk,
+    .company_code_risk {
+        margin-bottom: 5px;
+        /* 縮短標籤與輸入框的垂直間距 */
+    }
+
+    .form-select_risk,
+    .form-control_risk {
+        width: 100%;
+        /* 全寬 */
+    }
+
+    .btn-success_risk {
+        width: 100%;
+        /* 按鈕全寬 */
+        text-align: center;
+    }
+}
+
+/* 風險等級顏色樣式 */
+.risk-level {
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* 高風險：紅燈 */
+.red-level {
+    background-color: #f8d7da;
+    /* 淺紅色背景 */
+    color: #721c24;
+    /* 紅色文字 */
+}
+
+/* 中風險：黃燈 */
+.yellow-level {
+    background-color: #fff3cd;
+    /* 淺黃色背景 */
+    color: #856404;
+    /* 黃色文字 */
+}
+
+/* 低風險：綠燈 */
+.green-level {
+    background-color: #d4edda;
+    /* 淺綠色背景 */
+    color: #155724;
+    /* 綠色文字 */
+}
+
+/* 默認風險等級樣式（如果沒有匹配到） */
+.default-level {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+/* 漂綠標籤樣式 */
+.greenwashing-label {
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* 無漂綠跡象：藍色 */
+.blue-label {
+    background-color: #cce5ff;
+    /* 淺藍色背景 */
+    color: #004085;
+    /* 藍色文字 */
+}
+
+/* 可能漂綠：灰色 */
+.gray-label {
+    background-color: #e2e3e5;
+    /* 灰色背景 */
+    color: #383d41;
+    /* 深灰文字 */
+}
+
+/* 默認標籤樣式（如果沒有匹配到） */
+.default-label {
+    background-color: #f8d7da;
+    /* 淺紅色背景 */
+    color: #721c24;
+    /* 紅色文字 */
+}
