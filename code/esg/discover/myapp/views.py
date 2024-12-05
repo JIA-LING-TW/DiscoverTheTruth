@@ -1,3 +1,5 @@
+from .models import WaterResourceRisk, EnergyResourceRisk, WasteManagementRisk, GreenRisk
+from django.shortcuts import render
 import os
 # import time
 import string
@@ -120,42 +122,48 @@ def ESGReal(request):
 
 
 def ESGRisk(request):
-    results = []
-    report_year = request.POST.get('report_year')
-    risk_type = request.POST.get('risk_type')
-    company_id = request.POST.get('company_id')
+    # 取得篩選選項
+    selected_year = request.GET.get('report_year')
+    selected_topic = request.GET.get('risk_topic')
+    company_id = request.GET.get('company_id')
 
-    # 根據篩選條件查詢相應的資料
-    if risk_type == 'WaterResourceRisk':
-        results = WaterResourceRisk.objects.all()
-    elif risk_type == 'EnergyResourceRisk':
-        results = EnergyResourceRisk.objects.all()
-    elif risk_type == 'WasteManagementRisk':
-        results = WasteManagementRisk.objects.all()
-    elif risk_type == 'GreenRisk':
-        results = GreenRisk.objects.all()
+    risks = []  # 初始化風險資料為空
+    message = None  # 初始化提示訊息為 None
 
-    if report_year:
-        results = results.filter(report_year=report_year)
+    # 檢查是否有選擇議題
+    if selected_topic:
+        # 根據選擇的議題篩選對應模型
+        if selected_topic == "water":
+            risks = WaterResourceRisk.objects.all()
+        elif selected_topic == "energy":
+            risks = EnergyResourceRisk.objects.all()
+        elif selected_topic == "waste":
+            risks = WasteManagementRisk.objects.all()
+        elif selected_topic == "carbon":
+            risks = GreenRisk.objects.all()
 
-    if company_id:
-        results = results.filter(company_id__icontains=company_id)
+        # 篩選報告年度
+        if selected_year:
+            risks = risks.filter(report_year=selected_year)
 
-    # Convert company_id to integer (if it is a float) before sending to the template
-    for result in results:
-        if isinstance(result.company_id, float):
-            # This will remove the decimal part
-            result.company_id = int(result.company_id)
+        # 篩選公司代碼
+        if company_id:
+            risks = risks.filter(company_id=company_id)
 
-    # Pass the selected values to the template to retain the form state
-    context = {
-        'results': results,
-        'report_year': report_year,
-        'risk_type': risk_type,
-        'company_id': company_id
-    }
+        # 檢查是否有符合條件的資料
+        if not risks.exists():
+            message = "目前無相關風險資料"
+    else:
+        message = "請選擇一個議題進行查詢"
 
-    return render(request, 'ESGRisk.html', context)
+    # 渲染篩選後的結果
+    return render(request, 'ESGRisk.html', {
+        'risks': risks,
+        'selected_year': selected_year,
+        'selected_topic': selected_topic,
+        'company_id': company_id,
+        'message': message,
+    })
 
 
 def forget(request):

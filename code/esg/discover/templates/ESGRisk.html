@@ -1,67 +1,74 @@
 {% extends "base.html" %}
 {% load static %}
-{% block subtitle %}ESG基金風險管理{% endblock subtitle %}
+{% block subtitle %}風險管理{% endblock subtitle %}
 
 {% block selfcss %}
-<link rel="stylesheet" href="{% static 'css/ESGRisk.css' %}">
+<link rel="stylesheet" href="{% static 'css/risk.css' %}">
 {% endblock selfcss %}
-{% block body %}
-<div class="container">
-    <div class="heading">
-        <h1>ESG風險查詢</h1>
-        <p>根據篩選條件查詢相關風險資料</p>
-    </div>
 
-    <form method="POST">
-        {% csrf_token %}
-        <div class="select-container">
-            <!-- 報告年度下拉選單 -->
-            <div class="select-item">
-                <label for="report_year">報告年度</label>
-                <select id="report_year" name="report_year">
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">ESG 風險管理查詢系統</h1>
+
+    <!-- 篩選表單 -->
+    <form method="GET" class="mb-5">
+        <div class="row g-3">
+            <!-- 報告年度 -->
+            <div class="col-md-4">
+                <label for="report_year" class="form-label">報告年度</label>
+                <select name="report_year" id="report_year" class="form-select">
                     <option value="">選擇年度</option>
-                    <option value="2021" {% if report_year == '2021' %}selected{% endif %}>2021</option>
-                    <option value="2022" {% if report_year == '2022' %}selected{% endif %}>2022</option>
-                    <option value="2023" {% if report_year == '2023' %}selected{% endif %}>2023</option>
+                    <option value="2021" {% if selected_year == '2021' %}selected{% endif %}>2021</option>
+                    <option value="2022" {% if selected_year == '2022' %}selected{% endif %}>2022</option>
+                    <option value="2023" {% if selected_year == '2023' %}selected{% endif %}>2023</option>
                 </select>
             </div>
-            <!-- 相關議題風險下拉選單 -->
-            <div class="select-item">
-                <label for="risk_type">相關議題風險</label>
-                <select id="risk_type" name="risk_type">
-                    <option value="">選擇議題風險</option>
-                    <option value="WaterResourceRisk" {% if risk_type == 'WaterResourceRisk' %}selected{% endif %}>水資源管理風險</option>
-                    <option value="EnergyManagementRisk" {% if risk_type == 'EnergyManagementRisk' %}selected{% endif %}>能源管理風險</option>
-                    <option value="WasteManagementRisk" {% if risk_type == 'WasteManagementRisk' %}selected{% endif %}>廢棄物管理風險</option>
-                    <option value="GreenRisk" {% if risk_type == 'GreenRisk' %}selected{% endif %}>碳排放風險</option>
+            
+            <!-- 相關議題風險 -->
+            <div class="col-md-4">
+                <label for="risk_topic" class="form-label">相關議題風險</label>
+                <select name="risk_topic" id="risk_topic" class="form-select">
+                    <option value="">選擇議題</option>
+                    <option value="water" {% if selected_topic == 'water' %}selected{% endif %}>水資源管理</option>
+                    <option value="energy" {% if selected_topic == 'energy' %}selected{% endif %}>能源管理</option>
+                    <option value="waste" {% if selected_topic == 'waste' %}selected{% endif %}>廢棄物管理</option>
+                    <option value="carbon" {% if selected_topic == 'carbon' %}selected{% endif %}>碳排放管理</option>
                 </select>
             </div>
+            
             <!-- 公司代碼 -->
-            <div class="select-item">
-                <label for="company_id">公司代碼</label>
-                <input type="text" id="company_id" name="company_id" placeholder="輸入公司代碼" 
-                    value="{{ company_id }}" pattern="^\d+$" title="只允許數字，不能包含小數點" />
+            <div class="col-md-4">
+                <label for="company_id" class="form-label">公司代碼</label>
+                <input type="text" name="company_id" id="company_id" class="form-control" placeholder="請輸入公司代碼" value="{{ company_id }}">
             </div>
         </div>
-        <button type="submit" class="search-btn">查詢資料</button>
+        
+        <!-- 查詢按鈕 -->
+        <div class="mt-4 text-center">
+            <button type="submit" class="btn btn-primary">查詢</button>
+        </div>
     </form>
+    
+    <!-- 提示訊息 -->
+    {% if message %}
+        <p class="text-center text-danger">{{ message }}</p>
+    {% endif %}
 
-    <!-- 顯示查詢結果 -->
-    <div class="result-container">
-        {% if results %}
-            {% for result in results %}
-                <div class="result-item">
-                    <h3>{{ result.company_name }} - {{ result.report_year }}</h3>
-                    <p class="company-info">公司代號: {{ result.company_id }}</p>
-                    <p>風險等級: {{ result.risk_level }}</p>
-                    <p>漂綠標籤: {{ result.greenwashing_label }}</p>
-                    <p>異常標籤: {{ result.anomaly_label }}</p>
+    <!-- 風險資料 -->
+    <div class="row">
+        {% for risk in risks %}
+            <div class="col-md-4">
+                <div class="risk-card">
+                    <div class="risk-title">{{ risk.company_name }} - {{ risk.report_year }}</div>
+                    <div class="risk-details">
+                        <p>市場別：{{ risk.market_category }}</p>
+                        <p>風險等級：{{ risk.risk_level }}</p>
+                        <p>漂綠標籤：{{ risk.greenwashing_label }}</p>
+                        <p>驗證狀態：{{ risk.verification_status }}</p>
+                    </div>
                 </div>
-            {% endfor %}
-        {% else %}
-            <p>沒有符合的資料。</p>
-        {% endif %}
+            </div>
+        {% endfor %}
     </div>
 </div>
-
 {% endblock %}
