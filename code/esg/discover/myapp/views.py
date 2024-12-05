@@ -1,3 +1,9 @@
+from .models import ShareholderRisk
+from .models import Investor_Communication_Risk
+from .models import Hr_Develop_Risk
+from .models import Functiona_Committee_Risk
+from .models import BoardOfDirectorsRisk
+from django.http import JsonResponse
 import locale
 import requests
 from .models import WaterResourceRisk, EnergyResourceRisk, WasteManagementRisk, GreenRisk
@@ -1491,3 +1497,246 @@ def load_csv_to_database_green(request):
             return JsonResponse({"error": f"資料插入失敗，錯誤訊息: {e}"})
 
     return JsonResponse({"message": f"成功載入 {records_created} 筆資料到資料庫中！"})
+
+
+def load_csv_to_database_board(request):
+    # 使用 os.path.abspath 將檔案路徑轉為絕對路徑
+    csv_file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "result", "board_of_directors_risk.csv"))
+
+    # 檢查 CSV 檔案是否存在
+    if not os.path.exists(csv_file_path):
+        return JsonResponse({"error": f"檔案不存在: {csv_file_path}"})
+
+    # 讀取 CSV 檔案
+    try:
+        data = pd.read_csv(csv_file_path)
+    except Exception as e:
+        return JsonResponse({"error": f"讀取 CSV 文件失敗: {e}"})
+
+    # 將資料插入資料庫
+    records_created = 0
+    for _, row in data.iterrows():
+        try:
+            # 使用 get_or_create 來避免重複插入資料
+            obj, created = BoardOfDirectorsRisk.objects.get_or_create(
+                market=row.get("市場別", None),
+                year=row.get("年份", None),
+                company_code=row.get("公司代號", None),
+                defaults={  # 預設填充的字段
+                    "company_name": row.get("公司名稱", None),
+                    "total_seats": row.get("董事席次", None),
+                    "independent_seats": row.get("獨立董事席次", None),
+                    "female_seats": row.get("女性董事席次", None),
+                    "female_ratio": row.get("女性董事比例", None),
+                    "attendance_rate": row.get("董事會出席率", None),
+                    "training_rate": row.get("董事進修比率", None),
+                    "centrality": row.get("網絡中心性", None),
+                    "risk_level": row.get("風險等級", None),
+                    "anomaly_label": row.get("異常標籤", None),
+                },
+            )
+            if created:
+                records_created += 1
+        except Exception as e:
+            # 若某一行資料插入失敗，記錄下錯誤但不終止整個流程
+            return JsonResponse({"error": f"資料插入失敗，錯誤訊息: {e}"})
+
+    return JsonResponse({"message": f"成功載入 {records_created} 筆資料到資料庫中！"})
+
+
+def load_csv_to_database_functiona(request):
+    # 使用 os.path.abspath 將檔案路徑轉為絕對路徑
+    csv_file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "result", "functional_committee_risk.csv"))
+
+    # 檢查 CSV 檔案是否存在
+    if not os.path.exists(csv_file_path):
+        return JsonResponse({"error": f"檔案不存在: {csv_file_path}"}, status=400)
+
+    # 讀取 CSV 檔案
+    try:
+        data = pd.read_csv(csv_file_path)
+    except Exception as e:
+        return JsonResponse({"error": f"讀取 CSV 文件失敗: {e}"}, status=500)
+
+    # 將資料插入資料庫
+    records_created = 0
+    errors = []
+    for index, row in data.iterrows():
+        try:
+            # 使用 get_or_create 來避免重複插入資料
+            obj, created = Functiona_Committee_Risk.objects.get_or_create(
+                company_code=row["公司代號"],  # 使用公司代號作為唯一標識
+                report_year=row["報告年度"],  # 同一年份同公司
+                defaults={  # 如果條件不滿足則更新以下字段
+                    "market": row["市場別"],
+                    "company_name": row["公司名稱"],
+                    "compensation_committee_seats": int(row["薪酬委員會席次"]),
+                    "compensation_committee_independent_seats": int(row["薪酬委員會獨立董事席次"]),
+                    "compensation_committee_attendance_rate": float(row["薪酬委員會出席率"]),
+                    "audit_committee_seats": int(row["審計委員會席次"]),
+                    "audit_committee_attendance_rate": float(row["審計委員會出席率"]),
+                    "network_centrality": float(row["網絡中心性"]),
+                    "risk_level": row["風險等級"],
+                    "anomaly_label": row["異常標籤"],
+                },
+            )
+            if created:
+                records_created += 1
+        except Exception as e:
+            # 若某一行資料插入失敗，記錄下錯誤但不終止整個流程
+            errors.append({"row": index, "error": str(e)})
+
+    # 返回結果
+    return JsonResponse({
+        "message": f"成功載入 {records_created} 筆資料到資料庫中！",
+        "errors": errors,
+    })
+
+
+def load_csv_to_database_employee_safety(request):
+    # 使用 os.path.abspath 將檔案路徑轉為絕對路徑
+    csv_file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "result", "hr_develhr_develop_risk.csv"))
+
+    # 檢查 CSV 檔案是否存在
+    if not os.path.exists(csv_file_path):
+        return JsonResponse({"error": f"檔案不存在: {csv_file_path}"})
+
+    # 讀取 CSV 檔案
+    try:
+        data = pd.read_csv(csv_file_path)
+    except Exception as e:
+        return JsonResponse({"error": f"讀取 CSV 文件失敗: {e}"})
+
+    # 將資料插入資料庫
+    records_created = 0
+    errors = []
+    for index, row in data.iterrows():
+        try:
+            # 使用 get_or_create 來避免重複插入資料
+            obj, created = Hr_Develop_Risk.objects.get_or_create(
+                company_code=row["公司代號"],  # 使用公司代號作為唯一標識
+                report_year=row["報告年度"],  # 同一年份同公司
+                defaults={  # 如果條件不滿足則更新以下字段
+                    "company_name": row["公司名稱"],
+                    "employee_benefits_avg": row.get("員工福利平均數(仟元/人)(每年6/2起公開)", None),
+                    "employee_salary_avg": row.get("員工薪資平均數(仟元/人)(每年6/2起公開)", None),
+                    "non_supervisor_salary_avg": row.get("非擔任主管職務之全時員工薪資平均數(仟元/人)(每年7/1起公開)", None),
+                    "non_supervisor_salary_median": row.get("非擔任主管職務之全時員工薪資中位數(仟元/人)(每年7/1起公開)", None),
+                    "female_manager_ratio": row.get("管理職女性主管占比", None),
+                    "occupational_hazards_count": row.get("職業災害人數", None),
+                    "occupational_hazards_rate": row.get("職業災害人數及比率-比率", None),
+                    "occupational_hazards_category": row.get("職業災害-類別", None),
+                    "fire_count": row.get("火災-件數", None),
+                    "fire_injuries_count": row.get("火災-死傷人數", None),
+                    "fire_rate": row.get("火災-比率(死傷人數/員工總人數)", None),
+                    "risk_level": row.get("風險等級", None),
+                    "network_centrality": row.get("網絡中心性", None),
+                    "anomaly_label": row.get("異常標籤", None),
+                },
+            )
+            if created:
+                records_created += 1
+        except Exception as e:
+            # 若某一行資料插入失敗，記錄下錯誤但不終止整個流程
+            errors.append({"row": index, "error": str(e)})
+
+    # 返回結果
+    return JsonResponse({
+        "message": f"成功載入 {records_created} 筆資料到資料庫中！",
+        "errors": errors,
+    })
+
+
+def load_csv_to_database_investor_communication(request):
+    # 使用 os.path.abspath 將檔案路徑轉為絕對路徑
+    csv_file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "result", "investor_communication_risk.csv"))  # 假設檔案名稱為 "investor_communication_risk.csv"
+
+    # 檢查 CSV 檔案是否存在
+    if not os.path.exists(csv_file_path):
+        return JsonResponse({"error": f"檔案不存在: {csv_file_path}"}, status=400)
+
+    # 讀取 CSV 檔案
+    try:
+        data = pd.read_csv(csv_file_path)
+    except Exception as e:
+        return JsonResponse({"error": f"讀取 CSV 文件失敗: {e}"}, status=500)
+
+    # 將資料插入資料庫
+    records_created = 0
+    errors = []
+    for index, row in data.iterrows():
+        try:
+            # 使用 get_or_create 來避免重複插入資料
+            obj, created = Investor_Communication_Risk.objects.get_or_create(
+                company_code=row["公司代號"],  # 使用公司代號作為唯一標識
+                report_year=row["報告年度"],  # 同一年份同公司
+                defaults={  # 如果條件不滿足則更新以下字段
+                    "company_name": row["公司名稱"],
+                    "earnings_call_count": int(row.get("法說會次數", 0)),
+                    "governance_area_link": row.get("治理專區連結", ""),
+                    "network_centrality": float(row.get("網絡中心性", 0)),
+                    "risk_level": row.get("風險等級", ""),
+                    "anomaly_label": row.get("異常標籤", ""),
+                },
+            )
+            if created:
+                records_created += 1
+        except Exception as e:
+            # 若某一行資料插入失敗，記錄下錯誤但不終止整個流程
+            errors.append({"row": index, "error": str(e)})
+
+    # 返回結果
+    return JsonResponse({
+        "message": f"成功載入 {records_created} 筆資料到資料庫中！",
+        "errors": errors,
+    })
+
+
+def load_csv_to_database_shareholder_risk(request):
+    # 使用 os.path.abspath 將檔案路徑轉為絕對路徑
+    csv_file_path = os.path.abspath(os.path.join(
+        settings.BASE_DIR, "..", "result", "shareholding_and_control_risk.csv"))  # 假設檔案名稱為 "shareholder_risk.csv"
+
+    # 檢查 CSV 檔案是否存在
+    if not os.path.exists(csv_file_path):
+        return JsonResponse({"error": f"檔案不存在: {csv_file_path}"}, status=400)
+
+    # 讀取 CSV 檔案
+    try:
+        data = pd.read_csv(csv_file_path)
+    except Exception as e:
+        return JsonResponse({"error": f"讀取 CSV 文件失敗: {e}"}, status=500)
+
+    # 將資料插入資料庫
+    records_created = 0
+    errors = []
+    for index, row in data.iterrows():
+        try:
+            # 使用 get_or_create 來避免重複插入資料
+            obj, created = ShareholderRisk.objects.get_or_create(
+                company_code=row["公司代號"],  # 使用公司代號作為唯一標識
+                report_year=row["報告年度"],  # 同一年份同公司
+                defaults={  # 如果條件不滿足則更新以下字段
+                    "company_name": row["公司名稱"],
+                    "top_10_shareholders": row.get("前十大股東持股情況", ""),
+                    "shareholding_concentration": float(row.get("持股集中度", 0)),
+                    "network_centrality": float(row.get("網絡中心性", 0)),
+                    "risk_level": row.get("風險等級", ""),
+                    "anomaly_label": row.get("異常標籤", ""),
+                },
+            )
+            if created:
+                records_created += 1
+        except Exception as e:
+            # 若某一行資料插入失敗，記錄下錯誤但不終止整個流程
+            errors.append({"row": index, "error": str(e)})
+
+    # 返回結果
+    return JsonResponse({
+        "message": f"成功載入 {records_created} 筆資料到資料庫中！",
+        "errors": errors,
+    })

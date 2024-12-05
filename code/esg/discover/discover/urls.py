@@ -13,7 +13,8 @@ from myapp.views import (
     upload_employee_develop_data,
     upload_investor_communication_data,
     upload_shareholder_data,
-    upload_sustainability_report_data
+    upload_sustainability_report_data,
+    load_csv_to_database_board
 )
 
 urlpatterns = [
@@ -63,4 +64,11 @@ urlpatterns = [
     path('load-data_a/', views.load_csv_to_database_energy, name='load_data'),
     path('load-data_b/', views.load_csv_to_database_waste, name='load_data'),
     path('load-data_c/', views.load_csv_to_database_green, name='load_data'),
+    path('load-data_e/', views.load_csv_to_database_board, name='load_data'),
+    path('load-data_f/', views.load_csv_to_database_functiona, name='load_data'),
+    path('load-data_g/', views.load_csv_to_database_employee_safety, name='load_data'),
+    path('load-data_h/', views.load_csv_to_database_investor_communication,
+         name='load_data'),
+    path('load-data_i/', views.load_csv_to_database_shareholder_risk,
+         name='load_data'),
 ]
