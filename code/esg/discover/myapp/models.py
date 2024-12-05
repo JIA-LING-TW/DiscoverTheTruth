@@ -492,13 +492,17 @@ class BoardOfDirectorsRisk(models.Model):
     risk_level = models.CharField(max_length=20, verbose_name="風險等級")
     anomaly_label = models.CharField(max_length=20, verbose_name="異常標籤")
 
+    # 新增的欄位
+    greenwashing_label = models.CharField(
+        max_length=50, verbose_name="漂綠標籤", null=True, blank=True)
+
     class Meta:
         verbose_name = "董事會風險資訊"
         verbose_name_plural = "董事會風險資訊"
         db_table = "board_of_directors_risk"
 
     def __str__(self):
-        return f"{self.company_name} ({self.year})"
+        return f"{self.company_name} ({self.report_year})"
 
 
 class Functiona_Committee_Risk(models.Model):
@@ -518,10 +522,14 @@ class Functiona_Committee_Risk(models.Model):
     risk_level = models.CharField(max_length=20, verbose_name="風險等級")
     anomaly_label = models.CharField(max_length=20, verbose_name="異常標籤")
 
+    # 新增的欄位
+    greenwashing_label = models.CharField(
+        max_length=50, verbose_name="漂綠標籤", null=True, blank=True)
+
     class Meta:
         verbose_name = "董事會風險資訊"
         verbose_name_plural = "董事會風險資訊"
-        unique_together = ('company_code', 'report_year')  # 公司代號和報告年度應該是唯一組合
+        unique_together = ('company_code', 'report_year')
 
     def __str__(self):
         return f"{self.company_name} ({self.report_year})"
@@ -550,6 +558,8 @@ class Hr_Develop_Risk(models.Model):
     risk_level = models.CharField(max_length=20, verbose_name="風險等級")
     network_centrality = models.FloatField(verbose_name="網絡中心性")
     anomaly_label = models.CharField(max_length=20, verbose_name="異常標籤")
+    greenwashing_label = models.CharField(
+        max_length=50, verbose_name="漂綠標籤", null=True, blank=True)
 
     class Meta:
         verbose_name = "員工與安全風險資訊"
@@ -571,6 +581,8 @@ class ShareholderRisk(models.Model):
     network_centrality = models.FloatField(verbose_name="網絡中心性")
     risk_level = models.CharField(max_length=20, verbose_name="風險等級")
     anomaly_label = models.CharField(max_length=20, verbose_name="異常標籤")
+    greenwashing_label = models.CharField(
+        max_length=50, verbose_name="漂綠標籤", null=True, blank=True)
 
     class Meta:
         verbose_name = "股東風險資訊"
@@ -591,6 +603,8 @@ class Investor_Communication_Risk(models.Model):
     network_centrality = models.FloatField(verbose_name="網絡中心性")
     risk_level = models.CharField(max_length=20, verbose_name="風險等級")
     anomaly_label = models.CharField(max_length=20, verbose_name="異常標籤")
+    greenwashing_label = models.CharField(
+        max_length=50, verbose_name="漂綠標籤", null=True, blank=True)
 
     class Meta:
         verbose_name = "公司治理風險資訊"

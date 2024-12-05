@@ -43,7 +43,7 @@
     
             <!-- 公司代碼 -->
             <div class="col-auto_risk co_risk">
-                <label for="company_id" class="company_code_risk">公司代號：</label>
+                <label for="company_code" class="company_code_risk">公司代號：</label>
                 <input type="text" name="company_code" id="company_code" class="form-control_risk" placeholder="請輸入公司代碼" value="{{ company_code }}">
             </div>
     
@@ -59,48 +59,59 @@
         <p class="text-center text-danger">{{ message }}</p>
     {% endif %}
 
-    <!-- 風險資料 -->
-    <div class="container44">
-        <div class="content44">
-            <!-- 顯示 API 資料 -->
-            {% for item in api_data %}
-                <div class="block44">
-                    <h2>股名 / 股號</h2>
-                    <p>{{ item.company_name|default:"未知公司" }} {{ item.company_id|default:"無資料" }}</p>
-                </div>
-                <div class="block44">
-                    <h2>公司基本資訊</h2>
-                    <p>資本額：{{ item.capital|default:"無資料" }}</p>
-                    <p>董事長：{{ item.chairman|default:"無資料" }}</p>
-                    <p>總經理：{{ item.ceo|default:"無資料" }}</p>
-                </div>
-            {% endfor %}
-
-            <!-- 顯示資料庫資料 -->
-            {% for risk in risks %}
-                <div class="block44">
-                    <h2>漂綠偵測結果</h2>
-                    <p class="greenwashing-label 
-                    {% if risk.greenwashing_label == '無漂綠跡象' %}
-                        blue-label
-                    {% elif risk.greenwashing_label == '可能漂綠' %}
-                        gray-label
-                    {% else %}
-                        default-label
-                    {% endif %}
-                    ">
-                        漂綠標籤：{{ risk.greenwashing_label|default:"未標示" }}
-                    </p>
-                    <p>驗證取得：{{ risk.verification_status|default:"未驗證" }}</p>
-                </div>
-                <div class="block44">
-                    <h2>偵測風險結果</h2>
-                    <p class="risk-level {% if risk.risk_level == '高風險' %}red-level{% elif risk.risk_level == '中風險' %}yellow-level{% elif risk.risk_level == '低風險' %}green-level{% else %}default-level{% endif %}">
-                        風險等級：{{ risk.risk_level|default:"未評估" }}
-                    </p>
-                </div>
-            {% endfor %}
+    <!-- 顯示 API 資料 -->
+    {% if api_data %}
+        <div class="container44">
+            <div class="content44">
+                {% for item in api_data %}
+                    <div class="block44">
+                        <h2>股名 / 股號</h2>
+                        <p>{{ item.company_name|default:"未知公司" }} {{ item.company_id|default:"無資料" }}</p>
+                    </div>
+                    <div class="block44">
+                        <h2>公司基本資訊</h2>
+                        <p>資本額：{{ item.capital|default:"無資料" }}</p>
+                        <p>董事長：{{ item.chairman|default:"無資料" }}</p>
+                        <p>總經理：{{ item.ceo|default:"無資料" }}</p>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
-    </div>
+    {% else %}
+        <p class="text-center text-muted">尚無API資料顯示</p>
+    {% endif %}
+
+    <!-- 顯示資料庫資料 -->
+    {% if risks %}
+        <div class="container44">
+            <div class="content44">
+                {% for risk in risks %}
+                    <div class="block44">
+                        <h2>漂綠偵測結果</h2>
+                        <p class="greenwashing-label 
+                        {% if risk.greenwashing_label == '無漂綠跡象' %}
+                            blue-label
+                        {% elif risk.greenwashing_label == '可能漂綠' %}
+                            gray-label
+                        {% else %}
+                            default-label
+                        {% endif %}
+                        ">
+                            漂綠標籤：{{ risk.greenwashing_label|default:"未標示" }}
+                        </p>
+                        <p>驗證取得：{{ risk.verification_status|default:"未驗證" }}</p>
+                    </div>
+                    <div class="block44">
+                        <h2>偵測風險結果</h2>
+                        <p class="risk-level {% if risk.risk_level == '高風險' %}red-level{% elif risk.risk_level == '中風險' %}yellow-level{% elif risk.risk_level == '低風險' %}green-level{% else %}default-level{% endif %}">
+                            風險等級：{{ risk.risk_level|default:"未評估" }}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <p class="text-center text-muted">尚無風險資料顯示</p>
+    {% endif %}
 </div>
 {% endblock %}
