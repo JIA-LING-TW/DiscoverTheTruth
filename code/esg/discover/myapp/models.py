@@ -475,3 +475,127 @@ class GreenRisk(models.Model):
 
     def __str__(self):
         return f"{self.market_category} - {self.company_name} ({self.report_year})"
+
+
+class BoardOfDirectorsRisk(models.Model):
+    market = models.CharField(max_length=50, verbose_name="市場別")
+    year = models.IntegerField(verbose_name="年份")
+    company_code = models.CharField(max_length=10, verbose_name="公司代號")
+    company_name = models.CharField(max_length=100, verbose_name="公司名稱")
+    total_seats = models.IntegerField(verbose_name="董事席次")
+    independent_seats = models.IntegerField(verbose_name="獨立董事席次")
+    female_seats = models.IntegerField(verbose_name="女性董事席次")
+    female_ratio = models.FloatField(verbose_name="女性董事比例")
+    attendance_rate = models.FloatField(verbose_name="董事會出席率")
+    training_rate = models.FloatField(verbose_name="董事進修比率")
+    centrality = models.FloatField(verbose_name="網絡中心性")
+    risk_level = models.CharField(max_length=20, verbose_name="風險等級")
+    anomaly_label = models.CharField(max_length=20, verbose_name="異常標籤")
+
+    class Meta:
+        verbose_name = "董事會風險資訊"
+        verbose_name_plural = "董事會風險資訊"
+        db_table = "board_of_directors_risk"
+
+    def __str__(self):
+        return f"{self.company_name} ({self.year})"
+
+
+class Functiona_Committee_Risk(models.Model):
+    market = models.CharField(max_length=50, verbose_name="市場別")
+    report_year = models.IntegerField(verbose_name="報告年度")
+    company_code = models.CharField(max_length=10, verbose_name="公司代號")
+    company_name = models.CharField(max_length=100, verbose_name="公司名稱")
+    compensation_committee_seats = models.IntegerField(verbose_name="薪酬委員會席次")
+    compensation_committee_independent_seats = models.IntegerField(
+        verbose_name="薪酬委員會獨立董事席次")
+    compensation_committee_attendance_rate = models.FloatField(
+        verbose_name="薪酬委員會出席率")
+    audit_committee_seats = models.IntegerField(verbose_name="審計委員會席次")
+    audit_committee_attendance_rate = models.FloatField(
+        verbose_name="審計委員會出席率")
+    network_centrality = models.FloatField(verbose_name="網絡中心性")
+    risk_level = models.CharField(max_length=20, verbose_name="風險等級")
+    anomaly_label = models.CharField(max_length=20, verbose_name="異常標籤")
+
+    class Meta:
+        verbose_name = "董事會風險資訊"
+        verbose_name_plural = "董事會風險資訊"
+        unique_together = ('company_code', 'report_year')  # 公司代號和報告年度應該是唯一組合
+
+    def __str__(self):
+        return f"{self.company_name} ({self.report_year})"
+
+
+class Hr_Develop_Risk(models.Model):
+    report_year = models.IntegerField(verbose_name="報告年度")
+    company_code = models.CharField(max_length=10, verbose_name="公司代號")
+    company_name = models.CharField(max_length=100, verbose_name="公司名稱")
+    employee_benefits_avg = models.FloatField(
+        verbose_name="員工福利平均數(仟元/人)(每年6/2起公開)")
+    employee_salary_avg = models.FloatField(
+        verbose_name="員工薪資平均數(仟元/人)(每年6/2起公開)")
+    non_supervisor_salary_avg = models.FloatField(
+        verbose_name="非擔任主管職務之全時員工薪資平均數(仟元/人)(每年7/1起公開)")
+    non_supervisor_salary_median = models.FloatField(
+        verbose_name="非擔任主管職務之全時員工薪資中位數(仟元/人)(每年7/1起公開)")
+    female_manager_ratio = models.FloatField(verbose_name="管理職女性主管占比")
+    occupational_hazards_count = models.IntegerField(verbose_name="職業災害人數")
+    occupational_hazards_rate = models.FloatField(verbose_name="職業災害人數及比率-比率")
+    occupational_hazards_category = models.CharField(
+        max_length=100, verbose_name="職業災害-類別")
+    fire_count = models.IntegerField(verbose_name="火災-件數")
+    fire_injuries_count = models.IntegerField(verbose_name="火災-死傷人數")
+    fire_rate = models.FloatField(verbose_name="火災-比率(死傷人數/員工總人數)")
+    risk_level = models.CharField(max_length=20, verbose_name="風險等級")
+    network_centrality = models.FloatField(verbose_name="網絡中心性")
+    anomaly_label = models.CharField(max_length=20, verbose_name="異常標籤")
+
+    class Meta:
+        verbose_name = "員工與安全風險資訊"
+        verbose_name_plural = "員工與安全風險資訊"
+        unique_together = ('company_code', 'report_year')  # 公司代號和報告年度應該是唯一組合
+
+    def __str__(self):
+        return f"{self.company_name} ({self.report_year})"
+
+
+class ShareholderRisk(models.Model):
+    market_category = models.CharField(max_length=50, verbose_name="市場別")
+    report_year = models.IntegerField(verbose_name="報告年度")
+    company_code = models.CharField(max_length=10, verbose_name="公司代號")
+    company_name = models.CharField(max_length=100, verbose_name="公司名稱")
+    top_10_shareholders = models.TextField(
+        verbose_name="前十大股東持股情況")  # 假設這是文字形式描述
+    shareholding_concentration = models.FloatField(verbose_name="持股集中度")
+    network_centrality = models.FloatField(verbose_name="網絡中心性")
+    risk_level = models.CharField(max_length=20, verbose_name="風險等級")
+    anomaly_label = models.CharField(max_length=20, verbose_name="異常標籤")
+
+    class Meta:
+        verbose_name = "股東風險資訊"
+        verbose_name_plural = "股東風險資訊"
+        unique_together = ('company_code', 'report_year')  # 公司代號和報告年度應該是唯一組合
+
+    def __str__(self):
+        return f"{self.company_name} ({self.report_year})"
+
+
+class Investor_Communication_Risk(models.Model):
+    market = models.CharField(max_length=50, verbose_name="市場別")
+    report_year = models.IntegerField(verbose_name="報告年度")
+    company_code = models.CharField(max_length=10, verbose_name="公司代號")
+    company_name = models.CharField(max_length=100, verbose_name="公司名稱")
+    earnings_call_count = models.IntegerField(verbose_name="法說會次數")
+    governance_area_link = models.URLField(verbose_name="治理專區連結")
+    network_centrality = models.FloatField(verbose_name="網絡中心性")
+    risk_level = models.CharField(max_length=20, verbose_name="風險等級")
+    anomaly_label = models.CharField(max_length=20, verbose_name="異常標籤")
+
+    class Meta:
+        verbose_name = "公司治理風險資訊"
+        verbose_name_plural = "公司治理風險資訊"
+        unique_together = ('company_code', 'report_year')  # 公司代號和報告年度應該是唯一組合
+
+    def __str__(self):
+        return f"{self.company_name} ({self.report_year})"
