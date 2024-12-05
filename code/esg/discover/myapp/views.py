@@ -444,7 +444,7 @@ def upload_waste_management_data(request):
 
 
 def upload_energy_management_data(request):
-    # file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG/energy_management.xlsx"  # 替換為實際的檔案路徑
+    # 定義文件路徑（替換為實際的檔案路徑）
     file_path = os.path.abspath(os.path.join(
         settings.BASE_DIR, "..", "2021-2023_ESG(E)", "energy_management.xlsx"))
 
@@ -452,7 +452,7 @@ def upload_energy_management_data(request):
         # 讀取 Excel 檔案
         df = pd.read_excel(file_path)
 
-        # 檢查必要欄位是否存在
+        # 檢查 Excel 是否包含所有必要欄位
         required_columns = [
             "市場別", "年份", "公司代號", "公司名稱",
             "使用率(再生能源/總能源)", "資料範圍", "取得驗證"
@@ -460,7 +460,7 @@ def upload_energy_management_data(request):
         if not all(column in df.columns for column in required_columns):
             return JsonResponse({"error": "Excel 檔案格式錯誤，缺少必要欄位。"}, status=400)
 
-        # 清理數據：處理 NaN 和非數字值
+        # 數據清理函數：處理 NaN 和無效值
         def clean_value(value):
             if pd.isna(value):  # 如果是 NaN，返回 None
                 return None
@@ -468,12 +468,12 @@ def upload_energy_management_data(request):
                 return None
             return value.strip() if isinstance(value, str) else value
 
-        # 清理年份欄位，將無效的年份轉為 None 並移除無效年份行
-        df["年份"] = pd.to_numeric(df["年份"], errors="coerce")
+        # 清理年份欄位，轉換為整數並移除無效年份行
+        df["年份"] = pd.to_numeric(df["年份"], errors="coerce")  # 將年份轉為數字類型
         df = df.dropna(subset=["年份"])  # 移除年份為 NaN 的行
-        df["年份"] = df["年份"].astype(int)  # 確保年份是整數
+        df["年份"] = df["年份"].astype(int)  # 確保年份為整數
 
-        # 清理公司代號，轉為字串並去掉小數點
+        # 清理公司代號，將其轉為字串並去除小數點
         df["公司代號"] = df["公司代號"].apply(
             lambda x: str(int(x)) if pd.notna(x) else None)
 
@@ -482,24 +482,24 @@ def upload_energy_management_data(request):
             if column in df.columns:
                 df[column] = df[column].apply(clean_value)
 
-        # 去除原始資料中的重複項
+        # 去除重複數據（基於年份、公司代號、公司名稱、和市場別）
         df = df.drop_duplicates(subset=["年份", "公司代號", "公司名稱", "市場別"])
 
-        # 將資料寫入資料庫
+        # 將數據導入資料庫
         for _, row in df.iterrows():
-            # 檢查資料是否已存在（基於主要欄位）
+            # 檢查資料是否已存在
             if EnergyManagement.objects.filter(
-                market=row["市場別"],
+                market_type=row["市場別"],  # 修改此處以匹配資料庫中的正確欄位名稱
                 year=row["年份"],
                 company_code=row["公司代號"],
                 company_name=row["公司名稱"]
             ).exists():
                 print(f"重複資料跳過：{row['年份']} - {row['公司代號']} - {row['公司名稱']}")
-                continue  # 如果資料已存在，跳過此行
+                continue  # 若資料已存在，跳過此行
 
-            # 創建新記錄
+            # 建立新記錄
             EnergyManagement.objects.create(
-                market=row["市場別"],
+                market_type=row["市場別"],  # 確保欄位名稱與資料庫模型一致
                 year=row["年份"],
                 company_code=row["公司代號"],
                 company_name=row["公司名稱"],
@@ -511,11 +511,12 @@ def upload_energy_management_data(request):
         return JsonResponse({"success": "資料成功導入！"})
 
     except Exception as e:
+        # 返回錯誤訊息
         return JsonResponse({"error": f"處理檔案時發生錯誤：{str(e)}"}, status=500)
 
 
 def upload_greenhouse_gas_emission_data(request):
-    # file_path = "/Users/lijialing/Desktop/DiscoverTheTruth/2021-2023_ESG/greenhouse_gas_emissions.xlsx"  # 替換為實際的檔案路徑
+    # 定義文件路徑（替換為實際的檔案路徑）
     file_path = os.path.abspath(os.path.join(
         settings.BASE_DIR, "..", "2021-2023_ESG(E)", "greenhouse_gas_emissions.xlsx"))
 
@@ -534,7 +535,7 @@ def upload_greenhouse_gas_emission_data(request):
         if not all(column in df.columns for column in required_columns):
             return JsonResponse({"error": "Excel 檔案格式錯誤，缺少必要欄位。"}, status=400)
 
-        # 清理數據：處理 NaN 和非數字值
+        # 數據清理函數：處理 NaN 和無效值
         def clean_value(value):
             if pd.isna(value):
                 return None
@@ -542,30 +543,43 @@ def upload_greenhouse_gas_emission_data(request):
                 return None
             return value.strip() if isinstance(value, str) else value
 
-        # 清理年份欄位，將無效的年份轉為 None 並移除無效年份行
+        # 清理年份欄位，確保為有效整數
         df["年份"] = pd.to_numeric(df["年份"], errors="coerce")
-        df = df.dropna(subset=["年份"])
+        df = df.dropna(subset=["年份"])  # 移除年份為 NaN 的行
         df["年份"] = df["年份"].astype(int)
 
         # 清理公司代號，轉為字串並去掉小數點
         df["公司代號"] = df["公司代號"].apply(
             lambda x: str(int(x)) if pd.notna(x) else None)
 
-        # 清理其他數據欄位
-        for column in [
+        # 清理數據欄位，將非數字值轉為 None
+        numeric_columns = [
             "範疇一-排放量(噸CO2e)", "範疇二-排放量(噸CO2e)", "範疇三-排放量(噸CO2e)",
             "溫室氣體排放密集度-密集度(噸CO2e/單位)"
-        ]:
+        ]
+        for column in numeric_columns:
             if column in df.columns:
                 df[column] = pd.to_numeric(df[column], errors="coerce")
 
-        # 去除重複項
+        # 清理其他數據欄位
+        text_columns = [
+            "範疇一-資料邊界", "範疇一-取得驗證",
+            "範疇二-資料邊界", "範疇二-取得驗證",
+            "範疇三-資料邊界", "範疇三-取得驗證",
+            "溫室氣體排放密集度-單位"
+        ]
+        for column in text_columns:
+            if column in df.columns:
+                df[column] = df[column].apply(clean_value)
+
+        # 去除重複數據（基於市場別、年份、公司代號和公司名稱）
         df = df.drop_duplicates(subset=["市場別", "年份", "公司代號", "公司名稱"])
 
-        # 將資料寫入資料庫
+        # 將數據寫入資料庫
         for _, row in df.iterrows():
+            # 檢查資料是否已存在
             if GreenhouseGasEmission.objects.filter(
-                market=row["市場別"],
+                market_type=row["市場別"],  # 確保欄位名稱與資料庫模型一致
                 year=row["年份"],
                 company_code=row["公司代號"],
                 company_name=row["公司名稱"]
@@ -573,8 +587,9 @@ def upload_greenhouse_gas_emission_data(request):
                 print(f"重複資料跳過：{row['年份']} - {row['公司代號']} - {row['公司名稱']}")
                 continue
 
+            # 建立新記錄
             GreenhouseGasEmission.objects.create(
-                market=row["市場別"],
+                market_type=row["市場別"],
                 year=row["年份"],
                 company_code=row["公司代號"],
                 company_name=row["公司名稱"],
@@ -594,6 +609,7 @@ def upload_greenhouse_gas_emission_data(request):
         return JsonResponse({"success": "資料成功導入！"})
 
     except Exception as e:
+        # 捕獲異常並返回錯誤訊息
         return JsonResponse({"error": f"處理檔案時發生錯誤：{str(e)}"}, status=500)
 
 
