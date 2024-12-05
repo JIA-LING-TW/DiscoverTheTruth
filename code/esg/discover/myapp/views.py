@@ -1,3 +1,5 @@
+import locale
+import requests
 from .models import WaterResourceRisk, EnergyResourceRisk, WasteManagementRisk, GreenRisk
 from django.shortcuts import render
 import os
@@ -121,26 +123,32 @@ def ESGReal(request):
     return render(request, 'ESGReal.html')
 
 
+# 設定地區為台灣，使用台灣的金額格式
+locale.setlocale(locale.LC_ALL, 'zh_TW.UTF-8')
+
+
 def ESGRisk(request):
     # 取得篩選選項
     selected_year = request.GET.get('report_year')
     selected_topic = request.GET.get('risk_topic')
-    company_id = request.GET.get('company_id', '')  # 默認為空字串而非 None
+    company_id = request.GET.get('company_id', '').strip()  # 去除多餘空白
 
-    risks = []  # 初始化風險資料為空
-    message = None  # 初始化提示訊息為 None
+    risks = []  # 初始化風險資料
+    api_data = []  # 初始化 API 資料
+    message = None  # 提示訊息
 
-    # 檢查是否有選擇議題
-    if selected_topic:
-        # 根據選擇的議題篩選對應模型
-        if selected_topic == "water":
-            risks = WaterResourceRisk.objects.all()
-        elif selected_topic == "energy":
-            risks = EnergyResourceRisk.objects.all()
-        elif selected_topic == "waste":
-            risks = WasteManagementRisk.objects.all()
-        elif selected_topic == "carbon":
-            risks = GreenRisk.objects.all()
+    # 風險議題與模型的對應
+    topic_model_map = {
+        "water": WaterResourceRisk,
+        "energy": EnergyResourceRisk,
+        "waste": WasteManagementRisk,
+        "carbon": GreenRisk,
+    }
+
+    if selected_topic and selected_topic in topic_model_map:
+        # 根據議題篩選對應模型
+        model = topic_model_map[selected_topic]
+        risks = model.objects.all()
 
         # 篩選報告年度
         if selected_year:
@@ -150,21 +158,52 @@ def ESGRisk(request):
         if company_id:
             risks = risks.filter(company_id=company_id)
 
-        # 檢查是否有符合條件的資料
+        # 檢查資料是否存在
         if not risks.exists():
             message = "目前無相關風險資料"
+
+        # 向 API 發送請求
+        try:
+            api_url = "https://openapi.twse.com.tw/v1/opendata/t187ap03_L"
+            response = requests.get(api_url)
+            response.raise_for_status()  # 確保請求成功
+            raw_api_data = response.json()  # 假設 API 返回 JSON 資料
+
+            # 篩選 API 資料
+            for item in raw_api_data:
+                if not company_id or item.get("公司代號") == company_id:
+                    # 格式化實收資本額
+                    capital = item.get("實收資本額")
+                    formatted_capital = locale.format_string(
+                        "%d", int(capital), grouping=True) if capital else None
+
+                    api_data.append({
+                        "company_name": item.get("公司簡稱"),
+                        "year": item.get("年度"),
+                        "company_id": item.get("公司代號"),
+                        "market_category": item.get("市場別"),
+                        "chairman": item.get("董事長"),  # 董事長
+                        "ceo": item.get("總經理"),  # 總經理
+                        "capital": formatted_capital,  # 格式化的實收資本額
+                    })
+
+            if not api_data:
+                message = "API 無符合條件的資料"
+        except requests.RequestException as e:
+            api_data = []
+            message = f"無法取得 API 資料：{e}"
     else:
         message = "請選擇一個議題進行查詢"
 
     # 渲染篩選後的結果
     return render(request, 'ESGRisk.html', {
         'risks': risks,
+        'api_data': api_data,
         'selected_year': selected_year,
         'selected_topic': selected_topic,
         'company_id': company_id,
         'message': message,
     })
-
 
 
 def forget(request):
