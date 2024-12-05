@@ -159,7 +159,7 @@ def ESGReal(request):
 
         # 篩選公司代碼
         if company_code:
-            risks = risks.filter(company_id=company_code)  # 改為 company_id
+            risks = risks.filter(company_code=company_code)  # 修改為 company_code
 
         # 檢查資料是否存在
         if not risks.exists():
