@@ -479,7 +479,7 @@ class GreenRisk(models.Model):
 
 class BoardOfDirectorsRisk(models.Model):
     market = models.CharField(max_length=50, verbose_name="市場別")
-    year = models.IntegerField(verbose_name="年份")
+    report_year = models.IntegerField(verbose_name="年份")
     company_code = models.CharField(max_length=10, verbose_name="公司代號")
     company_name = models.CharField(max_length=100, verbose_name="公司名稱")
     total_seats = models.IntegerField(verbose_name="董事席次")

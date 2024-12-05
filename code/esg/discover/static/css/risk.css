@@ -234,8 +234,8 @@
 
 /* 默認標籤樣式（如果沒有匹配到） */
 .default-label {
-    background-color: #f8d7da;
-    /* 淺紅色背景 */
-    color: #721c24;
-    /* 紅色文字 */
+    background-color: #fff3cd;
+    /* 淺黃色背景 */
+    color: #856404;
+    /* 深黃色文字 */
 }

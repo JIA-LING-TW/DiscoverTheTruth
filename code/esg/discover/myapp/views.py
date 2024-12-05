@@ -137,7 +137,8 @@ def ESGRisk(request):
     # 取得篩選選項
     selected_year = request.GET.get('report_year')
     selected_topic = request.GET.get('risk_topic')
-    company_id = request.GET.get('company_id', '').strip()  # 去除多餘空白
+    company_code = request.GET.get(
+        'company_code', '').strip()  # 使用 company_code，並去除多餘空白
 
     risks = []  # 初始化風險資料
     api_data = []  # 初始化 API 資料
@@ -149,6 +150,11 @@ def ESGRisk(request):
         "energy": EnergyResourceRisk,
         "waste": WasteManagementRisk,
         "carbon": GreenRisk,
+        "board": BoardOfDirectorsRisk,
+        "function": Functiona_Committee_Risk,
+        "hr": Hr_Develop_Risk,
+        "shareholder": ShareholderRisk,
+        "investor": Investor_Communication_Risk,
     }
 
     if selected_topic and selected_topic in topic_model_map:
@@ -161,8 +167,8 @@ def ESGRisk(request):
             risks = risks.filter(report_year=selected_year)
 
         # 篩選公司代碼
-        if company_id:
-            risks = risks.filter(company_id=company_id)
+        if company_code:
+            risks = risks.filter(company_code=company_code)
 
         # 檢查資料是否存在
         if not risks.exists():
@@ -177,8 +183,7 @@ def ESGRisk(request):
 
             # 篩選 API 資料
             for item in raw_api_data:
-                if not company_id or item.get("公司代號") == company_id:
-                    # 格式化實收資本額
+                if not company_code or item.get("公司代號") == company_code:
                     capital = item.get("實收資本額")
                     formatted_capital = locale.format_string(
                         "%d", int(capital), grouping=True) if capital else None
@@ -207,7 +212,7 @@ def ESGRisk(request):
         'api_data': api_data,
         'selected_year': selected_year,
         'selected_topic': selected_topic,
-        'company_id': company_id,
+        'company_code': company_code,  # 修改為 company_code
         'message': message,
     })
 
