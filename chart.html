@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESG 圖表數據</title>
+    <style>
+        body {
+            font-family: '微軟正黑體', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #eeeeee;
+            padding: 15px;
+        }
+        nav button {
+            margin: 0 15px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #005599;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        nav button:hover {
+            background-color: #0077cc;
+        }
+        .filters {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .filters select, .filters input, .filters button {
+            margin: 0 10px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .filters button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .filters button:hover {
+            background-color: #218838;
+        }
+        footer {
+            background-color: #003366;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        ESG 圖表數據
+    </header>
+
+    <nav>
+        <button onclick="showCategory('E')">環境 (E)</button>
+        <button onclick="showCategory('S')">社會 (S)</button>
+        <button onclick="showCategory('G')">治理 (G)</button>
+    </nav>
+
+    <div class="filters">
+        <select id="companyFilter">
+            <option value="all">選擇公司</option>
+            <!-- 動態載入公司選項 -->
+        </select>
+        <input type="text" id="companySearch" placeholder="輸入公司名稱">
+        <select id="yearFilter">
+            <option value="all">選擇年份</option>
+            <!-- 動態載入年份選項 -->
+        </select>
+        <button onclick="applyFilters()">篩選</button>
+    </div>
+
+    
+
+    <script>
+        function showCategory(category) {
+            console.log("切換到分類:", category);
+        }
+
+        function applyFilters() {
+            const company = document.getElementById("companyFilter").value;
+            const search = document.getElementById("companySearch").value;
+            const year = document.getElementById("yearFilter").value;
+            console.log(`篩選條件：公司=${company}, 搜尋=${search}, 年份=${year}`);
+        }
+    </script>
+</body>
+</html>
