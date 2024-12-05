@@ -1,8 +1,7 @@
-from .models import ShareholderRisk
-from .models import Investor_Communication_Risk
-from .models import Hr_Develop_Risk
-from .models import Functiona_Committee_Risk
-from .models import BoardOfDirectorsRisk
+
+from .models import (WaterResourceRisk, EnergyResourceRisk, WasteManagementRisk,
+                     GreenRisk, BoardOfDirectorsRisk, Functiona_Committee_Risk,
+                     Hr_Develop_Risk, ShareholderRisk, Investor_Communication_Risk)
 from django.http import JsonResponse
 import locale
 import requests
@@ -33,7 +32,7 @@ from .models import (
     GreenRisk, WaterResourceRisk, EnergyResourceRisk, WasteManagementRisk,
     WaterResourceManagement, EnergyManagement, GreenhouseGasEmission, WasteManagement,
     ClimateRiskAndOpportunity, CompanyBoard, CorporateGovernance, EmployeeDevelop,
-    CompanyGovernance, Shareholder, SustainabilityReport
+    CompanyGovernance, Shareholder, SustainabilityReport, Functiona_Committee_Risk, BoardOfDirectorsRisk, Hr_Develop_Risk, ShareholderRisk, Investor_Communication_Risk
 )
 
 
@@ -126,7 +125,99 @@ def ESGEachCompany(request):
 
 
 def ESGReal(request):
-    return render(request, 'ESGReal.html')
+    # 取得篩選選項
+    selected_year = request.GET.get('report_year')
+    selected_topic = request.GET.get('risk_topic')
+    company_code = request.GET.get(
+        'company_code', '').strip()  # 使用 company_code，並去除多餘空白
+
+    risks = []  # 初始化風險資料
+    api_data = []  # 初始化 API 資料
+    message = None  # 提示訊息
+
+    # 風險議題與模型的對應
+    topic_model_map = {
+        "water": WaterResourceRisk,
+        "energy": EnergyResourceRisk,
+        "waste": WasteManagementRisk,
+        "carbon": GreenRisk,
+        "board": BoardOfDirectorsRisk,
+        "function": Functiona_Committee_Risk,
+        "hr": Hr_Develop_Risk,
+        "shareholder": ShareholderRisk,
+        "investor": Investor_Communication_Risk,
+    }
+
+    if selected_topic and selected_topic in topic_model_map:
+        # 根據議題篩選對應模型
+        model = topic_model_map[selected_topic]
+        risks = model.objects.all()
+
+        # 篩選報告年度
+        if selected_year:
+            risks = risks.filter(report_year=selected_year)
+
+        # 篩選公司代碼
+        if company_code:
+            risks = risks.filter(company_id=company_code)  # 改為 company_id
+
+        # 檢查資料是否存在
+        if not risks.exists():
+            message = "目前無相關風險資料"
+
+        # 向 API 發送請求
+        try:
+            api_url = "https://openapi.twse.com.tw/v1/opendata/t187ap03_L"
+            response = requests.get(api_url)
+            response.raise_for_status()  # 確保請求成功
+            raw_api_data = response.json()  # 假設 API 返回 JSON 資料
+
+            # 篩選 API 資料
+            for item in raw_api_data:
+                if not company_code or item.get("公司代號") == company_code:
+                    capital = item.get("實收資本額")
+                    formatted_capital = locale.format_string(
+                        "%d", int(capital), grouping=True) if capital else None
+
+                    api_data.append({
+                        "company_name": item.get("公司簡稱"),
+                        "year": item.get("年度"),
+                        "company_id": item.get("公司代號"),
+                        "market_category": item.get("市場別"),
+                        "chairman": item.get("董事長"),  # 董事長
+                        "ceo": item.get("總經理"),  # 總經理
+                        "capital": formatted_capital,  # 格式化的實收資本額
+                    })
+
+            if not api_data:
+                message = "API 無符合條件的資料"
+        except requests.RequestException as e:
+            api_data = []
+            message = f"無法取得 API 資料：{e}"
+    else:
+        message = "請選擇一個議題進行查詢"
+
+    # 渲染篩選後的結果
+    return render(request, 'ESGReal.html', {
+        'risks': risks,
+        'api_data': api_data,
+        'selected_year': selected_year,
+        'selected_topic': selected_topic,
+        'company_code': company_code,  # 修改為 company_code
+        'message': message,
+        'years': [2021, 2022, 2023],  # 可選的報告年度
+        'topics': [
+            ("water", "水資源管理"),
+            ("energy", "能源管理"),
+            ("waste", "廢棄物管理"),
+            ("carbon", "碳排放管理"),
+            ("board", "董事會"),
+            ("function", "功能性委員會"),
+            ("hr", "人力資源發展"),
+            ("shareholder", "持股及控制力"),
+            ("investor", "投資人溝通"),
+        ],  # 可選的相關議題
+    })
 
 
 # 設定地區為台灣，使用台灣的金額格式
@@ -168,7 +259,7 @@ def ESGRisk(request):
 
         # 篩選公司代碼
         if company_code:
-            risks = risks.filter(company_code=company_code)
+            risks = risks.filter(company_id=company_code)  # 改為 company_id
 
         # 檢查資料是否存在
         if not risks.exists():
@@ -214,6 +305,18 @@ def ESGRisk(request):
         'selected_topic': selected_topic,
         'company_code': company_code,  # 修改為 company_code
         'message': message,
+        'years': [2021, 2022, 2023],  # 可選的報告年度
+        'topics': [
+            ("water", "水資源管理"),
+            ("energy", "能源管理"),
+            ("waste", "廢棄物管理"),
+            ("carbon", "碳排放管理"),
+            ("board", "董事會"),
+            ("function", "功能性委員會"),
+            ("hr", "人力資源發展"),
+            ("shareholder", "持股及控制力"),
+            ("investor", "投資人溝通"),
+        ],  # 可選的相關議題
     })
 
 
@@ -1526,7 +1629,7 @@ def load_csv_to_database_board(request):
             # 使用 get_or_create 來避免重複插入資料
             obj, created = BoardOfDirectorsRisk.objects.get_or_create(
                 market=row.get("市場別", None),
-                year=row.get("年份", None),
+                report_year=row.get("年份", None),
                 company_code=row.get("公司代號", None),
                 defaults={  # 預設填充的字段
                     "company_name": row.get("公司名稱", None),
@@ -1539,6 +1642,7 @@ def load_csv_to_database_board(request):
                     "centrality": row.get("網絡中心性", None),
                     "risk_level": row.get("風險等級", None),
                     "anomaly_label": row.get("異常標籤", None),
+                    "greenwashing_label": row.get("漂綠標籤", None),  # 新增的欄位
                 },
             )
             if created:
@@ -1571,7 +1675,7 @@ def load_csv_to_database_functiona(request):
     for index, row in data.iterrows():
         try:
             # 使用 get_or_create 來避免重複插入資料
-            obj, created = Functiona_Committee_Risk.objects.get_or_create(
+            obj, created = Functiona_Committee_Risk.objects.get_or_create(  # 確保模型名稱正確
                 company_code=row["公司代號"],  # 使用公司代號作為唯一標識
                 report_year=row["報告年度"],  # 同一年份同公司
                 defaults={  # 如果條件不滿足則更新以下字段
@@ -1585,6 +1689,7 @@ def load_csv_to_database_functiona(request):
                     "network_centrality": float(row["網絡中心性"]),
                     "risk_level": row["風險等級"],
                     "anomaly_label": row["異常標籤"],
+                    "greenwashing_label": row.get("漂綠標籤", None),  # 新增的欄位
                 },
             )
             if created:
@@ -1640,6 +1745,7 @@ def load_csv_to_database_employee_safety(request):
                     "risk_level": row.get("風險等級", None),
                     "network_centrality": row.get("網絡中心性", None),
                     "anomaly_label": row.get("異常標籤", None),
+                    "greenwashing_label": row.get("漂綠標籤", None),  # 新增的欄位
                 },
             )
             if created:
@@ -1686,6 +1792,7 @@ def load_csv_to_database_investor_communication(request):
                     "network_centrality": float(row.get("網絡中心性", 0)),
                     "risk_level": row.get("風險等級", ""),
                     "anomaly_label": row.get("異常標籤", ""),
+                    "greenwashing_label": row.get("漂綠標籤", None),  # 新增的欄位
                 },
             )
             if created:
@@ -1732,6 +1839,7 @@ def load_csv_to_database_shareholder_risk(request):
                     "network_centrality": float(row.get("網絡中心性", 0)),
                     "risk_level": row.get("風險等級", ""),
                     "anomaly_label": row.get("異常標籤", ""),
+                    "greenwashing_label": row.get("漂綠標籤", None),  # 新增的欄位
                 },
             )
             if created:
