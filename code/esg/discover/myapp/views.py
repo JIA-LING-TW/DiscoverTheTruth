@@ -1,4 +1,11 @@
 
+from .models import EnergyManagement, WaterResourceManagement, GreenhouseGasEmission, WasteManagement
+from .models import WasteManagement
+from .models import EnergyManagement, WaterResourceManagement
+from .models import WaterResourceManagement
+from .models import EnergyManagement  # 假設您的模型是 EnergyManagement
+from .models import EnergyManagement
+from .models import GreenhouseGasEmission
 from .models import (WaterResourceRisk, EnergyResourceRisk, WasteManagementRisk,
                      GreenRisk, BoardOfDirectorsRisk, Functiona_Committee_Risk,
                      Hr_Develop_Risk, ShareholderRisk, Investor_Communication_Risk)
@@ -44,8 +51,131 @@ def about(request):
     return render(request, 'about.html')
 
 
+def energy_chart(request):
+    year = request.GET.get('year')  # 獲取年份
+    company_code = request.GET.get('company_code')  # 獲取公司代碼
+
+    if not year or not company_code:  # 如果缺少參數
+        return JsonResponse({'usage_rate': 0, 'error': 'Missing year or company_code'})
+
+    data = EnergyManagement.objects.filter(
+        year=year, company_code=company_code
+    ).values('usage_rate').first()
+
+    if data and data['usage_rate']:
+        try:
+            usage_rate = float(data['usage_rate'].replace('%', '').strip())
+        except ValueError:
+            return JsonResponse({'usage_rate': 0, 'error': 'Invalid usage_rate format'})
+    else:
+        return JsonResponse({'usage_rate': 0, 'error': 'No matching data found'})
+
+    return JsonResponse({'usage_rate': usage_rate})
+
+
 def chart(request):
-    return render(request, 'chart.html')
+    # 查詢所有公司代碼和名稱
+    companies = EnergyManagement.objects.values(
+        'company_code', 'company_name').distinct()
+    years = EnergyManagement.objects.values_list('year', flat=True).distinct()
+
+    selected_year = request.GET.get('year')
+    selected_company_code = request.GET.get('company_code')
+
+    usage_rate = 0
+    water_usage = 0
+    company_name = ''  # 新增變量來儲存公司名稱
+
+    if selected_year and selected_company_code:
+        # 根據選擇的公司代碼查詢公司名稱
+        company_data = EnergyManagement.objects.filter(
+            company_code=selected_company_code
+        ).values('company_name').first()
+        if company_data:
+            company_name = company_data.get('company_name', '')
+
+        # 查詢水資源數據
+        water_data = WaterResourceManagement.objects.filter(
+            year=selected_year, company_code=selected_company_code
+        ).values('water_usage').first()
+
+        if water_data:
+            water_usage = water_data.get('water_usage', 0)
+        else:
+            water_usage = 0
+
+        # 查詢能源數據
+        energy_data = EnergyManagement.objects.filter(
+            year=selected_year, company_code=selected_company_code
+        ).values('usage_rate').first()
+
+        if energy_data:
+            usage_rate = energy_data.get('usage_rate', 0)
+
+    context = {
+        'companies': companies,
+        'years': sorted(years, reverse=True),
+        'usage_rate': usage_rate,
+        'water_usage': water_usage,
+        'selected_year': selected_year,
+        'selected_company_code': selected_company_code,
+        'company_name': company_name,  # 傳遞公司名稱
+    }
+
+    return render(request, 'chart.html', context)
+
+
+def water_usage_chart(request):
+    year = request.GET.get('year')
+    company_code = request.GET.get('company_code')
+
+    water_usage = 0
+
+    if year and company_code:
+        water_data = WaterResourceManagement.objects.filter(
+            year=year, company_code=company_code
+        ).values('water_usage').first()
+
+        if water_data:
+            water_usage = water_data.get('water_usage', 0)
+
+    return JsonResponse({'water_usage': water_usage})
+
+
+def emissions_chart(request):
+    year = request.GET.get('year')
+    company_code = request.GET.get('company_code')
+
+    if year and company_code:
+        data = GreenhouseGasEmission.objects.filter(
+            year=year, company_code=company_code
+        ).values(
+            'scope_1_emissions', 'scope_2_emissions'
+        )
+        return JsonResponse({'data': list(data)})
+    return JsonResponse({'data': []})
+
+
+def waste_management_chart(request):
+    year = request.GET.get('year')
+    company_code = request.GET.get('company_code')
+
+    if year and company_code:
+        waste_data = WasteManagement.objects.filter(
+            year=year, company_code=company_code
+        ).values('hazardous_waste', 'non_hazardous_waste').first()
+
+        if waste_data:
+            return JsonResponse({
+                'data': [{
+                    'hazardous_waste': waste_data['hazardous_waste'],
+                    'non_hazardous_waste': waste_data['non_hazardous_waste'],
+                }]
+            })
+        else:
+            return JsonResponse({'data': []})
+
+    return JsonResponse({'data': []})
 
 
 def ESGEachCompany(request):

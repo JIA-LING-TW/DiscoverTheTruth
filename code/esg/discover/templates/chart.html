@@ -1,47 +1,353 @@
 {% extends "base.html" %}
 {% load static %}
-{% block subtitle %}圖表數據{% endblock subtitle %}
+{% block subtitle %}廢棄物管理數據分析{% endblock subtitle %}
 
 {% block selfcss %}
 <link rel="stylesheet" href="{% static 'css/chart.css' %}">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1 {
+        text-align: center;
+        margin: 20px 0;
+        color: #444;
+    }
+
+    .form-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1000px;
+        margin: 0 auto 20px auto;
+        padding: 10px;
+        background: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    .form-container label {
+        margin-right: 10px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .form-container select,
+    .form-container button {
+        padding: 8px;
+        margin-right: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .form-container button {
+        background-color: #36A2EB;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .form-container button:hover {
+        background-color: #2b8cc4;
+    }
+
+    .charts-container {
+        display: flex;
+        justify-content: space-between;
+        margin: 20px auto;
+        padding: 20px;
+        max-width: 1200px;
+    }
+
+    .chart-container {
+        width: 48%;
+        background: #fff;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    canvas {
+        width: 100%;
+        height: 300px;
+    }
+
+    .chart-container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+</style>
 {% endblock selfcss %}
+
 {% block body %}
-<header>
-    ESG 圖表數據
-</header>
+<h1 id="company-name">{{ company_name|default:"數據分析" }}</h1>
 
-<nav>
-    <button onclick="showCategory('E')">環境 (E)</button>
-    <button onclick="showCategory('S')">社會 (S)</button>
-    <button onclick="showCategory('G')">治理 (G)</button>
-</nav>
+<div class="form-container">
+    <div>
+        <label for="year">年度：</label>
+        <select id="year">
+            {% for year in years %}
+            <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-<div class="filters">
-    <select id="companyFilter">
-        <option value="all">選擇公司</option>
-        <!-- 動態載入公司選項 -->
-    </select>
-    <input type="text" id="companySearch" placeholder="輸入公司名稱">
-    <select id="yearFilter">
-        <option value="all">選擇年份</option>
-        <!-- 動態載入年份選項 -->
-    </select>
-    <button onclick="applyFilters()">篩選</button>
+    <div>
+        <label for="company">公司代碼：</label>
+        <input type="text" id="company" placeholder="輸入公司代碼">
+    </div>
+
+    <button id="load-data">載入數據</button>
 </div>
 
+<!-- 排放量與能源圖表 -->
+<div class="charts-container">
+    <!-- 排放量圖表 -->
+    <div class="chart-container">
+        <h2>溫室氣體排放量</h2>
+        <canvas id="emissionsChart"></canvas>
+    </div>
 
+    <!-- 堆疊條形圖：能源使用率 -->
+    <div class="chart-container">
+        <h2>能源使用率 (再生能源/總能源)</h2>
+        <canvas id="energyChart"></canvas>
+    </div>
+</div>
 
+<!-- 用水量與廢棄物圖表並排 -->
+<div class="charts-container">
+    <!-- 用水量圖表 -->
+    <div class="chart-container">
+        <h2>用水量 (公噸)</h2>
+        <canvas id="waterUsageChart"></canvas>
+    </div>
+
+    <!-- 廢棄物圖表 -->
+    <div class="chart-container">
+        <h2>廢棄物管理</h2>
+        <canvas id="wasteManagementChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    function showCategory(category) {
-        console.log("切換到分類:", category);
+
+    document.getElementById('company').addEventListener('input', async (event) => {
+        const companyCode = event.target.value;
+        if (companyCode) {
+            try {
+                const response = await fetch(`/get-company-name/?company_code=${companyCode}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const companyName = data.company_name || '未知公司';
+                    document.querySelector('h1').textContent = `${companyName} 數據分析`;
+                }
+            } catch (error) {
+                console.error('Error fetching company name:', error);
+            }
+        } else {
+            document.querySelector('h1').textContent = '廢棄物管理數據分析';
+        }
+    });
+
+
+
+
+    const year = "{{ selected_year|default:'2023' }}";  // 如果未選擇年份，默認為 2023
+    const emissionsChartContext = document.getElementById('emissionsChart').getContext('2d');
+    const energyChartContext = document.getElementById('energyChart').getContext('2d');
+    const waterUsageChartContext = document.getElementById('waterUsageChart').getContext('2d');
+    const wasteManagementChartContext = document.getElementById('wasteManagementChart').getContext('2d');
+    let emissionsChart, energyChart, waterUsageChart, wasteManagementChart;
+    
+    function updateEmissionsChart(data, year, companyCode) {
+        if (emissionsChart) emissionsChart.destroy();
+    
+        emissionsChart = new Chart(emissionsChartContext, {
+            type: 'bar',
+            data: {
+                labels: ['範疇一', '範疇二'],
+                datasets: [{
+                    label: '排放量 (噸CO2e)',
+                    data: [data.scope_1_emissions, data.scope_2_emissions],
+                    backgroundColor: ['#36A2EB', '#FFCE56']
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: `${year} 年 - ${companyCode} (噸CO2e)` }
+                }
+            }
+        });
+    }
+    
+    function updateEnergyChart(usageRate) {
+        const year = document.getElementById('year').value;  // 动态获取选择的年份
+        if (energyChart) energyChart.destroy();
+    
+        energyChart = new Chart(energyChartContext, {
+            type: 'bar',  // 使用堆疊條形圖
+            data: {
+                labels: ['能源'],
+                datasets: [
+                    {
+                        label: '再生能源',
+                        data: [usageRate],
+                        backgroundColor: '#36A2EB'
+                    },
+                    {
+                        label: '其他能源',
+                        data: [100 - usageRate],
+                        backgroundColor: '#FFCE56'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'x',  // 水平排列
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: `使用率: ${year} 年 - ${usageRate}%` }
+                },
+                scales: {
+                    x: { 
+                        beginAtZero: true,
+                        stacked: true  // 堆疊條形圖
+                    },
+                    y: {
+                        stacked: true,  // 堆疊條形圖
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+    
+    
+    function updateWaterUsageChart(waterUsage, year) {
+        if (waterUsageChart) waterUsageChart.destroy();
+    
+        // 確保 waterUsage 是有效數字
+        if (isNaN(waterUsage) || waterUsage === null || waterUsage === undefined) {
+            waterUsage = 0;  // 設定為 0 或其他預設值
+        }
+    
+        waterUsageChart = new Chart(waterUsageChartContext, {
+            type: 'bar',
+            data: {
+                labels: ['用水量 (公噸)'],
+                datasets: [{
+                    label: '用水量',
+                    data: [waterUsage],
+                    backgroundColor: ['#FF6384']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: {
+                        display: true,
+                        text: `用水量: ${year} 年 - ${waterUsage} (公噸)`  // 正確的模板字面量語法
+                    }
+                }
+            }
+        });
     }
 
-    function applyFilters() {
-        const company = document.getElementById("companyFilter").value;
-        const search = document.getElementById("companySearch").value;
-        const year = document.getElementById("yearFilter").value;
-        console.log(`篩選條件：公司=${company}, 搜尋=${search}, 年份=${year}`);
+    function updateWasteManagementChart(data, year, companyCode) {
+        if (wasteManagementChart) wasteManagementChart.destroy();
+
+        const hazardousWaste = parseFloat(data.hazardous_waste) || 0;
+        const nonHazardousWaste = parseFloat(data.non_hazardous_waste) || 0;
+
+        wasteManagementChart = new Chart(wasteManagementChartContext, {
+            type: 'bar',
+            data: {
+                labels: ['有害廢棄物', '無害廢棄物'],
+                datasets: [{
+                    label: '廢棄物量 (公噸)',
+                    data: [hazardousWaste, nonHazardousWaste],
+                    backgroundColor: ['#FF6384', '#36A2EB']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: `${year} 年 - ${companyCode} (公噸)` }
+                }
+            }
+        });
     }
+    
+    async function fetchChartData(url, params) {
+        const queryString = new URLSearchParams(params).toString();
+        const response = await fetch(`${url}?${queryString}`);
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+    }
+    
+    document.getElementById('load-data').addEventListener('click', async () => {
+        const year = document.getElementById('year').value;
+        const companyCode = document.getElementById('company').value;
+    
+        if (!year || !companyCode) {
+            alert('請選擇年度和公司代碼！');
+            return;
+        }
+    
+        try {
+            // 1. 溫室氣體排放量
+            const emissionsData = await fetchChartData('/emissions-chart', { year, company_code: companyCode });
+            if (emissionsData.data.length === 0) {
+                alert('未找到溫室氣體數據！');
+                return;
+            }
+            updateEmissionsChart(emissionsData.data[0], year, companyCode);
+    
+            // 2. 能源使用率
+            const energyData = await fetchChartData('/energy-chart', { year, company_code: companyCode });
+            if (!energyData.usage_rate) {
+                alert('未找到能源使用率數據！');
+                return;
+            }
+            updateEnergyChart(energyData.usage_rate);
+    
+            // 3. 用水量
+            const waterUsageData = await fetchChartData('/water-usage-chart', { year, company_code: companyCode });
+            if (!waterUsageData.water_usage) {
+                alert('未找到用水量數據！');
+                return;
+            }
+            updateWaterUsageChart(waterUsageData.water_usage, year);
+    
+            // 4. 廢棄物
+            const wasteData = await fetchChartData('/waste-management-chart', { year, company_code: companyCode });
+            if (wasteData.data && wasteData.data.length > 0) {
+                const { hazardous_waste, non_hazardous_waste } = wasteData.data[0];
+                updateWasteManagementChart({ hazardous_waste, non_hazardous_waste }, year, companyCode);
+            } else {
+                alert('未找到廢棄物數據！');
+            }
+    
+        } catch (error) {
+            console.error('Error:', error);
+            alert('查詢數據時發生錯誤，請稍後再試！');
+        }
+    });
+    
+    
 </script>
-
 {% endblock %}

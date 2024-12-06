@@ -71,4 +71,9 @@ urlpatterns = [
          name='load_data'),
     path('load-data_i/', views.load_csv_to_database_shareholder_risk,
          name='load_data'),
+    path('emissions-chart/', views.emissions_chart, name='emissions_chart'),
+    path('energy-chart/', views.energy_chart, name='energy_chart'),
+    path('water-usage-chart/', views.water_usage_chart, name='water_usage_chart'),
+    path('waste-management-chart', views.waste_management_chart,
+         name='waste_management_chart'),
 ]
