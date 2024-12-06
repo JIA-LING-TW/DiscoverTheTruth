@@ -360,7 +360,8 @@ class SustainabilityReport(models.Model):
 class WaterResourceRisk(models.Model):
     market_category = models.CharField(max_length=10, verbose_name="市場別")
     report_year = models.IntegerField(verbose_name="報告年度")
-    company_id = models.FloatField(null=True, blank=True, verbose_name="公司代號")
+    company_code = models.FloatField(
+        null=True, blank=True, verbose_name="公司代號")
     company_name = models.CharField(
         max_length=255, null=True, blank=True, verbose_name="公司名稱")
     water_usage = models.FloatField(verbose_name="用水量")
@@ -385,7 +386,8 @@ class WaterResourceRisk(models.Model):
 class EnergyResourceRisk(models.Model):
     market_category = models.CharField(max_length=10, verbose_name="市場別")
     report_year = models.IntegerField(verbose_name="報告年度")
-    company_id = models.FloatField(null=True, blank=True, verbose_name="公司代號")
+    company_code = models.FloatField(
+        null=True, blank=True, verbose_name="公司代號")
     company_name = models.CharField(
         max_length=255, null=True, blank=True, verbose_name="公司名稱")
     renewable_energy_rate = models.FloatField(
@@ -408,7 +410,8 @@ class EnergyResourceRisk(models.Model):
 class WasteManagementRisk(models.Model):
     market_category = models.CharField(max_length=10, verbose_name="市場別")
     report_year = models.IntegerField(verbose_name="報告年度")
-    company_id = models.FloatField(null=True, blank=True, verbose_name="公司代號")
+    company_code = models.FloatField(
+        null=True, blank=True, verbose_name="公司代號")
     company_name = models.CharField(
         max_length=255, null=True, blank=True, verbose_name="公司名稱")
     hazardous_waste_amount = models.FloatField(
@@ -439,7 +442,8 @@ class WasteManagementRisk(models.Model):
 class GreenRisk(models.Model):
     market_category = models.CharField(max_length=10, verbose_name="市場別")
     report_year = models.IntegerField(verbose_name="年份")
-    company_id = models.FloatField(null=True, blank=True, verbose_name="公司代號")
+    company_code = models.FloatField(
+        null=True, blank=True, verbose_name="公司代號")
     company_name = models.CharField(
         max_length=255, null=True, blank=True, verbose_name="公司名稱")
     scope_1_emission = models.FloatField(

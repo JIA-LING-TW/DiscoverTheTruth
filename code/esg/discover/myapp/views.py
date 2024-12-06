@@ -270,11 +270,11 @@ def ESGEachCompany(request):
 
 def ESGReal(request):
     # 獲取篩選條件
-    report_year = request.GET.get('report_year')
-    risk_topic = request.GET.get('risk_topic')
-    company_code = request.GET.get('company_code')  # 用戶輸入的公司代號
+    report_year = request.GET.get('report_year', '').strip()  # 清理空白
+    risk_topic = request.GET.get('risk_topic', '').strip()
+    company_code = request.GET.get('company_code', '').strip()
 
-    # 定義對應模型的字典
+    # 定義風險議題與模型的對應字典
     model_mapping = {
         "水資源管理": WaterResourceRisk,
         "能源管理": EnergyResourceRisk,
@@ -287,25 +287,35 @@ def ESGReal(request):
         "董事會": BoardOfDirectorsRisk,
     }
 
-    data = []  # 用於存放篩選後的結果
+    data = []  # 初始化查詢結果
+    message = None  # 用於提示消息
 
-    # 如果風險議題和模型對應，進行查詢
-    if risk_topic in model_mapping:
-        model = model_mapping[risk_topic]
-        queryset = model.objects.all()
+    try:
+        # 確認風險議題是否有效
+        if risk_topic in model_mapping:
+            model = model_mapping[risk_topic]
+            queryset = model.objects.all()
 
-        # 根據篩選條件篩選資料
-        if report_year:
-            queryset = queryset.filter(report_year=report_year)
-        if company_code:  # 確認是否有輸入公司代號
-            # 使用正確的欄位名稱 company_id
-            queryset = queryset.filter(
-                company_id=company_code)  # 改為 company_id
+            # 根據篩選條件過濾數據
+            if report_year:
+                queryset = queryset.filter(report_year=report_year)
+            if company_code:
+                queryset = queryset.filter(
+                    company_code=company_code)  # 假設字段名稱為 company_code
 
-        # 只提取需要的欄位
-        data = queryset.values(
-            'anomaly_label', 'network_centrality', 'company_name', 'report_year'
-        )
+            # 提取需要的欄位
+            data = queryset.values(
+                'anomaly_label', 'network_centrality', 'company_name', 'report_year'
+            )
+
+            # 如果無匹配資料，提示消息
+            if not data.exists():
+                message = "未找到符合條件的數據。"
+        else:
+            message = "請選擇一個有效的風險議題。"
+    except Exception as e:
+        # 捕獲異常並設置錯誤消息
+        message = f"數據查詢過程中出現問題：{str(e)}"
 
     # 返回篩選條件和查詢結果給前端
     return render(request, 'ESGReal.html', {
@@ -313,6 +323,7 @@ def ESGReal(request):
         'report_year': report_year,
         'risk_topic': risk_topic,
         'company_code': company_code,
+        'message': message,  # 添加提示消息
     })
 
 
@@ -355,8 +366,8 @@ def ESGRisk(request):
 
         # 篩選公司代碼
         if company_code:
-            # 使用 company_id 作為篩選條件
-            risks = risks.filter(company_id=company_code)
+            # 使用 company_code 篩選
+            risks = risks.filter(company_code=company_code)
 
         # 檢查資料是否存在
         if not risks.exists():
@@ -379,7 +390,7 @@ def ESGRisk(request):
                     api_data.append({
                         "company_name": item.get("公司簡稱"),
                         "year": item.get("年度"),
-                        "company_id": item.get("公司代號"),
+                        "company_code": item.get("公司代號"),  # 使用 company_code
                         "market_category": item.get("市場別"),
                         "chairman": item.get("董事長"),  # 董事長
                         "ceo": item.get("總經理"),  # 總經理
