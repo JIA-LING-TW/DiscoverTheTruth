@@ -8,7 +8,7 @@
     /* 基本樣式 */
     body {
         font-family: 'Arial', sans-serif;
-        background-color: #f5f7fa;
+        background: linear-gradient(to right, #fde2eb, #5a8cbf); /* Light Pink to Muted Blue */
         color: #333;
         margin: 0;
         padding: 0;
@@ -16,7 +16,7 @@
 
     h1 {
         text-align: center;
-        font-size: 30px;
+        font-size: 40px;
         color: #333;
         margin: 30px 0;
     }
@@ -118,7 +118,7 @@
 {% endblock selfcss %}
 
 {% block body %}
-<h1 id="company-name"> {{ company_name }} <span>數據分析</span></h1>
+<h1 id="company-name"> {{ company_name }} <span style="font-size:40px;color:black;">數據分析</span></h1>
 
 <div class="form-container">
     <div>
@@ -188,6 +188,8 @@
     
                 // Update the <h1> element with the company name
                 companyNameElement.textContent = `${companyName} 數據分析`;
+                companyNameElement.style.fontSize = '40px';  // Make the text bold
+
             } catch (error) {
                 console.error('Error fetching company name:', error);
                 companyNameElement.textContent = '查詢失敗，請稍後再試 數據分析';

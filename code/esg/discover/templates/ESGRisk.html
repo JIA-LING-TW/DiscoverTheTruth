@@ -4,56 +4,97 @@
 
 {% block selfcss %}
 <link rel="stylesheet" href="{% static 'css/risk.css' %}">
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(to right, #fde2eb, #5a8cbf); /* Light Pink to Muted Blue */
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+    .container55{
+        background: linear-gradient(to right, #fde2eb, #5a8cbf); /* Light Pink to Muted Blue */
+    }
+    .f33 .row {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 15px;
+        /* 控制項目間的距離 */
+        align-items: center;
+        /* 改為垂直居中對齊 */
+    }
+    
+    
+    /* 整體容器的間距與佈局 */
+    .f33 {
+        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        padding: 10px 15px;
+        /* 背景色 */
+        /* border: 1px solid #ddd; */
+        /* 邊框 */
+        border-radius: 8px;
+        /* 圓角 */
+        margin-bottom: 20px;
+    }
+    .form-container333{
+        margin-left:220px;
+    }
+    
+</style>
 {% endblock selfcss %}
 
 {% block body %}
-<div class="container mt-5">
+<div class="container55 mt-5">
     <h1 class="text-center mb-4">ESG 風險管理查詢系統</h1>
 
     <!-- 篩選表單 -->
-    <form method="GET" class="mb-3 f33">
-        <div class="row align-items-end">
-            <!-- 報告年度 -->
-            <div class="col-auto_risk">
-                <label for="report_year" class="form-label1_risk">報告年度：</label>
-                <select name="report_year" id="report_year" class="form-select_risk">
-                    <option value="">全部</option>
-                    <option value="2021" {% if selected_year == '2021' %}selected{% endif %}>2021</option>
-                    <option value="2022" {% if selected_year == '2022' %}selected{% endif %}>2022</option>
-                    <option value="2023" {% if selected_year == '2023' %}selected{% endif %}>2023</option>
-                </select>
+    <div class="form-container333">
+        <form method="GET" class="mb-3 f33">
+            <div class="row align-items-end">
+                <!-- 報告年度 -->
+                <div class="col-auto_risk">
+                    <label for="report_year" class="form-label1_risk">報告年度：</label>
+                    <select name="report_year" id="report_year" class="form-select_risk">
+                        <option value="">全部</option>
+                        <option value="2021" {% if selected_year == '2021' %}selected{% endif %}>2021</option>
+                        <option value="2022" {% if selected_year == '2022' %}selected{% endif %}>2022</option>
+                        <option value="2023" {% if selected_year == '2023' %}selected{% endif %}>2023</option>
+                    </select>
+                </div>
+        
+                <!-- 相關議題風險 -->
+                <div class="col-auto_risk">
+                    <label for="risk_topic" class="form-label1_risk">相關議題風險：</label>
+                    <select name="risk_topic" id="risk_topic" class="form-select_risk">
+                        <option value="">全部</option>
+                        <option value="water" {% if selected_topic == 'water' %}selected{% endif %}>水資源管理</option>
+                        <option value="energy" {% if selected_topic == 'energy' %}selected{% endif %}>能源管理</option>
+                        <option value="waste" {% if selected_topic == 'waste' %}selected{% endif %}>廢棄物管理</option>
+                        <option value="carbon" {% if selected_topic == 'carbon' %}selected{% endif %}>碳排放管理</option>
+                        <option value="function" {% if selected_topic == 'function' %}selected{% endif %}>功能性委員會</option>
+                        <option value="shareholder" {% if selected_topic == 'shareholder' %}selected{% endif %}>持股及控制力</option>                    
+                        <option value="hr" {% if selected_topic == 'hr' %}selected{% endif %}>人力資源發展</option>
+                        <option value="investor" {% if selected_topic == 'investor' %}selected{% endif %}>投資人溝通</option>
+                        <option value="board" {% if selected_topic == 'board' %}selected{% endif %}>董事會</option>
+                    </select>
+                </div>
+        
+                <!-- 公司代碼 -->
+                <div class="col-auto_risk co_risk">
+                    <label for="company_code" class="company_code_risk">公司代號：</label>
+                    <input type="text" name="company_code" id="company_code" class="form-control_risk" placeholder="請輸入公司代碼" value="{{ company_code }}">
+                </div>
+        
+                <!-- 查詢按鈕 -->
+                <div class="col-auto_risk">
+                    <button type="submit" class="btn btn-success_risk">篩選</button>
+                </div>
             </div>
-    
-            <!-- 相關議題風險 -->
-            <div class="col-auto_risk">
-                <label for="risk_topic" class="form-label1_risk">相關議題風險：</label>
-                <select name="risk_topic" id="risk_topic" class="form-select_risk">
-                    <option value="">全部</option>
-                    <option value="water" {% if selected_topic == 'water' %}selected{% endif %}>水資源管理</option>
-                    <option value="energy" {% if selected_topic == 'energy' %}selected{% endif %}>能源管理</option>
-                    <option value="waste" {% if selected_topic == 'waste' %}selected{% endif %}>廢棄物管理</option>
-                    <option value="carbon" {% if selected_topic == 'carbon' %}selected{% endif %}>碳排放管理</option>
-                    <option value="function" {% if selected_topic == 'function' %}selected{% endif %}>功能性委員會</option>
-                    <option value="shareholder" {% if selected_topic == 'shareholder' %}selected{% endif %}>持股及控制力</option>                    
-                    <option value="hr" {% if selected_topic == 'hr' %}selected{% endif %}>人力資源發展</option>
-                    <option value="investor" {% if selected_topic == 'investor' %}selected{% endif %}>投資人溝通</option>
-                    <option value="board" {% if selected_topic == 'board' %}selected{% endif %}>董事會</option>
-                </select>
-            </div>
-    
-            <!-- 公司代碼 -->
-            <div class="col-auto_risk co_risk">
-                <label for="company_code" class="company_code_risk">公司代號：</label>
-                <input type="text" name="company_code" id="company_code" class="form-control_risk" placeholder="請輸入公司代碼" value="{{ company_code }}">
-            </div>
-    
-            <!-- 查詢按鈕 -->
-            <div class="col-auto_risk">
-                <button type="submit" class="btn btn-success_risk">篩選</button>
-            </div>
-        </div>
-    </form>
-    
+        </form>
+    </div>
     <!-- 提示訊息 -->
     {% if message %}
         <p class="text-center text-danger">{{ message }}</p>
@@ -66,13 +107,13 @@
                 {% for item in api_data %}
                     <div class="block44">
                         <h2>股名 / 股號</h2>
-                        <p>{{ item.company_name|default:"未知公司" }} {{ item.company_id|default:"無資料" }}</p>
+                        <p style="font-size:40px;font-weight: bold; color:blue;">{{ item.company_name|default:"未知公司" }} {{ item.company_id|default:"無資料" }}</p>
                     </div>
                     <div class="block44">
                         <h2>公司基本資訊</h2>
-                        <p>資本額：{{ item.capital|default:"無資料" }}</p>
-                        <p>董事長：{{ item.chairman|default:"無資料" }}</p>
-                        <p>總經理：{{ item.ceo|default:"無資料" }}</p>
+                        <p style="font-weight: bold;">資本額：{{ item.capital|default:"無資料" }}</p>
+                        <p style="font-weight: bold;">董事長：{{ item.chairman|default:"無資料" }}</p>
+                        <p style="font-weight: bold;">總經理：{{ item.ceo|default:"無資料" }}</p>
                     </div>
                 {% endfor %}
             </div>
@@ -99,11 +140,11 @@
                         ">
                             漂綠標籤：{{ risk.greenwashing_label|default:"未標示" }}
                         </p>
-                        <p>驗證取得：{{ risk.verification_status|default:"未驗證" }}</p>
+                        <p style="font-weight: bold;">驗證取得：{{ risk.verification_status|default:"未驗證" }}</p>
                     </div>
                     <div class="block44">
                         <h2>偵測風險結果</h2>
-                        <p class="risk-level {% if risk.risk_level == '高風險' %}red-level{% elif risk.risk_level == '中風險' %}yellow-level{% elif risk.risk_level == '低風險' %}green-level{% else %}default-level{% endif %}">
+                        <p class="risk-level {% if risk.risk_level == '高風險' %}red-level{% elif risk.risk_level == '中風險' %}yellow-level{% elif risk.risk_level == '低風險' %}green-level{% else %}default-level{% endif %}" style="color:green;">
                             風險等級：{{ risk.risk_level|default:"未評估" }}
                         </p>
                     </div>
