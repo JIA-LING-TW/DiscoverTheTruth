@@ -73,6 +73,20 @@ def energy_chart(request):
     return JsonResponse({'usage_rate': usage_rate})
 
 
+def get_company_name(request):
+    company_code = request.GET.get('company_code')
+    company_name = ''
+
+    if company_code:
+        company_data = EnergyManagement.objects.filter(
+            company_code=company_code
+        ).values('company_name').first()
+        if company_data:
+            company_name = company_data.get('company_name', '')
+
+    return JsonResponse({'company_name': company_name})
+
+
 def chart(request):
     # 查詢所有公司代碼和名稱
     companies = EnergyManagement.objects.values(
