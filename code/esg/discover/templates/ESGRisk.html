@@ -5,6 +5,15 @@
 {% block selfcss %}
 <link rel="stylesheet" href="{% static 'css/risk.css' %}">
 <style>
+    .text-center {
+        text-align: center;
+        margin: 0 auto;
+    }
+    .text-muted, .text-danger {
+        font-size: 16px; /* 可調整字體大小 */
+        line-height: 1.5;
+    }
+    
     body {
         font-family: 'Arial', sans-serif;
         background: linear-gradient(to right, #fde2eb, #5a8cbf); /* Light Pink to Muted Blue */
@@ -47,7 +56,7 @@
 {% endblock selfcss %}
 
 {% block body %}
-<div class="container55 mt-5">
+<div class="container55 mt-5" style="margin-top:40px;">
     <h1 class="text-center mb-4">ESG基金風險管理系統</h1>
 
     <!-- 篩選表單 -->
