@@ -488,7 +488,7 @@ class BoardOfDirectorsRisk(models.Model):
     female_ratio = models.FloatField(verbose_name="女性董事比例")
     attendance_rate = models.FloatField(verbose_name="董事會出席率")
     training_rate = models.FloatField(verbose_name="董事進修比率")
-    centrality = models.FloatField(verbose_name="網絡中心性")
+    network_centrality = models.FloatField(verbose_name="網絡中心性")
     risk_level = models.CharField(max_length=20, verbose_name="風險等級")
     anomaly_label = models.CharField(max_length=20, verbose_name="異常標籤")
 

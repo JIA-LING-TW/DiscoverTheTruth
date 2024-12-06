@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% block subtitle %}風險管理{% endblock subtitle %}
+{% block subtitle %}ESG報告真實性驗證{% endblock subtitle %}
 
 {% block selfcss %}
 <link rel="stylesheet" href="{% static 'css/real.css' %}">
@@ -113,7 +113,7 @@
 {% endblock selfcss %}
 
 {% block body %}
-<h1>ESG 資料篩選系統</h1>
+<h1>ESG真實性驗證</h1>
 
 <!-- 篩選表單 -->
 <form method="get" class="filter-form">
@@ -169,8 +169,11 @@
                 <tr>
                     <td>{{ item.report_year }}</td>
                     <td>{{ item.company_name }}</td>
-                    <td>{{ item.network_centrality }}</td>
-                    <td>{{ item.anomaly_label }}</td>
+                    <td style="color:blue;">{{ item.network_centrality }}</td>
+                    <td style="{% if item.anomaly_label == '異常' %}color:red; font-weight:bold;{% endif %}">
+                        {{ item.anomaly_label }}
+                    </td>
+                    
                 </tr>
             {% endfor %}
         </tbody>
