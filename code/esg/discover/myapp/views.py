@@ -272,7 +272,7 @@ def ESGReal(request):
     # 獲取篩選條件
     report_year = request.GET.get('report_year')
     risk_topic = request.GET.get('risk_topic')
-    company_code = request.GET.get('company_code', '')  # 默認值為空字串
+    company_code = request.GET.get('company_code')  # 用戶輸入的公司代號
 
     # 定義對應模型的字典
     model_mapping = {
@@ -298,11 +298,14 @@ def ESGReal(request):
         if report_year:
             queryset = queryset.filter(report_year=report_year)
         if company_code:  # 確認是否有輸入公司代號
-            queryset = queryset.filter(company_id=company_code)  # 使用正確的欄位名稱
+            # 使用正確的欄位名稱 company_id
+            queryset = queryset.filter(
+                company_id=company_code)  # 改為 company_id
 
         # 只提取需要的欄位
         data = queryset.values(
-            'anomaly_label', 'network_centrality', 'company_name', 'report_year')
+            'anomaly_label', 'network_centrality', 'company_name', 'report_year'
+        )
 
     # 返回篩選條件和查詢結果給前端
     return render(request, 'ESGReal.html', {
@@ -352,7 +355,8 @@ def ESGRisk(request):
 
         # 篩選公司代碼
         if company_code:
-            risks = risks.filter(company_id=company_code)  # 改為 company_id
+            # 使用 company_id 作為篩選條件
+            risks = risks.filter(company_id=company_code)
 
         # 檢查資料是否存在
         if not risks.exists():
