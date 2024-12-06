@@ -4,28 +4,49 @@
 
 {% block selfcss %}
 <link rel="stylesheet" href="{% static 'css/contact.css' %}">
+<style>
+    .large-green-section {
+        background-color: #4caf50; /* 綠色背景 */
+        padding: 130px 120px 130px 120px ; /* 增大內邊距 */
+        text-align: center;
+        border-radius: 8px; /* 圓角（可選） */
+    }
+    
+    .large-green-section .section-title {
+        font-size: 3em; /* 增大標題字型 */
+        margin-bottom: 20px;
+    }
+    
+    .large-green-section .section-description {
+        font-size: 1.2em; /* 調整說明文字大小 */
+        line-height: 1.8; /* 增加行距 */
+    }
+    
+</style>
 {% endblock selfcss %}
 
 {% block body %}
-<section class="hero-section">
+<div class="about-section large-green-section">
     <div class="container">
-        <h1 class="hero-title">聯絡我們</h1>
-        <p class="hero-description">
-            無論您有任何問題、需求，或是合作機會，<br>我們都樂於傾聽並與您交流。請使用以下方式聯繫我們！
+        <h1 class="section-title">聯絡我們</h1>
+        <p class="section-description">
+            無論您有任何問題、需求，或是合作機會，<br>
+            我們都樂於傾聽並與您交流。歡迎透過以下方式聯繫我們！
         </p>
     </div>
-</section>
+</div>
 
-<section class="contact-details">
+
+<section class="core-values contact-details">
     <div class="container">
         <h2 class="section-title">聯絡方式</h2>
-        <div class="contact-grid">
-            <div class="contact-item">
+        <div class="values-grid contact-grid">
+            <div class="value contact-item">
                 <i class="fas fa-envelope icon"></i>
                 <h3>電子信箱</h3>
                 <p><a href="mailto:explorethetruth635@gmail.com" class="email-link">explorethetruth635@gmail.com</a></p>
             </div>
-            <div class="contact-item">
+            <div class="value contact-item">
                 <i class="fas fa-map-marker-alt icon"></i>
                 <h3>地址</h3>
                 <p>國立台北科技大學<br>宏裕科技大樓實驗室635</p>
@@ -34,14 +55,16 @@
     </div>
 </section>
 
-<section class="map-section">
+<section class="core-values map-section">
     <div class="container">
         <h2 class="section-title">我們的位置</h2>
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3614.710607891911!2d121.53182407562738!3d25.043893237892686!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442a97d255598df%3A0x47ea748e8f3f53aa!2z5ZyL56uL6Ie65YyX56eR5oqA5aSn5a24!5e0!3m2!1szh-TW!2stw!4v1732871695633!5m2!1szh-TW!2stw" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3614.710607891911!2d121.53182407562738!3d25.043893237892686!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442a97d255598df%3A0x47ea748e8f3f53aa!2z5ZyL56uL6Ie65YyX56eR5oqA5aSn5a24!5e0!3m2!1szh-TW!2stw!4v1732871695633!5m2!1szh-TW!2stw" 
+                width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
     </div>
 </section>
 
-<section class="contact-form-section">
+<section class="core-values contact-form-section">
     <div class="container">
         <h2 class="section-title">留下您的訊息</h2>
         <form action="#" method="POST" class="contact-form">
@@ -64,14 +87,14 @@
 
 <div class="bottom-section">
     <div class="line-container">
-        <img src="{% static "LOGO.png" %}" class="line-image">
+        <img src="{% static 'LOGO.png' %}" class="line-image">
         <span class="line-text">碳索偵相</span>
         <ul class="bottom-menu">
             <li>首頁</li>
             <li>服務內容</li>
             <li>技術實現</li>
             <li>關於</li>
-                <a href="#" class="register-button">立即註冊</a>
+            <a href="#" class="register-button">立即註冊</a>
         </ul>
     </div>
     <div class="bottom-right">
@@ -81,80 +104,7 @@
     </div>
 </div>
 
-
-
-
 <footer style="background: linear-gradient(to right, #d7e3f4, #b0c9ea); padding: 20px; text-align: center;">
     &copy; 2024 碳索偵相. All Rights Reserved.
 </footer>
 {% endblock body %}
-
-
-
-
-
-{% comment %} {% extends "base.html" %}
-{% load static %}
-{% block subtitle %}聯絡我們{% endblock subtitle %}
-
-{% block selfcss %}
-<link rel="stylesheet" href="{% static 'css/contact.css' %}">
-{% endblock selfcss %}
-{% block body %}
-<body>
-
-
-    <!DOCTYPE html>
-    <html lang="zh-TW">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>聯絡我們</title>
-        <link rel="stylesheet" href="styles.css">
-    </head>
-    <body>
-        <div class="contact-card">
-            <div class="contact-info">
-                <h2>聯絡我們</h2>
-                <p>電子信箱：<a href="mailto:explorethetruth635@gmail.com">explorethetruth635@gmail.com</a></p>
-            </div>
-            <div class="map-container">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3614.710607891911!2d121.53182407562738!3d25.043893237892686!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442a97d255598df%3A0x47ea748e8f3f53aa!2z5ZyL56uL6Ie65YyX56eR5oqA5aSn5a24!5e0!3m2!1szh-TW!2stw!4v1732871695633!5m2!1szh-TW!2stw" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
-        </div>
-    </body>
-    </html>
-    
- 
-
-
-
-    <div class="bottom-section">
-        <div class="line-container">
-            <img src="{% static "LOGO.png" %}" class="line-image">
-            <span class="line-text">碳索偵相</span>
-            <ul class="bottom-menu">
-                <li>首頁</li>
-                <li>服務內容</li>
-                <li>技術實現</li>
-                <li>關於</li>
-                    <a href="register.html" class="register-button">立即註冊</a>
-            </ul>
-        </div>
-        <div class="bottom-right">
-            <p>若有任何問題想諮詢我們，歡迎聯絡以下 Email！</p>
-            <p>explorethetruth635@gmail.com</p>
-            <a href="content.html" class="contact-button">聯絡我們</a>
-        </div>
-    </div>
-
-
-
-
-    <footer style="background: linear-gradient(to right, #d7e3f4, #b0c9ea); padding: 20px; text-align: center;">
-        &copy; 2024 碳索偵相. All Rights Reserved.
-    </footer>
-</body>
-
-{% endblock %} {% endcomment %}
-
