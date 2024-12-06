@@ -63,13 +63,13 @@
 
 /* 整體容器的間距與佈局 */
 .f33 {
+    text-align: center;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     padding: 10px 15px;
-    background-color: #f9f9f9;
     /* 背景色 */
-    border: 1px solid #ddd;
+    /* border: 1px solid #ddd; */
     /* 邊框 */
     border-radius: 8px;
     /* 圓角 */
