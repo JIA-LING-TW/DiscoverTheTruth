@@ -1,60 +1,109 @@
-/* 導航按鈕 */
-nav {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    gap: 10px;
-}
+ /* 基本樣式 */
+ body {
+     font-family: 'Arial', sans-serif;
+     background: linear-gradient(to right, #fde2eb, #5a8cbf);
+     /* Light Pink to Muted Blue */
+     color: #333;
+     margin: 0;
+     padding: 0;
+ }
 
-nav button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
+ h1 {
+     text-align: center;
+     font-size: 40px;
+     color: #333;
+     margin: 30px 0;
+ }
 
-nav button:hover {
-    background-color: #0056b3;
-}
+ h1 span {
+     font-size: 20px;
+     color: #4CAF50;
+ }
 
-/* 篩選區域 */
-.filters {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 20px 0;
-    padding: 10px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+ /* 表單容器 */
+ .form-container {
+     display: flex;
+     justify-content: space-between;
+     gap: 20px;
+     max-width: 1000px;
+     margin: 20px auto;
+     padding: 20px;
+     background: #fff;
+     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+     border-radius: 8px;
+ }
 
-.filters select,
-.filters input {
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    width: 200px;
-}
+ .form-container label {
+     font-weight: bold;
+     font-size: 16px;
+     margin-bottom: 8px;
+     color: #555;
+ }
 
-.filters button {
-    padding: 10px 20px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
+ .form-container select,
+ .form-container input {
+     width: 180px;
+     padding: 10px;
+     font-size: 14px;
+     border: 1px solid #ccc;
+     border-radius: 4px;
+     transition: all 0.3s ease;
+ }
 
-.filters button:hover {
-    background-color: #218838;
-}
+ .form-container select:focus,
+ .form-container input:focus {
+     border-color: #4CAF50;
+     outline: none;
+ }
 
-/* 輸入框與選擇框 */
-.filters input {
-    width: 250px;
-}
+ .form-container button {
+     width: 160px;
+     padding: 12px 20px;
+     font-size: 16px;
+     font-weight: bold;
+     background-color: #4CAF50;
+     color: white;
+     border: none;
+     border-radius: 4px;
+     cursor: pointer;
+     transition: background-color 0.3s ease;
+ }
+
+ .form-container button:hover {
+     background-color: #45a049;
+ }
+
+ .charts-container {
+     display: flex;
+     justify-content: space-between;
+     margin: 20px auto;
+     max-width: 1200px;
+     gap: 20px;
+ }
+
+ .chart-container {
+     width: 48%;
+     background: #fff;
+     padding: 20px;
+     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+     border-radius: 8px;
+ }
+
+ .chart-container h2 {
+     font-size: 22px;
+     text-align: center;
+     margin-bottom: 20px;
+     color: #4CAF50;
+ }
+
+ canvas {
+     width: 100%;
+     height: 300px;
+     border-radius: 4px;
+ }
+
+ /* 為「廢棄物」和「公司代碼」輸入框添加專門的樣式 */
+ .c444 {
+     margin-top: 5px;
+     margin-right: 10px;
+ }
