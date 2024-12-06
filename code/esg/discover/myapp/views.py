@@ -269,98 +269,47 @@ def ESGEachCompany(request):
 
 
 def ESGReal(request):
-    # 取得篩選選項
-    selected_year = request.GET.get('report_year')
-    selected_topic = request.GET.get('risk_topic')
-    company_code = request.GET.get(
-        'company_code', '').strip()  # 使用 company_code，並去除多餘空白
+    # 獲取篩選條件
+    report_year = request.GET.get('report_year')
+    risk_topic = request.GET.get('risk_topic')
+    company_code = request.GET.get('company_code', '')  # 默認值為空字串
 
-    risks = []  # 初始化風險資料
-    api_data = []  # 初始化 API 資料
-    message = None  # 提示訊息
-
-    # 風險議題與模型的對應
-    topic_model_map = {
-        "water": WaterResourceRisk,
-        "energy": EnergyResourceRisk,
-        "waste": WasteManagementRisk,
-        "carbon": GreenRisk,
-        "board": BoardOfDirectorsRisk,
-        "function": Functiona_Committee_Risk,
-        "hr": Hr_Develop_Risk,
-        "shareholder": ShareholderRisk,
-        "investor": Investor_Communication_Risk,
+    # 定義對應模型的字典
+    model_mapping = {
+        "水資源管理": WaterResourceRisk,
+        "能源管理": EnergyResourceRisk,
+        "廢棄物管理": WasteManagementRisk,
+        "碳排放管理": GreenRisk,
+        "功能性委員會": Functiona_Committee_Risk,
+        "持股及控制力": ShareholderRisk,
+        "人力資源發展": Hr_Develop_Risk,
+        "投資人溝通": Investor_Communication_Risk,
+        "董事會": BoardOfDirectorsRisk,
     }
 
-    if selected_topic and selected_topic in topic_model_map:
-        # 根據議題篩選對應模型
-        model = topic_model_map[selected_topic]
-        risks = model.objects.all()
+    data = []  # 用於存放篩選後的結果
 
-        # 篩選報告年度
-        if selected_year:
-            risks = risks.filter(report_year=selected_year)
+    # 如果風險議題和模型對應，進行查詢
+    if risk_topic in model_mapping:
+        model = model_mapping[risk_topic]
+        queryset = model.objects.all()
 
-        # 篩選公司代碼
-        if company_code:
-            risks = risks.filter(company_code=company_code)  # 修改為 company_code
+        # 根據篩選條件篩選資料
+        if report_year:
+            queryset = queryset.filter(report_year=report_year)
+        if company_code:  # 確認是否有輸入公司代號
+            queryset = queryset.filter(company_id=company_code)  # 使用正確的欄位名稱
 
-        # 檢查資料是否存在
-        if not risks.exists():
-            message = "目前無相關風險資料"
+        # 只提取需要的欄位
+        data = queryset.values(
+            'anomaly_label', 'network_centrality', 'company_name', 'report_year')
 
-        # 向 API 發送請求
-        try:
-            api_url = "https://openapi.twse.com.tw/v1/opendata/t187ap03_L"
-            response = requests.get(api_url)
-            response.raise_for_status()  # 確保請求成功
-            raw_api_data = response.json()  # 假設 API 返回 JSON 資料
-
-            # 篩選 API 資料
-            for item in raw_api_data:
-                if not company_code or item.get("公司代號") == company_code:
-                    capital = item.get("實收資本額")
-                    formatted_capital = locale.format_string(
-                        "%d", int(capital), grouping=True) if capital else None
-
-                    api_data.append({
-                        "company_name": item.get("公司簡稱"),
-                        "year": item.get("年度"),
-                        "company_id": item.get("公司代號"),
-                        "market_category": item.get("市場別"),
-                        "chairman": item.get("董事長"),  # 董事長
-                        "ceo": item.get("總經理"),  # 總經理
-                        "capital": formatted_capital,  # 格式化的實收資本額
-                    })
-
-            if not api_data:
-                message = "API 無符合條件的資料"
-        except requests.RequestException as e:
-            api_data = []
-            message = f"無法取得 API 資料：{e}"
-    else:
-        message = "請選擇一個議題進行查詢"
-
-    # 渲染篩選後的結果
+    # 返回篩選條件和查詢結果給前端
     return render(request, 'ESGReal.html', {
-        'risks': risks,
-        'api_data': api_data,
-        'selected_year': selected_year,
-        'selected_topic': selected_topic,
-        'company_code': company_code,  # 修改為 company_code
-        'message': message,
-        'years': [2021, 2022, 2023],  # 可選的報告年度
-        'topics': [
-            ("water", "水資源管理"),
-            ("energy", "能源管理"),
-            ("waste", "廢棄物管理"),
-            ("carbon", "碳排放管理"),
-            ("board", "董事會"),
-            ("function", "功能性委員會"),
-            ("hr", "人力資源發展"),
-            ("shareholder", "持股及控制力"),
-            ("investor", "投資人溝通"),
-        ],  # 可選的相關議題
+        'data': data,
+        'report_year': report_year,
+        'risk_topic': risk_topic,
+        'company_code': company_code,
     })
 
 

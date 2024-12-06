@@ -4,101 +4,178 @@
 
 {% block selfcss %}
 <link rel="stylesheet" href="{% static 'css/real.css' %}">
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(to right, #fde2eb, #5a8cbf); /* Light Pink to Muted Blue */
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+    .filter-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: center;
+        margin: 20px 0;
+        padding: 15px;
+        {% comment %} background-color: #f9f9f9; {% endcomment %}
+        {% comment %} border: 1px solid #ddd; {% endcomment %}
+        border-radius: 8px;
+        margin-left:220px;
+    }
+
+    .filter-form label {
+        margin-right: 10px;
+        font-weight: bold;
+        color: #555;
+    }
+
+    .filter-form select,
+    .filter-form input[type="text"] {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+        width: 180px;
+    }
+
+    .filter-form button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .filter-form button:hover {
+        background-color: #0056b3;
+    }
+
+    @media (max-width: 768px) {
+        .filter-form {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .filter-form label,
+        .filter-form select,
+        .filter-form input[type="text"],
+        .filter-form button {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .filter-form button {
+            width: auto;
+        }
+    }
+
+    table {
+        width: 90%;
+        margin: 20px auto;
+        border-collapse: collapse;
+        border: 1px solid #ccc;
+        background: #ffffff;
+    }
+
+    table, th, td {
+        border: 1px solid #ccc;
+    }
+
+    th, td {
+        padding: 15px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #007bff;
+        color: #ffffff;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    tbody tr:hover {
+        background-color: #e9ecef;
+    }
+
+    .no-data {
+        text-align: center;
+        margin-top: 20px;
+        color: #555;
+    }
+</style>
 {% endblock selfcss %}
 
 {% block body %}
-<div class="container mt-5">
-    <h1 class="text-center mb-4">ESG 風險管理查詢系統</h1>
+<h1>ESG 資料篩選系統</h1>
 
-    <!-- 篩選表單 -->
-    <form method="GET" class="mb-4">
-        <div class="row align-items-end">
-            <div class="col-auto">
-                <label for="report_year" class="form-label">報告年度：</label>
-                <select name="report_year" id="report_year" class="form-select">
-                    <option value="">全部</option>
-                    <option value="2021" {% if selected_year == '2021' %}selected{% endif %}>2021</option>
-                    <option value="2022" {% if selected_year == '2022' %}selected{% endif %}>2022</option>
-                    <option value="2023" {% if selected_year == '2023' %}selected{% endif %}>2023</option>
-                </select>
-            </div>
-    
-            <div class="col-auto">
-                <label for="risk_topic" class="form-label">相關議題風險：</label>
-                <select name="risk_topic" id="risk_topic" class="form-select">
-                    <option value="">全部</option>
-                    <option value="water" {% if selected_topic == 'water' %}selected{% endif %}>水資源管理</option>
-                    <option value="energy" {% if selected_topic == 'energy' %}selected{% endif %}>能源管理</option>
-                    <option value="waste" {% if selected_topic == 'waste' %}selected{% endif %}>廢棄物管理</option>
-                    <option value="carbon" {% if selected_topic == 'carbon' %}selected{% endif %}>碳排放管理</option>
-                    <option value="function" {% if selected_topic == 'function' %}selected{% endif %}>功能性委員會</option>
-                    <option value="shareholder" {% if selected_topic == 'shareholder' %}selected{% endif %}>持股及控制力</option>                    
-                    <option value="hr" {% if selected_topic == 'hr' %}selected{% endif %}>人力資源發展</option>
-                    <option value="investor" {% if selected_topic == 'investor' %}selected{% endif %}>投資人溝通</option>
-                    <option value="board" {% if selected_topic == 'board' %}selected{% endif %}>董事會</option>
-                </select>
-            </div>
-    
-            <div class="col-auto">
-                <label for="company_code" class="form-label">公司代號：</label>
-                <input type="text" name="company_code" id="company_code" class="form-control" placeholder="請輸入公司代碼" value="{{ company_code }}">
-            </div>
-    
-            <div class="col-auto">
-                <button type="submit" class="btn btn-success">篩選</button>
-            </div>
-        </div>
-    </form>
+<!-- 篩選表單 -->
+<form method="get" class="filter-form">
+    <div>
+        <label for="report_year">報告年度:</label>
+        <select name="report_year" id="report_year">
+            <option value="">選擇報告年度</option>
+            <option value="2021" {% if report_year == "2021" %}selected{% endif %}>2021</option>
+            <option value="2022" {% if report_year == "2022" %}selected{% endif %}>2022</option>
+            <option value="2023" {% if report_year == "2023" %}selected{% endif %}>2023</option>
+        </select>
+    </div>
 
-    <!-- 提示訊息 -->
-    {% if message %}
-        <p class="text-center text-danger">{{ message }}</p>
-    {% endif %}
+    <div>
+        <label for="risk_topic">風險議題:</label>
+        <select name="risk_topic" id="risk_topic">
+            <option value="">選擇風險議題</option>
+            <option value="水資源管理" {% if risk_topic == "水資源管理" %}selected{% endif %}>水資源管理</option>
+            <option value="能源管理" {% if risk_topic == "能源管理" %}selected{% endif %}>能源管理</option>
+            <option value="廢棄物管理" {% if risk_topic == "廢棄物管理" %}selected{% endif %}>廢棄物管理</option>
+            <option value="碳排放管理" {% if risk_topic == "碳排放管理" %}selected{% endif %}>碳排放管理</option>
+            <option value="功能性委員會" {% if risk_topic == "功能性委員會" %}selected{% endif %}>功能性委員會</option>
+            <option value="持股及控制力" {% if risk_topic == "持股及控制力" %}selected{% endif %}>持股及控制力</option>
+            <option value="人力資源發展" {% if risk_topic == "人力資源發展" %}selected{% endif %}>人力資源發展</option>
+            <option value="投資人溝通" {% if risk_topic == "投資人溝通" %}selected{% endif %}>投資人溝通</option>
+            <option value="董事會" {% if risk_topic == "董事會" %}selected{% endif %}>董事會</option>
+        </select>
+    </div>
 
-    <!-- 顯示 API 資料 -->
-    {% if api_data %}
-        <div class="card-deck">
-            {% for item in api_data %}
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">公司資訊</h5>
-                        <p><strong>股名 / 股號:</strong> {{ item.company_name|default:"未知公司" }} {{ item.company_id|default:"無資料" }}</p>
-                        <p><strong>資本額:</strong> {{ item.capital|default:"無資料" }}</p>
-                        <p><strong>董事長:</strong> {{ item.chairman|default:"無資料" }}</p>
-                        <p><strong>總經理:</strong> {{ item.ceo|default:"無資料" }}</p>
-                    </div>
-                </div>
+    <div>
+        <label for="company_code">公司代號:</label>
+        <input type="text" name="company_code" id="company_code" placeholder="輸入公司代號" value="{{ company_code }}">
+    </div>
+
+    <div>
+        <button type="submit">篩選</button>
+    </div>
+</form>
+
+<!-- 篩選結果 -->
+{% if data %}
+    <table>
+        <thead>
+            <tr>
+                <th>報告年度</th>
+                <th>公司名稱</th>
+                <th>SNA指數</th>
+                <th>異常標籤</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data %}
+                <tr>
+                    <td>{{ item.report_year }}</td>
+                    <td>{{ item.company_name }}</td>
+                    <td>{{ item.network_centrality }}</td>
+                    <td>{{ item.anomaly_label }}</td>
+                </tr>
             {% endfor %}
-        </div>
-    {% else %}
-        <p class="text-center text-muted">尚無API資料顯示</p>
-    {% endif %}
-
-    <!-- 顯示資料庫資料 -->
-    {% if risks %}
-        <div class="card-deck">
-            {% for risk in risks %}
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">漂綠偵測結果</h5>
-                        <p class="greenwashing-label {% if risk.greenwashing_label == '無漂綠跡象' %}blue-label{% elif risk.greenwashing_label == '可能漂綠' %}gray-label{% else %}default-label{% endif %}">
-                            漂綠標籤：{{ risk.greenwashing_label|default:"未標示" }}
-                        </p>
-                        <p><strong>驗證取得：</strong> {{ risk.verification_status|default:"未驗證" }}</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">偵測風險結果</h5>
-                        <p class="risk-level {% if risk.risk_level == '高風險' %}red-level{% elif risk.risk_level == '中風險' %}yellow-level{% elif risk.risk_level == '低風險' %}green-level{% else %}default-level{% endif %}">
-                            風險等級：{{ risk.risk_level|default:"未評估" }}
-                        </p>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p class="text-center text-muted">尚無風險資料顯示</p>
-    {% endif %}
-</div>
+        </tbody>
+    </table>
+{% else %}
+    <p class="no-data">沒有找到符合條件的資料。</p>
+{% endif %}
 {% endblock %}
