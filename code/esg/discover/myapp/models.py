@@ -31,15 +31,15 @@ class WasteManagement(models.Model):
     company_code = models.CharField(
         max_length=20, verbose_name="公司代號", blank=True, null=True)
     company_name = models.CharField(max_length=100, verbose_name="公司名稱")
-    hazardous_waste = models.CharField(
-        max_length=255, verbose_name="有害廢棄物量(公噸)", blank=True, null=True)
-    non_hazardous_waste = models.CharField(
-        max_length=255, verbose_name="非有害廢棄物量(公噸)", blank=True, null=True)
-    total_weight = models.CharField(
-        max_length=255, verbose_name="總重量(有害+非有害)(公噸)", blank=True, null=True)
+    hazardous_waste = models.DecimalField(
+        max_digits=10, decimal_places=2, verbose_name="有害廢棄物量(公噸)", blank=True, null=True)
+    non_hazardous_waste = models.DecimalField(
+        max_digits=10, decimal_places=2, verbose_name="非有害廢棄物量(公噸)", blank=True, null=True)
+    total_weight = models.DecimalField(
+        max_digits=10, decimal_places=2, verbose_name="總重量(有害+非有害)(公噸)", blank=True, null=True)
     data_scope = models.TextField(verbose_name="資料範圍", blank=True, null=True)
-    waste_intensity = models.CharField(
-        max_length=255, verbose_name="廢棄物密集度(公噸/單位)", blank=True, null=True)
+    waste_intensity = models.DecimalField(
+        max_digits=10, decimal_places=2, verbose_name="廢棄物密集度(公噸/單位)", blank=True, null=True)
     waste_intensity_unit = models.CharField(
         max_length=100, verbose_name="廢棄物密集度-單位", blank=True, null=True)
     certification = models.CharField(
