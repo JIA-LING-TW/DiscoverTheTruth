@@ -107,3 +107,37 @@
      margin-top: 5px;
      margin-right: 10px;
  }
+
+ .container_three33 {
+     display: flex;
+     justify-content: space-between;
+     /* 均等間距 */
+     align-items: stretch;
+     /* 高度一致 */
+     height: 100px;
+     /* 設定容器高度，或使用內容自適應 */
+ }
+
+ .item133 {
+     flex: 1;
+     /* 平均分配寬度 */
+     border: 1px solid #ddd;
+     /* 外框，方便觀察效果 */
+     margin: 0 5px;
+     /* 元素間距 */
+     text-align: center;
+     /* 文字置中 */
+     line-height: 100px;
+     /* 文字垂直置中，根據容器高度調整 */
+     background-color: #f0f0f0;
+     /* 背景顏色 */
+ }
+
+ /* 移除左右第一個與最後一個元素的間距 */
+ .item133:first-child {
+     margin-left: 0;
+ }
+
+ .item133:last-child {
+     margin-right: 0;
+ }

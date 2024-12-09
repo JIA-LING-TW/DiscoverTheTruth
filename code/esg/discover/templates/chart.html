@@ -113,7 +113,41 @@
         margin-top: 5px;
         margin-right: 10px;
     }
+    .wrapper_133 {
+        width: 100%; /* 設定整體寬度 */
+        text-align: center; /* 讓標題置中 */
+    }
 
+    .title133 {
+        font-size: 24px; /* 標題字體大小 */
+        margin-bottom: 20px; /* 與下方容器的間距 */
+        color: #333; /* 標題顏色 */
+    }
+
+    .container_three33 {
+        display: flex;
+        justify-content: space-between; /* 均等間距 */
+        align-items: stretch; /* 高度一致 */
+        height: 100px; /* 設定容器高度，或使用內容自適應 */
+        padding: 0 20px; /* 左右留出 20px 的空間 */
+    }
+
+    .item133 {
+        flex: 1; /* 平均分配寬度 */
+        border: 1px solid #ddd; /* 外框，方便觀察效果 */
+        {% comment %} margin: 0 5px; /* 元素間距 */ {% endcomment %}
+        text-align: center; /* 文字置中 */
+        line-height: 100px; /* 文字垂直置中，根據容器高度調整 */
+        background-color: #f0f0f0; /* 背景顏色 */
+    }
+
+    .item133:first-child {
+        margin-left: 0;
+    }
+
+    .item133:last-child {
+        margin-right: 0;
+    }
 </style>
 {% endblock selfcss %}
 
@@ -167,6 +201,15 @@
         <canvas id="wasteManagementChart"></canvas>
     </div>
 </div>
+
+{% comment %} <div class="wrapper_133">
+    <h1 class="title133">密集度</h1>
+    <div class="container_three33">
+        <div class="item133">第一部分</div>
+        <div class="item133">第二部分</div>
+        <div class="item133">第三部分</div>
+    </div>
+</div> {% endcomment %}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -227,7 +270,14 @@
                 responsive: true,
                 plugins: {
                     legend: { position: 'top' },
-                    title: { display: true, text: `${year} 年 - ${companyCode} (噸CO2e)` }
+                    title: { 
+                        display: true, 
+                        text: [
+                            `${year} 年`,
+                            `範疇一: ${data.scope_1_emissions} (噸CO2e)`, 
+                            `範疇二: ${data.scope_2_emissions} (噸CO2e)`
+                        ] 
+                    }
                 }
             }
         });
@@ -328,7 +378,14 @@
                 indexAxis: 'y', // 設定為橫向長條圖
                 plugins: {
                     legend: { position: 'top' },
-                    title: { display: true, text: `${year} 年 - ${companyCode} (公噸)` }
+                    title: { 
+                        display: true, 
+                        text: [
+                            `${year} 年`,
+                            `有害廢棄物: ${hazardousWaste} (公噸)`, 
+                            `無害廢棄物: ${nonHazardousWaste} (公噸)`
+                        ] 
+                    }
                 }
             }
         });
