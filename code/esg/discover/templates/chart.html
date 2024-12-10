@@ -12,6 +12,7 @@
         color: #333;
         margin: 0;
         padding: 0;
+        
     }
 
     h1 {
@@ -133,12 +134,12 @@
     }
 
     .item133 {
-        flex: 1; /* 平均分配寬度 */
-        border: 1px solid #ddd; /* 外框，方便觀察效果 */
-        {% comment %} margin: 0 5px; /* 元素間距 */ {% endcomment %}
-        text-align: center; /* 文字置中 */
-        line-height: 100px; /* 文字垂直置中，根據容器高度調整 */
-        background-color: #f0f0f0; /* 背景顏色 */
+        flex: 1;
+        border: 1px solid #ddd;
+        margin: 0 5px;
+        text-align: center;
+        line-height: 100px;
+        background-color: #f0f0f0;
     }
 
     .item133:first-child {
@@ -148,6 +149,42 @@
     .item133:last-child {
         margin-right: 0;
     }
+    .button-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.esg-button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.esg-button:hover {
+    background-color: #ddd;
+}
+
+#btn-environment {
+    background-color: #36A2EB; /* 藍色 */
+    color: white;
+}
+
+#btn-social {
+    background-color: #FFCE56; /* 黃色 */
+    color: white;
+}
+
+#btn-governance {
+    background-color: #4CAF50; /* 綠色 */
+    color: white;
+}
+
+    
 </style>
 {% endblock selfcss %}
 
@@ -168,11 +205,18 @@
         <label style="margin-bottom:4px;margin-top:3px;" for="company">公司代碼：</label>
         <input class="c444" type="text" id="company" placeholder="輸入公司代碼">
     </div>
-
-    <button id="load-data">載入數據</button>
+<div class="button-container" id="load-data">
+    <!-- <button id="load-data" class="esg-button">載入數據</button> -->
+    
+        <button class="esg-button" id="btn-environment">環境 (E)</button>
+        <button class="esg-button" id="btn-social">社會 (S)</button>
+        <button class="esg-button" id="btn-governance">治理 (G)</button>
+    </div>
+    
 </div>
-
-<!-- 排放量與能源圖表 -->
+<div id="environment-content" class="esg-content"style="display: none;">
+    <h2>環境 (E)</h2>
+    <!-- 排放量與能源圖表 -->
 <div class="charts-container">
     <!-- 排放量圖表 -->
     <div class="chart-container">
@@ -201,6 +245,19 @@
         <canvas id="wasteManagementChart"></canvas>
     </div>
 </div>
+</div>
+
+<div id="social-content" class="esg-content" style="display: none;">
+    <h2>社會 (S)</h2>
+    <p>此處顯示與社會相關的數據或圖表。</p>
+</div>
+
+<div id="governance-content" class="esg-content" style="display: none;">
+    <h2>治理 (G)</h2>
+    <p>此處顯示與治理相關的數據或圖表。</p>
+</div>
+
+
 
 {% comment %} <div class="wrapper_133">
     <h1 class="title133">密集度</h1>
@@ -213,6 +270,28 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+
+document.getElementById('btn-environment').addEventListener('click', () => {
+    showContent('environment-content');
+});
+
+document.getElementById('btn-social').addEventListener('click', () => {
+    showContent('social-content');
+});
+
+document.getElementById('btn-governance').addEventListener('click', () => {
+    showContent('governance-content');
+});
+
+function showContent(contentId) {
+    // 隱藏所有內容
+    document.querySelectorAll('.esg-content').forEach(content => {
+        content.style.display = 'none';
+    });
+
+    // 顯示選擇的內容
+    document.getElementById(contentId).style.display = 'block';
+}
 
     document.getElementById('company').addEventListener('input', async function () {
         const companyCode = this.value.trim();
@@ -398,55 +477,67 @@
         if (!response.ok) throw new Error('Network response was not ok');
         return response.json();
     }
-    
-    document.getElementById('load-data').addEventListener('click', async () => {
-        const year = document.getElementById('year').value;
-        const companyCode = document.getElementById('company').value;
-    
-        if (!year || !companyCode) {
-            alert('請選擇年度和公司代碼！');
-            return;
-        }
-    
-        try {
-            // 1. 溫室氣體排放量
-            const emissionsData = await fetchChartData('/emissions-chart', { year, company_code: companyCode });
-            if (emissionsData.data.length === 0) {
-                alert('未找到溫室氣體數據！');
-                return;
-            }
-            updateEmissionsChart(emissionsData.data[0], year, companyCode);
-    
-            // 2. 能源使用率
-            const energyData = await fetchChartData('/energy-chart', { year, company_code: companyCode });
-            if (!energyData.usage_rate) {
-                alert('未找到能源使用率數據！');
-                return;
-            }
-            updateEnergyChart(energyData.usage_rate);
-    
-            // 3. 用水量
-            const waterUsageData = await fetchChartData('/water-usage-chart', { year, company_code: companyCode });
-            if (!waterUsageData.water_usage) {
-                alert('未找到用水量數據！');
-                return;
-            }
-            updateWaterUsageChart(waterUsageData.water_usage, year);
-    
-            // 4. 廢棄物
-            const wasteData = await fetchChartData('/waste-management-chart', { year, company_code: companyCode });
-            if (wasteData.data && wasteData.data.length > 0) {
-                const { hazardous_waste, non_hazardous_waste } = wasteData.data[0];
-                updateWasteManagementChart({ hazardous_waste, non_hazardous_waste }, year, companyCode);
-            } else {
-                alert('未找到廢棄物數據！');
-            }
-    
-        } catch (error) {
-            console.error('Error:', error);
-            alert('查詢數據時發生錯誤，請稍後再試！');
-        }
+    function hideAllCharts() {
+    document.querySelectorAll('.chart-container').forEach(chart => {
+        chart.style.display = 'none';
     });
+}
+    
+document.getElementById('load-data').addEventListener('click', async () => {
+    const year = document.getElementById('year').value;
+    const companyCode = document.getElementById('company').value;
+
+    hideAllCharts(); // 預設隱藏所有圖表
+
+    if (!year || !companyCode) {
+        alert('請選擇年度和公司代碼！');
+        return;
+    }
+
+    try {
+        // 1. 溫室氣體排放量
+        const emissionsData = await fetchChartData('/emissions-chart', { year, company_code: companyCode });
+        if (emissionsData.data && emissionsData.data.length > 0) {
+            updateEmissionsChart(emissionsData.data[0], year, companyCode);
+            showChart('emissions-chart-container');
+        } else {
+            alert('未找到溫室氣體數據！');
+        }
+
+        // 2. 能源使用率
+        const energyData = await fetchChartData('/energy-chart', { year, company_code: companyCode });
+        if (energyData.usage_rate) {
+            updateEnergyChart(energyData.usage_rate);
+            showChart('energy-chart-container');
+        } else {
+            alert('未找到能源使用率數據！');
+        }
+
+        // 3. 用水量
+        const waterUsageData = await fetchChartData('/water-usage-chart', { year, company_code: companyCode });
+        if (waterUsageData.water_usage) {
+            updateWaterUsageChart(waterUsageData.water_usage, year);
+            showChart('water-usage-chart-container');
+        } else {
+            alert('未找到用水量數據！');
+        }
+
+        // 4. 廢棄物
+        const wasteData = await fetchChartData('/waste-management-chart', { year, company_code: companyCode });
+        if (wasteData.data && wasteData.data.length > 0) {
+            const { hazardous_waste, non_hazardous_waste } = wasteData.data[0];
+            updateWasteManagementChart({ hazardous_waste, non_hazardous_waste }, year, companyCode);
+            showChart('waste-management-chart-container');
+        } else {
+            alert('未找到廢棄物數據！');
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('查詢數據時發生錯誤，請稍後再試！');
+    }
+});
+
     
     
 </script>

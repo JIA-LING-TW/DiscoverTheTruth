@@ -60,6 +60,18 @@
         .filters button:hover {
             background-color: #218838;
         }
+        .chart-container {
+            display: none;
+            padding: 20px;
+            background-color: #ffffff;
+            margin: 20px auto;
+            width: 90%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .chart-container.active {
+            display: block;
+        }
         footer {
             background-color: #003366;
             color: white;
@@ -75,36 +87,98 @@
     </header>
 
     <nav>
-        <button onclick="showCategory('E')">環境 (E)</button>
-        <button onclick="showCategory('S')">社會 (S)</button>
-        <button onclick="showCategory('G')">治理 (G)</button>
+        <button onclick="showChart('chart-e')">環境 (E)</button>
+        <button onclick="showChart('chart-s')">社會 (S)</button>
+        <button onclick="showChart('chart-g')">治理 (G)</button>
     </nav>
 
     <div class="filters">
-        <select id="companyFilter">
-            <option value="all">選擇公司</option>
-            <!-- 動態載入公司選項 -->
-        </select>
-        <input type="text" id="companySearch" placeholder="輸入公司名稱">
-        <select id="yearFilter">
-            <option value="all">選擇年份</option>
-            <!-- 動態載入年份選項 -->
+        <input type="text" id="companyCode" placeholder="輸入公司代號">
+        <select id="yearSelect">
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
         </select>
         <button onclick="applyFilters()">篩選</button>
     </div>
 
-    
+    <div id="chart-e" class="chart-container">
+        <h2>環境 (E) 圖表</h2>
+        <p id="chart-e-data">這裡顯示環境相關數據的圖表。</p>
+        <!-- 在這裡嵌入環境相關圖表 -->
+         <!-- 排放量與能源圖表 -->
+<div class="charts-container">
+    <!-- 排放量圖表 -->
+    <div class="chart-container">
+        <h2>溫室氣體排放量</h2>
+        <canvas id="emissionsChart"></canvas>
+    </div>
+
+    <!-- 堆疊條形圖：能源使用率 -->
+    <div class="chart-container">
+        <h2>能源使用率 (再生能源/總能源)</h2>
+        <canvas id="energyChart"></canvas>
+    </div>
+</div>
+
+<!-- 用水量與廢棄物圖表並排 -->
+<div class="charts-container">
+    <!-- 用水量圖表 -->
+    <div class="chart-container">
+        <h2>用水量 (公噸)</h2>
+        <canvas id="waterUsageChart"></canvas>
+    </div>
+
+    <!-- 廢棄物圖表 -->
+    <div class="chart-container">
+        <h2>廢棄物管理</h2>
+        <canvas id="wasteManagementChart"></canvas>
+    </div>
+</div>
+    </div>
+
+    <div id="chart-s" class="chart-container">
+        <h2>社會 (S) 圖表</h2>
+        <p id="chart-s-data">這裡顯示社會相關數據的圖表。</p>
+        <!-- 在這裡嵌入社會相關圖表 -->
+    </div>
+
+    <div id="chart-g" class="chart-container">
+        <h2>治理 (G) 圖表</h2>
+        <p id="chart-g-data">這裡顯示治理相關數據的圖表。</p>
+        <!-- 在這裡嵌入治理相關圖表 -->
+    </div>
+
+    <footer>
+        ESG 圖表數據 &copy; 2024
+    </footer>
 
     <script>
-        function showCategory(category) {
-            console.log("切換到分類:", category);
+        // 顯示指定的圖表
+        function showChart(chartId) {
+            // 隱藏所有圖表區塊
+            const charts = document.querySelectorAll('.chart-container');
+            charts.forEach(chart => chart.classList.remove('active'));
+
+            // 顯示指定的圖表區塊
+            document.getElementById(chartId).classList.add('active');
         }
 
+        // 應用篩選條件並更新圖表
         function applyFilters() {
-            const company = document.getElementById("companyFilter").value;
-            const search = document.getElementById("companySearch").value;
-            const year = document.getElementById("yearFilter").value;
-            console.log(`篩選條件：公司=${company}, 搜尋=${search}, 年份=${year}`);
+            const companyCode = document.getElementById("companyCode").value;
+            const year = document.getElementById("yearSelect").value;
+
+            if (companyCode) {
+                document.getElementById("chart-e-data").innerText = 
+                    `顯示公司 ${companyCode} 在 ${year} 的環境數據圖表。`;
+                document.getElementById("chart-s-data").innerText = 
+                    `顯示公司 ${companyCode} 在 ${year} 的社會數據圖表。`;
+                document.getElementById("chart-g-data").innerText = 
+                    `顯示公司 ${companyCode} 在 ${year} 的治理數據圖表。`;
+            } else {
+                alert("請輸入公司代號！");
+            }
         }
     </script>
 </body>
