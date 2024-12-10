@@ -5,179 +5,257 @@
 {% block selfcss %}
 <link rel="stylesheet" href="{% static 'css/chart.css' %}">
 <style>
+    
     /* 基本樣式 */
-    body {
-        font-family: 'Arial', sans-serif;
-        background: linear-gradient(to right, #fde2eb, #5a8cbf); /* Light Pink to Muted Blue */
-        color: #333;
-        margin: 0;
-        padding: 0;
-    }
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #fde2eb, #5a8cbf);
+    /* Light Pink to Muted Blue */
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
 
-    h1 {
-        text-align: center;
-        font-size: 40px;
-        color: #333;
-        margin: 30px 0;
-    }
+h1 {
+    text-align: center;
+    font-size: 40px;
+    color: #333;
+    margin: 30px 0;
+}
 
-    h1 span {
-        font-size: 20px;
-        color: #4CAF50;
-    }
+h1 span {
+    font-size: 20px;
+    color: #4CAF50;
+}
 
-    /* 表單容器 */
-    .form-container {
-        display: flex;
-        justify-content: space-between;
-        gap: 20px;
-        max-width: 1000px;
-        margin: 20px auto;
-        padding: 20px;
-        background: #fff;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-    }
+/* 表單容器 */
+.form-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
 
-    .form-container label {
-        font-weight: bold;
-        font-size: 16px;
-        margin-bottom: 8px;
-        color: #555;
-    }
+.form-container label {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #555;
+}
 
-    .form-container select,
-    .form-container input {
-        width: 180px;
-        padding: 10px;
-        font-size: 14px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        transition: all 0.3s ease;
-    }
+.form-container select,
+.form-container input {
+    width: 180px;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
 
-    .form-container select:focus,
-    .form-container input:focus {
-        border-color: #4CAF50;
-        outline: none;
-    }
+.form-container select:focus,
+.form-container input:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
 
-    .form-container button {
-        width: 160px;
-        padding: 12px 20px;
-        font-size: 16px;
-        font-weight: bold;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
+.form-container button {
+    width: 160px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
 
-    .form-container button:hover {
-        background-color: #45a049;
-    }
+.form-container button:hover {
+    background-color: #45a049;
+}
 
-    .charts-container {
-        display: flex;
-        justify-content: space-between;
-        margin: 20px auto;
-        max-width: 1200px;
-        gap: 20px;
-    }
+.charts-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px auto;
+    max-width: 1200px;
+    gap: 20px;
+}
 
-    .chart-container {
-        width: 48%;
-        background: #fff;
-        padding: 20px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-    }
+.chart-container {
+    width: 48%;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
 
-    .chart-container h2 {
-        font-size: 22px;
-        text-align: center;
-        margin-bottom: 20px;
-        color: #4CAF50;
-    }
+.chart-container h2 {
+    font-size: 22px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #4CAF50;
+}
 
-    canvas {
-        width: 100%;
-        height: 300px;
-        border-radius: 4px;
-    }
+canvas {
+    width: 100%;
+    height: 300px;
+    border-radius: 4px;
+}
 
-    /* 為「廢棄物」和「公司代碼」輸入框添加專門的樣式 */
-    .c444 {
-        margin-top: 5px;
-        margin-right: 10px;
-    }
-    .wrapper_133 {
-        width: 100%; /* 設定整體寬度 */
-        text-align: center; /* 讓標題置中 */
-    }
+/* 為「廢棄物」和「公司代碼」輸入框添加專門的樣式 */
+.c444 {
+    margin-top: 5px;
+    margin-right: 10px;
+}
 
-    .title133 {
-        font-size: 24px; /* 標題字體大小 */
-        margin-bottom: 20px; /* 與下方容器的間距 */
-        color: #333; /* 標題顏色 */
-    }
+.wrapper_133 {
+    width: 100%;
+    /* 設定整體寬度 */
+    text-align: center;
+    /* 讓標題置中 */
+}
 
-    .container_three33 {
-        display: flex;
-        justify-content: space-between; /* 均等間距 */
-        align-items: stretch; /* 高度一致 */
-        height: 100px; /* 設定容器高度，或使用內容自適應 */
-        padding: 0 20px; /* 左右留出 20px 的空間 */
-    }
+.title133 {
+    font-size: 24px;
+    /* 標題字體大小 */
+    margin-bottom: 20px;
+    /* 與下方容器的間距 */
+    color: #333;
+    /* 標題顏色 */
+}
 
-    .item133 {
-        flex: 1; /* 平均分配寬度 */
-        border: 1px solid #ddd; /* 外框，方便觀察效果 */
-        {% comment %} margin: 0 5px; /* 元素間距 */ {% endcomment %}
-        text-align: center; /* 文字置中 */
-        line-height: 100px; /* 文字垂直置中，根據容器高度調整 */
-        background-color: #f0f0f0; /* 背景顏色 */
-    }
+.container_three33 {
+    display: flex;
+    justify-content: space-between;
+    /* 均等間距 */
+    align-items: stretch;
+    /* 高度一致 */
+    height: 100px;
+    /* 設定容器高度，或使用內容自適應 */
+    padding: 0 20px;
+    /* 左右留出 20px 的空間 */
+}
 
-    .item133:first-child {
-        margin-left: 0;
-    }
+.item133 {
+    flex: 1;
+    /* 平均分配寬度 */
+    border: 1px solid #ddd;
+    text-align: center;
+    /* 文字置中 */
+    line-height: 100px;
+    /* 文字垂直置中，根據容器高度調整 */
+    background-color: #f0f0f0;
+    /* 背景顏色 */
+}
 
-    .item133:last-child {
-        margin-right: 0;
-    }
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
 
-    .esg-button {
-        margin: 5px;
-        padding: 10px 20px;
-        font-size: 18px;
-        font-weight: bold;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-    
-    .esg-button:hover {
-        background-color: #ddd;
-    }
-    
-    #btn-environment {
-        background-color: #36A2EB; /* 藍色 */
-        color: white;
-    }
-    
-    #btn-social {
-        background-color: #FFCE56; /* 黃色 */
-        color: white;
-    }
-    
-    #btn-governance {
-        background-color: #4CAF50; /* 綠色 */
-        color: white;
-    }
+#environment-content {
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.chart-container {
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chart-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+h2 {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.charts-container {
+    gap: 30px;
+}
+
+canvas {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+
+.item133:first-child {
+    margin-left: 0;
+}
+
+.item133:last-child {
+    margin-right: 0;
+}
+
+.esg-button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.esg-button:hover {
+    background-color: #ddd;
+}
+
+#btn-environment {
+    background-color: #36A2EB;
+    /* 藍色 */
+    color: white;
+}
+
+#btn-social {
+    background-color: #FFCE56;
+    /* 黃色 */
+    color: white;
+}
+
+#btn-governance {
+    background-color: #4CAF50;
+    /* 綠色 */
+    color: white;
+}
+
+.esg-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.esg-button.active {
+    background-color: #007bff;
+    color: white;
+    border: 4px solid #0349ab;
+}
+
+
+.esg-button:hover {
+    background-color: #e0e0e0;
+    /* 滑鼠懸停的背景顏色 */
+}
 </style>
 {% endblock selfcss %}
 
@@ -204,34 +282,40 @@
     <button class="esg-button" id="btn-social">社會 (S)</button>
     <button class="esg-button" id="btn-governance">治理 (G)</button>
 </div>
-<div id="environment-content" class="esg-content"style="display: none;">
-    <!-- 排放量與能源圖表 -->
-    <div class="charts-container">
+<div id="environment-content" class="esg-content" style="display: none; padding: 20px;">
+    <!-- Header 區塊 -->
+    <div style="background-color: #36A2EB; color: #fff; text-align: center; padding: 20px; border-radius: 8px;">
+        <h2 style="font-size: 36px; margin: 0;">環境 (E)</h2>
+        <p style="font-size: 18px; margin: 10px 0 0;">探索環境指標數據與趨勢</p>
+    </div>
+
+    <!-- 圖表區塊 -->
+    <div class="charts-container" style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 30px;">
         <!-- 排放量圖表 -->
-        <div class="chart-container">
-            <h2>溫室氣體排放量</h2>
-            <canvas id="emissionsChart"></canvas>
+        <div class="chart-container" style="flex: 1; min-width: 400px; background: #f9f9f9; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px;">
+            <h2 style="font-size: 24px; text-align: center; color: #333;">溫室氣體排放量</h2>
+            <canvas id="emissionsChart" style="max-width: 100%; height: 70%;"></canvas>
         </div>
 
-        <!-- 堆疊條形圖：能源使用率 -->
-        <div class="chart-container">
-            <h2>能源使用率 (再生能源/總能源)</h2>
-            <canvas id="energyChart"></canvas>
+        <!-- 能源使用率圖表 -->
+        <div class="chart-container" style="flex: 1; min-width: 400px; background: #f9f9f9; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px;">
+            <h2 style="font-size: 24px; text-align: center; color: #333;">能源使用率 (再生能源/總能源)</h2>
+            <canvas id="energyChart" style="max-width: 100%; height: 70%;"></canvas>
         </div>
     </div>
 
-    <!-- 用水量與廢棄物圖表並排 -->
-    <div class="charts-container">
+    <!-- 用水量與廢棄物管理圖表 -->
+    <div class="charts-container" style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 30px;">
         <!-- 用水量圖表 -->
-        <div class="chart-container">
-            <h2>用水量 (公噸)</h2>
-            <canvas id="waterUsageChart"></canvas>
+        <div class="chart-container" style="flex: 1; min-width: 400px; background: #f9f9f9; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px;">
+            <h2 style="font-size: 24px; text-align: center; color: #333;">用水量 (公噸)</h2>
+            <canvas id="waterUsageChart" style="max-width: 100%; height: 70%;"></canvas>
         </div>
 
         <!-- 廢棄物圖表 -->
-        <div class="chart-container">
-            <h2>廢棄物管理</h2>
-            <canvas id="wasteManagementChart"></canvas>
+        <div class="chart-container" style="flex: 1; min-width: 400px; background: #f9f9f9; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 20px;">
+            <h2 style="font-size: 24px; text-align: center; color: #333;">廢棄物管理</h2>
+            <canvas id="wasteManagementChart" style="max-width: 100%; height: 70%;"></canvas>
         </div>
     </div>
 </div>
@@ -239,7 +323,6 @@
 <div id="social-content" class="esg-content" style="display: none;">
     <h2>社會 (S)</h2>
     <p>此處顯示與社會相關的數據或圖表。</p>
-</div>
 
 <div id="governance-content" class="esg-content" style="display: none;">
     <h2>治理 (G)</h2>
@@ -257,6 +340,28 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("DOM fully loaded and parsed");
+    
+        const buttons = document.querySelectorAll(".esg-button");
+        console.log("Buttons selected:", buttons);
+    
+        buttons.forEach(button => {
+            button.addEventListener("click", function () {
+                console.log("Button clicked:", this);
+    
+                // 移除所有按鈕的 active 樣式
+                buttons.forEach(btn => btn.classList.remove("active"));
+    
+                // 為當前按鈕添加 active 樣式
+                this.classList.add("active");
+            });
+        });
+    });
+    
+    
+    
 
     document.getElementById('btn-environment').addEventListener('click', () => {
         showContent('environment-content');
