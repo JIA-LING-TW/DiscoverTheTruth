@@ -14,7 +14,6 @@ from myapp.views import (
     upload_investor_communication_data,
     upload_shareholder_data,
     upload_sustainability_report_data,
-    load_csv_to_database_board
 )
 
 urlpatterns = [
@@ -77,5 +76,4 @@ urlpatterns = [
     path('waste-management-chart', views.waste_management_chart,
          name='waste_management_chart'),
     path('get-company-name/', views.get_company_name, name='get_company_name'),
-    path('density-chart/', views.density_chart, name='density-chart'),
 ]
