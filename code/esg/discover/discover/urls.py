@@ -77,4 +77,5 @@ urlpatterns = [
     path('waste-management-chart', views.waste_management_chart,
          name='waste_management_chart'),
     path('get-company-name/', views.get_company_name, name='get_company_name'),
+    path('density-chart/', views.density_chart, name='density-chart'),
 ]

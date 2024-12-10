@@ -1,4 +1,5 @@
 
+from .models import WaterResourceManagement, WasteManagement, GreenhouseGasEmission
 from .models import EnergyManagement, WaterResourceManagement, GreenhouseGasEmission, WasteManagement
 from .models import WasteManagement
 from .models import EnergyManagement, WaterResourceManagement
@@ -137,6 +138,35 @@ def chart(request):
     }
 
     return render(request, 'chart.html', context)
+
+
+def density_chart(request):
+    year = request.GET.get('year')
+    company_code = request.GET.get('company_code')
+
+    if not year or not company_code:
+        return JsonResponse({'error': 'Missing parameters'}, status=400)
+
+    try:
+        water_data = WaterResourceManagement.objects.get(
+            year=year, company_code=company_code)
+        waste_data = WasteManagement.objects.get(
+            year=year, company_code=company_code)
+        emission_data = GreenhouseGasEmission.objects.get(
+            year=year, company_code=company_code)
+
+        data = {
+            'water_density': water_data.water_intensity or "無數據",
+            'waste_density': waste_data.waste_intensity or "無數據",
+            'emission_density': emission_data.emission_intensity or "無數據"
+        }
+        return JsonResponse(data)
+    except WaterResourceManagement.DoesNotExist:
+        return JsonResponse({'error': 'Water data not found'}, status=404)
+    except WasteManagement.DoesNotExist:
+        return JsonResponse({'error': 'Waste data not found'}, status=404)
+    except GreenhouseGasEmission.DoesNotExist:
+        return JsonResponse({'error': 'Emission data not found'}, status=404)
 
 
 def water_usage_chart(request):
