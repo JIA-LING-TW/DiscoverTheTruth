@@ -321,6 +321,10 @@
     function updateEmissionsChart(data, year, companyCode) {
         if (emissionsChart) emissionsChart.destroy();
     
+        // 格式化數值以加上千分位逗號
+        const formattedScope1Emissions = data.scope_1_emissions.toLocaleString();
+        const formattedScope2Emissions = data.scope_2_emissions.toLocaleString();
+    
         emissionsChart = new Chart(emissionsChartContext, {
             type: 'bar',
             data: {
@@ -340,14 +344,15 @@
                         display: true, 
                         text: [
                             `${year} 年`,
-                            `範疇一: ${data.scope_1_emissions} (噸CO2e)`, 
-                            `範疇二: ${data.scope_2_emissions} (噸CO2e)`
+                            `範疇一: ${formattedScope1Emissions} (噸CO2e)`, 
+                            `範疇二: ${formattedScope2Emissions} (噸CO2e)`
                         ] 
                     }
                 }
             }
         });
     }
+    
     
     function updateEnergyChart(usageRate) {
         const year = document.getElementById('year').value;  // 动态获取选择的年份
@@ -394,11 +399,14 @@
     
     function updateWaterUsageChart(waterUsage, year) {
         if (waterUsageChart) waterUsageChart.destroy();
-    
+        
         // 確保 waterUsage 是有效數字
         if (isNaN(waterUsage) || waterUsage === null || waterUsage === undefined) {
             waterUsage = 0;  // 設定為 0 或其他預設值
         }
+        
+        // 格式化數值以加上千分位逗號
+        const formattedWaterUsage = waterUsage.toLocaleString();
     
         waterUsageChart = new Chart(waterUsageChartContext, {
             type: 'bar',
@@ -416,18 +424,23 @@
                     legend: { position: 'top' },
                     title: {
                         display: true,
-                        text: `用水量: ${year} 年 - ${waterUsage} (公噸)`  // 正確的模板字面量語法
+                        text: `用水量: ${year} 年 - ${formattedWaterUsage} (公噸)`  // 使用格式化的數值
                     }
                 }
             }
         });
     }
+    
 
     function updateWasteManagementChart(data, year, companyCode) {
         if (wasteManagementChart) wasteManagementChart.destroy();
     
         const hazardousWaste = parseFloat(data.hazardous_waste) || 0;
         const nonHazardousWaste = parseFloat(data.non_hazardous_waste) || 0;
+        
+        // 格式化數值以加上千分位逗號
+        const formattedHazardousWaste = hazardousWaste.toLocaleString();
+        const formattedNonHazardousWaste = nonHazardousWaste.toLocaleString();
     
         wasteManagementChart = new Chart(wasteManagementChartContext, {
             type: 'bar',
@@ -448,8 +461,8 @@
                         display: true, 
                         text: [
                             `${year} 年`,
-                            `有害廢棄物: ${hazardousWaste} (公噸)`, 
-                            `無害廢棄物: ${nonHazardousWaste} (公噸)`
+                            `有害廢棄物: ${formattedHazardousWaste} (公噸)`, 
+                            `無害廢棄物: ${formattedNonHazardousWaste} (公噸)`
                         ] 
                     }
                 }
