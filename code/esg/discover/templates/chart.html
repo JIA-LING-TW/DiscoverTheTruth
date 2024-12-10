@@ -114,7 +114,7 @@
         margin-top: 5px;
         margin-right: 10px;
     }
-    .wrapper_133 {
+    {% comment %} .wrapper_133 {
         width: 100%; /* 設定整體寬度 */
         text-align: center; /* 讓標題置中 */
     }
@@ -148,6 +148,18 @@
 
     .item133:last-child {
         margin-right: 0;
+    } {% endcomment %}
+
+    /* 外層容器設計 */
+    .wrapper_133 {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px 30px;
+        background-color: #f4f7fa;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        border-top: 5px solid #0078D7;
     }
     .button-container {
     text-align: center;
@@ -194,7 +206,8 @@
 <div class="form-container">
     <div>
         <label style="margin-bottom:8px;" for="year">年度：</label>
-        <select id="year">
+        <select id="year" onchange="updateYear()">
+            <option value="">請選擇年份</option> <!-- 預設選項 -->
             {% for year in years %}
             <option value="{{ year }}">{{ year }}</option>
             {% endfor %}
@@ -262,11 +275,28 @@
 {% comment %} <div class="wrapper_133">
     <h1 class="title133">密集度</h1>
     <div class="container_three33">
-        <div class="item133">第一部分</div>
-        <div class="item133">第二部分</div>
-        <div class="item133">第三部分</div>
+        <div class="item133" id="water-density">
+            <p class="density-label">用水密集度</p>
+            <p class="density-value">--</p>
+        </div>
+        <div class="item133" id="waste-density">
+            <p class="density-label">廢棄物密集度</p>
+            <p class="density-value">--</p>
+        </div>
+        <div class="item133" id="emission-density">
+            <p class="density-label">溫室氣體排放密集度</p>
+            <p class="density-value">--</p>
+        </div>
     </div>
+</div>
+
+
+{% comment %} <div class="density-container">
+    <div class="density-item" id="water-density">用水密集度：--</div>
+    <div class="density-item" id="waste-density">廢棄物密集度：--</div>
+    <div class="density-item" id="emission-density">溫室氣體密集度：--</div>
 </div> {% endcomment %}
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -334,6 +364,10 @@ function showContent(contentId) {
     function updateEmissionsChart(data, year, companyCode) {
         if (emissionsChart) emissionsChart.destroy();
     
+        // 格式化數值以加上千分位逗號
+        const formattedScope1Emissions = data.scope_1_emissions.toLocaleString();
+        const formattedScope2Emissions = data.scope_2_emissions.toLocaleString();
+    
         emissionsChart = new Chart(emissionsChartContext, {
             type: 'bar',
             data: {
@@ -353,14 +387,15 @@ function showContent(contentId) {
                         display: true, 
                         text: [
                             `${year} 年`,
-                            `範疇一: ${data.scope_1_emissions} (噸CO2e)`, 
-                            `範疇二: ${data.scope_2_emissions} (噸CO2e)`
+                            `範疇一: ${formattedScope1Emissions} (噸CO2e)`, 
+                            `範疇二: ${formattedScope2Emissions} (噸CO2e)`
                         ] 
                     }
                 }
             }
         });
     }
+    
     
     function updateEnergyChart(usageRate) {
         const year = document.getElementById('year').value;  // 动态获取选择的年份
@@ -407,11 +442,14 @@ function showContent(contentId) {
     
     function updateWaterUsageChart(waterUsage, year) {
         if (waterUsageChart) waterUsageChart.destroy();
-    
+        
         // 確保 waterUsage 是有效數字
         if (isNaN(waterUsage) || waterUsage === null || waterUsage === undefined) {
             waterUsage = 0;  // 設定為 0 或其他預設值
         }
+        
+        // 格式化數值以加上千分位逗號
+        const formattedWaterUsage = waterUsage.toLocaleString();
     
         waterUsageChart = new Chart(waterUsageChartContext, {
             type: 'bar',
@@ -429,18 +467,23 @@ function showContent(contentId) {
                     legend: { position: 'top' },
                     title: {
                         display: true,
-                        text: `用水量: ${year} 年 - ${waterUsage} (公噸)`  // 正確的模板字面量語法
+                        text: `用水量: ${year} 年 - ${formattedWaterUsage} (公噸)`  // 使用格式化的數值
                     }
                 }
             }
         });
     }
+    
 
     function updateWasteManagementChart(data, year, companyCode) {
         if (wasteManagementChart) wasteManagementChart.destroy();
     
         const hazardousWaste = parseFloat(data.hazardous_waste) || 0;
         const nonHazardousWaste = parseFloat(data.non_hazardous_waste) || 0;
+        
+        // 格式化數值以加上千分位逗號
+        const formattedHazardousWaste = hazardousWaste.toLocaleString();
+        const formattedNonHazardousWaste = nonHazardousWaste.toLocaleString();
     
         wasteManagementChart = new Chart(wasteManagementChartContext, {
             type: 'bar',
@@ -461,14 +504,15 @@ function showContent(contentId) {
                         display: true, 
                         text: [
                             `${year} 年`,
-                            `有害廢棄物: ${hazardousWaste} (公噸)`, 
-                            `無害廢棄物: ${nonHazardousWaste} (公噸)`
+                            `有害廢棄物: ${formattedHazardousWaste} (公噸)`, 
+                            `無害廢棄物: ${formattedNonHazardousWaste} (公噸)`
                         ] 
                     }
                 }
             }
         });
     }
+    
     
     
     async function fetchChartData(url, params) {
