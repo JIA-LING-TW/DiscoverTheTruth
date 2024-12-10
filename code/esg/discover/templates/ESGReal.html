@@ -17,12 +17,13 @@
         flex-wrap: wrap;
         gap: 15px;
         align-items: center;
-        margin: 20px 0;
+        margin: 20px auto;
         padding: 15px;
-        {% comment %} background-color: #f9f9f9; {% endcomment %}
-        {% comment %} border: 1px solid #ddd; {% endcomment %}
+        background-color:none;
+        border: none;
         border-radius: 8px;
-        margin-left:220px;
+        margin-left: 250px;
+        width: 90%;
     }
 
     .filter-form label {
@@ -153,6 +154,13 @@
     </div>
 </form>
 
+<!-- 提示框 -->
+{% if data %}
+    <div style="margin: 20px auto; width: 90%; background-color: #fff3f3; color: #d8000c; border: 1px solid #d8000c; padding: 15px; border-radius: 5px;">
+        <strong>*</strong> 網路中心性值介於 0 到 1 之間，接近 0 表示重要性低，接近 1 表示重要性高，正常值通常落在平均值 ± 2 標準差內，超出此範圍則為異常。
+    </div>
+{% endif %}
+
 <!-- 篩選結果 -->
 {% if data %}
     <table>
@@ -170,7 +178,7 @@
                     <td>{{ item.report_year }}</td>
                     <td>{{ item.company_name }}</td>
                     <td style="color:blue;">{{ item.network_centrality }}</td>
-                    <td style="{% if item.anomaly_label == '異常' %}color:red; font-weight:bold;{% endif %}">
+                    <td {% if item.anomaly_label == '異常' %}style="color:red; font-weight:bold;"{% endif %}>
                         {{ item.anomaly_label }}
                     </td>
                     
