@@ -486,7 +486,9 @@ canvas {
                 indexAxis: 'x',  // 水平排列
                 plugins: {
                     legend: { position: 'top' },
-                    title: { display: true, text: `使用率: ${year} 年 - ${usageRate}%` }
+                    title: { display: true, 
+                        text: [`${year} 年`,
+                    `能源使用率:${usageRate}%`] }
                 },
                 scales: {
                     x: { 
@@ -530,7 +532,8 @@ canvas {
                     legend: { position: 'top' },
                     title: {
                         display: true,
-                        text: `用水量: ${year} 年 - ${formattedWaterUsage} (公噸)`  // 使用格式化的數值
+                        text: [`${year} 年`,
+                    `用水量:${formattedWaterUsage} (公噸)`]  // 使用格式化的數值
                     }
                 }
             }
